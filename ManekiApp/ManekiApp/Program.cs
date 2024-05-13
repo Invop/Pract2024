@@ -5,6 +5,7 @@ using ManekiApp.Client.Pages;
 using ManekiApp.Components;
 using ManekiApp.Components.Account;
 using ManekiApp.Data;
+using Radzen;
 
 namespace ManekiApp;
 
@@ -18,6 +19,9 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        builder.Services.AddRadzenComponents();
+        
+        
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddScoped<IdentityUserAccessor>();
         builder.Services.AddScoped<IdentityRedirectManager>();
