@@ -1,0 +1,13 @@
+﻿version: '3.9'
+
+services:
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=Maneki
+      - POSTGRES_PASSWORD=ManekiPassword
+      - POSTGRES_DB=ManekiApp
+    ports:
+      - '5432:5432'
