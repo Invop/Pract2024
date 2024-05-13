@@ -166,7 +166,7 @@ SOON.
     -   Фреймворк ASPNET
     -   БД PostgreSQL
     -   Aiogram для інтеграції з Telegram(Python)
-	 -   Docker
+    -   Docker
 -   Фронтенд:
 	 - Blazor
 	 - Radzen
