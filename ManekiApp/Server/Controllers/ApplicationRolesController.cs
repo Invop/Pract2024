@@ -23,6 +23,7 @@ namespace ManekiApp.Server.Controllers
 
        partial void OnRolesRead(ref IQueryable<ApplicationRole> roles);
 
+       [AllowAnonymous]
        [EnableQuery]
        [HttpGet]
        public IEnumerable<ApplicationRole> Get()

@@ -12,9 +12,9 @@ namespace ManekiApp.Server.Models
     {
         [JsonIgnore, IgnoreDataMember]
         public override string PasswordHash { get; set; }
-        [NotMapped]
+        
+        
         public string TelegramId { get; set; }
-        [NotMapped]
         public bool TelegramConfirmed { get; set; }
         
         [NotMapped]

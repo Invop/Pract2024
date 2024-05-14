@@ -75,7 +75,7 @@ app.Run();
 
 void SeedData(RoleManager<ApplicationRole> roleManager)
 {
-    var roles = new List<string> { "Admin", "FreeUser", "Author", "Subscriber" };
+    var roles = new List<string> { "Admin", "FreeUser", "Author", "SubscriberTier1","SubscriberTier2","SubscriberTier3" };
     foreach (var role in roles)
     {
         if (!roleManager.RoleExistsAsync(role).GetAwaiter().GetResult())

@@ -17,10 +17,7 @@ namespace ManekiApp.Client.Pages
 
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
-
-        [Inject]
-        protected DialogService DialogService { get; set; }
-
+        
         [Inject]
         protected TooltipService TooltipService { get; set; }
 
@@ -32,7 +29,6 @@ namespace ManekiApp.Client.Pages
 
         protected IEnumerable<ManekiApp.Server.Models.ApplicationRole> roles;
         protected ManekiApp.Server.Models.ApplicationUser user;
-        protected IEnumerable<string> userRoles = Enumerable.Empty<string>();
         protected string error;
         protected bool errorVisible;
 
@@ -50,9 +46,9 @@ namespace ManekiApp.Client.Pages
         {
             try
             {
-                user.Roles = roles.Where(role => userRoles.Contains(role.Id)).ToList();
+                user.Roles = roles.Where(role => role.NormalizedName=="FREEUSER").ToList();
                 await Security.CreateUser(user);
-                DialogService.Close(null);
+                NavigationManager.NavigateTo("/");
             }
             catch (Exception ex)
             {
@@ -60,10 +56,6 @@ namespace ManekiApp.Client.Pages
                 error = ex.Message;
             }
         }
-
-        protected async Task CancelClick()
-        {
-            DialogService.Close(null);
-        }
+        
     }
 }
