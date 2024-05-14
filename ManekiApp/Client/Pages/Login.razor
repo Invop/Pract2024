@@ -6,10 +6,11 @@
 <RadzenRow>
     <RadzenColumn SizeMD="12">
         <RadzenTemplateForm Action="@($"account/login?redirectUrl={redirectUrl}")" Data="@("login")"
-            Method="post">
+                            Method="post">
             <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
             <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Info" Visible="@infoVisible">@info</RadzenAlert>
-            <RadzenLogin AllowResetPassword="false" AllowRegister="false" 
+            <RadzenLogin AllowResetPassword="false" AllowRegister="true"
+                         Register=@(args => OnRegister())           
             />
         </RadzenTemplateForm>
     </RadzenColumn>

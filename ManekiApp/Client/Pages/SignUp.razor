@@ -1,0 +1,66 @@
+@layout LoginLayout
+@page "/sign-up"
+
+<PageTitle>Sign Up</PageTitle>
+<RadzenText Text="Sign Up" TextStyle="Radzen.Blazor.TextStyle.H5" class="mb-4" TagName="Radzen.Blazor.TagName.H2" />
+<RadzenRow>
+    <RadzenColumn SizeMD="12">
+        <RadzenTemplateForm TItem="ManekiApp.Server.Models.ApplicationUser" Data="@user" Visible="@(user != null)" Submit="@FormSubmit">
+            <RadzenAlert Title="Cannot create user" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="UserName" style="width: 100%" Text="User Name" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox Disabled="true" style="width: 100%" @bind-Value="@(user.UserName)"
+                                   Name="UserName" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="TelegramId" style="width: 100%" Text="Telegram Id" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@(user.TelegramId)" Name="TelegramId" />
+                    <RadzenRequiredValidator Component="TelegramId" Text="TelegramId is required" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-top: 1rem">
+                <RadzenColumn SizeMD="12">
+                    <p class="alert alert-info small">
+                        If you don't know your Telegram ID, chat with this
+                        <a href="https://t.me/getmyid_bot" target="_blank">bot</a>,
+                        send the command <code>/start</code>, and enter the numbers that the bot
+                        gives you (after "Your user ID:") into the Telegram ID field.
+                    </p>
+                    <br/>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="Password" style="width: 100%" Text="Password" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenPassword style="display: block; width: 100%" @bind-Value="@(user.Password)"
+                                    Name="Password" />
+                    <RadzenRequiredValidator Component="Password" Text="Password is required" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Component="ConfirmPassword" style="width: 100%" Text="Confirm password" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenPassword style="display: block; width: 100%" @bind-Value="@(user.ConfirmPassword)"
+                                    Name="ConfirmPassword" />
+                    <RadzenRequiredValidator Component="ConfirmPassword" Text="ConfirmPassword is required" />
+                    <RadzenCompareValidator Text="Passwords must match" Component="ConfirmPassword" Value="@user.Password" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Sign Up" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenTemplateForm>
+        <RadzenLink Path="/login" Text="Already have an account?" />
+    </RadzenColumn>
+</RadzenRow>
