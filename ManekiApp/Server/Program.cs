@@ -68,4 +68,19 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveWebAssemblyRenderMode().AddAdditionalAssemblies(typeof(ManekiApp.Client._Imports).Assembly);
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>().Database.Migrate();
+using var scope = app.Services.CreateScope();
+SeedData(scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>());
 app.Run();
+
+
+void SeedData(RoleManager<ApplicationRole> roleManager)
+{
+    var roles = new List<string> { "Admin", "FreeUser", "Author", "Subscriber" };
+    foreach (var role in roles)
+    {
+        if (!roleManager.RoleExistsAsync(role).GetAwaiter().GetResult())
+        {
+            roleManager.CreateAsync(new ApplicationRole(role)).GetAwaiter().GetResult();
+        }
+    }
+}

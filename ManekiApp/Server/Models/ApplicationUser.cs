@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ManekiApp.Server.Models
 {
-    public partial class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
         [JsonIgnore, IgnoreDataMember]
         public override string PasswordHash { get; set; }

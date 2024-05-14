@@ -10,6 +10,14 @@ namespace ManekiApp.Server.Models
 {
     public partial class ApplicationRole : IdentityRole
     {
+        public ApplicationRole()
+        {
+        }
+
+        public ApplicationRole(string roleName) : base(roleName)
+        {
+        }
+        
         [JsonIgnore]
         public ICollection<ApplicationUser> Users { get; set; }
 
