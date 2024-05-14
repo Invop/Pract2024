@@ -130,12 +130,10 @@ namespace ManekiApp.Server.Controllers
         }
 
         partial void OnUserCreated(ApplicationUser user);
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ApplicationUser user)
         {
-            user.UserName = user.Email;
-            user.EmailConfirmed = true;
             var password = user.Password;
             var roles = user.Roles;
             user.Roles = null;

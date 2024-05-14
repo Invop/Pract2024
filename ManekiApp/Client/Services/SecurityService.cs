@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Text;
 using System.Text.Json;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -30,7 +29,7 @@ namespace ManekiApp.Client
 
         public ClaimsPrincipal Principal { get; private set; }
 
-        public SecurityService(NavigationManager navigationManager, IHttpClientFactory factory)
+        public SecurityService( NavigationManager navigationManager, IHttpClientFactory factory)
         {
             this.baseUri = new Uri($"{navigationManager.BaseUri}odata/Identity/");
             this.httpClient = factory.CreateClient("ManekiApp.Server");

@@ -10,17 +10,14 @@ using Radzen.Blazor;
 
 namespace ManekiApp.Client.Pages
 {
-    public partial class Login
+    public partial class SignUp
     {
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
 
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
-
-        [Inject]
-        protected DialogService DialogService { get; set; }
-
+        
         [Inject]
         protected TooltipService TooltipService { get; set; }
 
@@ -30,33 +27,35 @@ namespace ManekiApp.Client.Pages
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
-        protected string redirectUrl;
+        protected IEnumerable<ManekiApp.Server.Models.ApplicationRole> roles;
+        protected ManekiApp.Server.Models.ApplicationUser user;
         protected string error;
-        protected string info;
         protected bool errorVisible;
-        protected bool infoVisible;
 
         [Inject]
         protected SecurityService Security { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            var query = System.Web.HttpUtility.ParseQueryString(new Uri(NavigationManager.ToAbsoluteUri(NavigationManager.Uri).ToString()).Query);
+            user = new ManekiApp.Server.Models.ApplicationUser();
 
-            error = query.Get("error");
-
-            info = query.Get("info");
-
-            redirectUrl = query.Get("redirectUrl");
-
-            errorVisible = !string.IsNullOrEmpty(error);
-
-            infoVisible = !string.IsNullOrEmpty(info);
+            roles = await Security.GetRoles();
         }
 
-        private void OnRegister()
+        protected async Task FormSubmit(ManekiApp.Server.Models.ApplicationUser user)
         {
-            NavigationManager.NavigateTo("/sign-up");
+            try
+            {
+                user.Roles = roles.Where(role => role.NormalizedName=="FREEUSER").ToList();
+                await Security.CreateUser(user);
+                NavigationManager.NavigateTo("/");
+            }
+            catch (Exception ex)
+            {
+                errorVisible = true;
+                error = ex.Message;
+            }
         }
+        
     }
 }

@@ -18,8 +18,8 @@ namespace ManekiApp.Client.Shared
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
 
-        [Inject]
-        protected NavigationManager NavigationManager { get; set; }
+        // [Inject]
+        // protected NavigationManager NavigationManager { get; set; }
 
         [Inject]
         protected DialogService DialogService { get; set; }
@@ -35,5 +35,6 @@ namespace ManekiApp.Client.Shared
 
         [Inject]
         protected SecurityService Security { get; set; }
+
     }
 }
