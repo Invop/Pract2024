@@ -26,7 +26,8 @@ builder.Services.AddDbContext<ManekiAppDBContext>(options =>
 builder.Services.AddControllers().AddOData(opt =>
 {
     var oDataBuilderManekiAppDB = new ODataConventionModelBuilder();
-    oDataBuilderManekiAppDB.EntitySet<UserVerificationCode>("UserVerificationCode");
+    oDataBuilderManekiAppDB
+        .EntitySet<UserVerificationCode>("UserVerificationCodes");
     opt.AddRouteComponents("odata/ManekiAppDB", oDataBuilderManekiAppDB.GetEdmModel()).Count().Filter().OrderBy()
         .Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
@@ -56,6 +57,11 @@ builder.Services.AddControllers().AddOData(o =>
         .SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
+builder.Services.AddScoped<ManekiAppDBService>();
+builder.Services.AddDbContext<ManekiAppDBContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"));
+});
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -76,8 +82,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-app.MapRazorComponents<App>().AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(_Imports).Assembly);
+app.MapRazorComponents<App>().AddInteractiveWebAssemblyRenderMode().AddAdditionalAssemblies(typeof(_Imports).Assembly);
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>().Database.Migrate();
 using var scope = app.Services.CreateScope();
 SeedData(scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>());
