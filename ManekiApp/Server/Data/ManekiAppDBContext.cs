@@ -1,6 +1,4 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
+using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManekiApp.Server.Data
@@ -23,10 +21,11 @@ namespace ManekiApp.Server.Data
             this.OnModelBuilding(builder);
         }
 
+        public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
+
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Conventions.Add(_ => new BlankTriggerAddingConvention());
         }
-    
     }
 }
