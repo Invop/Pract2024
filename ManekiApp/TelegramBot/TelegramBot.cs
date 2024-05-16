@@ -77,14 +77,28 @@ public class TelegramBot
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
 
             // Get existing code or generate a new one
-            var verificationCode = await dbContext
-                .UserVerificationCodes
-                .FirstOrDefaultAsync(c => c.UserId == user.Id && c.ExpiryTime > DateTime.UtcNow, cancellationToken);
-
-            if (verificationCode == null)
+            var existingCode =
+                await dbContext.UserVerificationCodes.FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken);
+            if (existingCode != null)
             {
+                if (existingCode.ExpiryTime <= DateTime.UtcNow)
+                {
+                    // Generate a new code and update expiry time
+                    existingCode.Code = CodeGenerator.GenerateCode();
+                    existingCode.ExpiryTime = DateTime.UtcNow.AddMinutes(15);
+
+                    dbContext.UserVerificationCodes.Update(existingCode);
+                    await dbContext.SaveChangesAsync(cancellationToken);
+                }
+
+                await botClient.SendTextMessageAsync(chatId, $"We've generated a new code for you: {existingCode.Code}",
+                    cancellationToken: cancellationToken);
+            }
+            else
+            {
+                // Create a new UserVerificationCode
                 var newCode = CodeGenerator.GenerateCode();
-                verificationCode = new UserVerificationCode
+                var verificationCode = new UserVerificationCode
                 {
                     Id = Guid.NewGuid(),
                     UserId = user.Id,
@@ -95,13 +109,9 @@ public class TelegramBot
                 await dbContext.UserVerificationCodes.AddAsync(verificationCode, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);
 
-                await botClient.SendTextMessageAsync(chatId, $"Generated a new code: {newCode}",
+                await botClient.SendTextMessageAsync(chatId, $"We've generated a new code for you: {newCode}",
                     cancellationToken: cancellationToken);
-                return;
             }
-
-            await botClient.SendTextMessageAsync(chatId, $"Your current code is: {verificationCode.Code}",
-                cancellationToken: cancellationToken);
         }
     }
 

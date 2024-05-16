@@ -23,11 +23,12 @@
             <RadzenCard>
                 <RadzenText Text="SecurityCode" TextStyle="TextStyle.Subtitle2"
                             TagName="TagName.H3"/>
-                <RadzenSecurityCode Count="6" Type="SecurityCodeType.Numeric"></RadzenSecurityCode>
+                <RadzenSecurityCode Count="6" Type="SecurityCodeType.Numeric" @bind-Value="code"></RadzenSecurityCode>
             </RadzenCard>
-            <RadzenButton Size="ButtonSize.Medium" Text="Check Confirmation Code"
+            <RadzenButton Size="ButtonSize.Medium" Click="@(args => CheckCode())" Text="Check Confirmation Code"
                           Style="height: 30px; top: 50px">
             </RadzenButton>
+            <p>@($"{code}")</p>
         </RadzenRow>
     </RadzenRow>
 

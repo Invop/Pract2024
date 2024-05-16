@@ -13,8 +13,12 @@ public partial class UserVerificationCodesController : ODataController
 {
     private readonly ManekiAppDBContext context;
 
-    public UserVerificationCodesController(ManekiAppDBContext context)
+    private readonly ILogger<UserVerificationCodesController> _logger;
+
+    public UserVerificationCodesController(ILogger<UserVerificationCodesController> logger,
+        ManekiAppDBContext context)
     {
+        _logger = logger;
         this.context = context;
     }
 
@@ -48,6 +52,33 @@ public partial class UserVerificationCodesController : ODataController
         return result;
     }
 
+    [HttpGet("/odata/ManekiAppDB/UserVerificationCodesByUserId(UserId={UserId})")]
+    public IActionResult GetUserVerificationCodeByUserId(string userId)
+    {
+        var item = context.UserVerificationCodes
+            .FirstOrDefault(i => i.UserId == userId);
+
+        _logger.LogInformation("Logging all UserVerificationCode items:");
+        foreach (var verificationCode in context.UserVerificationCodes)
+            _logger.LogInformation(
+                $"UserID: {verificationCode.UserId}, Code: {verificationCode.Code}, ExpiryTime: {verificationCode.ExpiryTime}");
+
+        if (item == null)
+        {
+            _logger.LogInformation($"UserVerificationCode was not found for UserId: {userId}");
+            return NotFound();
+        }
+
+        if (item.ExpiryTime <= DateTime.UtcNow)
+        {
+            _logger.LogInformation($"UserVerificationCode for UserId: {userId} has expired");
+            return NotFound();
+        }
+
+        _logger.LogInformation($"Code: {item.Code}");
+        return Ok(item);
+    }
+
     partial void OnUserVerificationCodeDeleted(UserVerificationCode item);
     partial void OnAfterUserVerificationCodeDeleted(UserVerificationCode item);
 
@@ -60,8 +91,7 @@ public partial class UserVerificationCodesController : ODataController
 
 
             var item = context.UserVerificationCodes
-                .Where(i => i.Id == key)
-                .FirstOrDefault();
+                .FirstOrDefault(i => i.Id == key);
 
             if (item == null) return BadRequest();
 
@@ -98,7 +128,7 @@ public partial class UserVerificationCodesController : ODataController
             context.SaveChanges();
 
             var itemToReturn = context.UserVerificationCodes.Where(i => i.Id == key);
-            Request.QueryString = Request.QueryString.Add("$expand", "AspNetUser");
+
             OnAfterUserVerificationCodeUpdated(item);
             return new ObjectResult(SingleResult.Create(itemToReturn));
         }
@@ -129,7 +159,7 @@ public partial class UserVerificationCodesController : ODataController
             context.SaveChanges();
 
             var itemToReturn = context.UserVerificationCodes.Where(i => i.Id == key);
-            Request.QueryString = Request.QueryString.Add("$expand", "AspNetUser");
+
             OnAfterUserVerificationCodeUpdated(item);
             return new ObjectResult(SingleResult.Create(itemToReturn));
         }
@@ -159,7 +189,6 @@ public partial class UserVerificationCodesController : ODataController
 
             var itemToReturn = context.UserVerificationCodes.Where(i => i.Id == item.Id);
 
-            Request.QueryString = Request.QueryString.Add("$expand", "AspNetUser");
 
             OnAfterUserVerificationCodeCreated(item);
 

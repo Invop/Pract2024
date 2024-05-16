@@ -13,6 +13,8 @@ using _Imports = ManekiApp.Client._Imports;
 using ManekiAppDBService = ManekiApp.Server.ManekiAppDBService;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddLogging();
+
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveWebAssemblyComponents();
 builder.Services.AddControllers();
@@ -26,8 +28,16 @@ builder.Services.AddDbContext<ManekiAppDBContext>(options =>
 builder.Services.AddControllers().AddOData(opt =>
 {
     var oDataBuilderManekiAppDB = new ODataConventionModelBuilder();
-    oDataBuilderManekiAppDB
-        .EntitySet<UserVerificationCode>("UserVerificationCodes");
+    var userVerifCodes =
+        oDataBuilderManekiAppDB.EntitySet<UserVerificationCode>(
+            "UserVerificationCodes");
+
+    var getUserVerificationCodeByUserIdFunction =
+        userVerifCodes.EntityType.Collection.Function("UserVerificationCodesByUserId");
+    getUserVerificationCodeByUserIdFunction.Parameter<string>("UserId");
+    getUserVerificationCodeByUserIdFunction
+        .ReturnsFromEntitySet<UserVerificationCode>("UserVerificationCodes");
+
     opt.AddRouteComponents("odata/ManekiAppDB", oDataBuilderManekiAppDB.GetEdmModel()).Count().Filter().OrderBy()
         .Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
@@ -56,7 +66,14 @@ builder.Services.AddControllers().AddOData(o =>
     o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select()
         .SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
+
+
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
+builder.Services.AddScoped<ManekiAppDBService>();
+builder.Services.AddDbContext<ManekiAppDBContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"));
+});
 builder.Services.AddScoped<ManekiAppDBService>();
 builder.Services.AddDbContext<ManekiAppDBContext>(options =>
 {

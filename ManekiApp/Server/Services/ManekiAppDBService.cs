@@ -10,14 +10,13 @@ namespace ManekiApp.Server
 {
     public partial class ManekiAppDBService
     {
-        ManekiAppDBContext Context => context;
+        private ManekiAppDBContext Context { get; }
 
-        private readonly ManekiAppDBContext context;
         private readonly NavigationManager navigationManager;
 
         public ManekiAppDBService(ManekiAppDBContext context, NavigationManager navigationManager)
         {
-            this.context = context;
+            Context = context;
             this.navigationManager = navigationManager;
         }
 

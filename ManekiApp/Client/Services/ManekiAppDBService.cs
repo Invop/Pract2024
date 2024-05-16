@@ -126,6 +126,19 @@ namespace ManekiApp.Client
                 .ReadAsync<UserVerificationCode>();
         }
 
+
+        public async Task<UserVerificationCode> GetUserVerificationCodeByUserId(
+            string userId)
+        {
+            var uri = new Uri(baseUri, $"UserVerificationCodesByUserId(UserId={userId})");
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+            var response = await httpClient.SendAsync(httpRequestMessage);
+
+            return await response
+                .ReadAsync<UserVerificationCode>();
+        }
+
+
         partial void OnUpdateUserVerificationCode(HttpRequestMessage requestMessage);
 
         public async Task<HttpResponseMessage> UpdateUserVerificationCode(Guid id = default,

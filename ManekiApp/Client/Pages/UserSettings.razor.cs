@@ -18,6 +18,7 @@ namespace ManekiApp.Client.Pages
         [Inject] protected ContextMenuService ContextMenuService { get; set; }
 
         [Inject] protected NotificationService NotificationService { get; set; }
+        [Inject] protected ManekiAppDBService ManekiAppDB { get; set; }
 
         protected string oldPassword = "";
         protected string newPassword = "";
@@ -26,6 +27,7 @@ namespace ManekiApp.Client.Pages
         protected string error;
         protected bool errorVisible;
         protected bool successVisible;
+        private string code;
 
         [Inject] protected SecurityService Security { get; set; }
 
@@ -33,6 +35,25 @@ namespace ManekiApp.Client.Pages
         {
             user = await Security.GetUserById($"{Security.User.Id}");
         }
+
+
+        private async Task CheckCode()
+        {
+            var verificationCode = await ManekiAppDB.GetUserVerificationCodeByUserId(Security.User.Id);
+            if (verificationCode.Code == Convert.ToInt32(code))
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Info, Summary = $"{verificationCode.Code}",
+                    Detail = $"Info Detail{code}", Duration = 4000
+                });
+            else
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error, Summary = $"{verificationCode.Code}",
+                    Detail = $"Info Detail{code}", Duration = 4000
+                });
+        }
+
 
         protected async Task FormSubmit()
         {

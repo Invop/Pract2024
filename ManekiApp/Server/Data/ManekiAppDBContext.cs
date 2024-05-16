@@ -17,6 +17,9 @@ namespace ManekiApp.Server.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<UserVerificationCode>()
+                .HasIndex(p => p.UserId)
+                .IsUnique();
             base.OnModelCreating(builder);
             this.OnModelBuilding(builder);
         }
