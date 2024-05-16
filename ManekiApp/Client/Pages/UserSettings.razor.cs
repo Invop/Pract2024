@@ -41,16 +41,21 @@ namespace ManekiApp.Client.Pages
         {
             var verificationCode = await ManekiAppDB.GetUserVerificationCodeByUserId(Security.User.Id);
             if (verificationCode.Code == Convert.ToInt32(code))
+            {
                 NotificationService.Notify(new NotificationMessage
                 {
-                    Severity = NotificationSeverity.Info, Summary = $"{verificationCode.Code}",
-                    Detail = $"Info Detail{code}", Duration = 4000
+                    Severity = NotificationSeverity.Success, Summary = "Success",
+                    Detail = "Your telegram id has been confirmed", Duration = 4000
                 });
+                user.TelegramConfirmed = true;
+                await Security.UpdateUser($"{Security.User.Id}", user);
+            }
+
             else
                 NotificationService.Notify(new NotificationMessage
                 {
-                    Severity = NotificationSeverity.Error, Summary = $"{verificationCode.Code}",
-                    Detail = $"Info Detail{code}", Duration = 4000
+                    Severity = NotificationSeverity.Error, Summary = "Error",
+                    Detail = "You entered an invalid code", Duration = 4000
                 });
         }
 
