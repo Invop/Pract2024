@@ -1,23 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Hangfire;
 
-namespace ManekiApp.TelegramBot;
+var builder = WebApplication.CreateBuilder(args);
 
-internal class Program
-{
-    private static async Task Main(string[] args)
-    {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
-        var services = new ServiceCollection();
-        var startup = new Startup(configuration);
-        startup.ConfigureServices(services);
+builder.Services.AddHangfire(x =>
+    x.UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage("Server=localhost;Database=Hangfire;User Id=sa;Password=ChangeMe1;TrustServerCertificate=True;")
+);
 
-        using var serviceProvider = services.BuildServiceProvider();
-        var bot = serviceProvider.GetRequiredService<TelegramBot>();
 
-        await bot.Start();
-    }
-}
+builder.Services.AddHangfireServer(x => x.SchedulePollingInterval = TimeSpan.FromSeconds(1));
+
+var app = builder.Build();
+app.UseHangfireDashboard();
+
+app.UseHttpsRedirection();
+app.Run();
