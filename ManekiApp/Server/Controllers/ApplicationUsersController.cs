@@ -1,19 +1,11 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using ManekiApp.Server.Data;
+using ManekiApp.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.OData.Results;
-using Microsoft.AspNetCore.OData.Deltas;
-using System.ComponentModel.DataAnnotations.Schema;
-
-using ManekiApp.Server.Data;
-using ManekiApp.Server.Models;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace ManekiApp.Server.Controllers
 {
@@ -25,7 +17,8 @@ namespace ManekiApp.Server.Controllers
         private readonly UserManager<ApplicationUser> userManager;
 
 
-        public ApplicationUsersController(ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager)
+        public ApplicationUsersController(ApplicationIdentityDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
             this.context = context;
             this.userManager = userManager;
@@ -79,7 +72,7 @@ namespace ManekiApp.Server.Controllers
         partial void OnUserUpdated(ApplicationUser user);
 
         [HttpPatch("{Id}")]
-        public async Task<IActionResult> Patch(string key, [FromBody]ApplicationUser data)
+        public async Task<IActionResult> Patch(string key, [FromBody] ApplicationUser data)
         {
             var user = await userManager.FindByIdAsync(key);
 
@@ -93,14 +86,14 @@ namespace ManekiApp.Server.Controllers
             IdentityResult result = null;
 
             user.Roles = null;
-
+            user.TelegramConfirmed = data.TelegramConfirmed;
             result = await userManager.UpdateAsync(user);
 
             if (data.Roles != null)
             {
                 result = await userManager.RemoveFromRolesAsync(user, await userManager.GetRolesAsync(user));
 
-                if (result.Succeeded) 
+                if (result.Succeeded)
                 {
                     result = await userManager.AddToRolesAsync(user, data.Roles.Select(r => r.Name));
                 }
@@ -130,6 +123,7 @@ namespace ManekiApp.Server.Controllers
         }
 
         partial void OnUserCreated(ApplicationUser user);
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ApplicationUser user)
