@@ -28,19 +28,12 @@ builder.Services.AddDbContext<ManekiAppDBContext>(options =>
 builder.Services.AddControllers().AddOData(opt =>
 {
     var oDataBuilderManekiAppDB = new ODataConventionModelBuilder();
-    var userVerifCodes =
-        oDataBuilderManekiAppDB.EntitySet<UserVerificationCode>(
-            "UserVerificationCodes");
-
-    var getUserVerificationCodeByUserIdFunction =
-        userVerifCodes.EntityType.Collection.Function("UserVerificationCodesByUserId");
-    getUserVerificationCodeByUserIdFunction.Parameter<string>("UserId");
-    getUserVerificationCodeByUserIdFunction
-        .ReturnsFromEntitySet<UserVerificationCode>("UserVerificationCodes");
-
+    oDataBuilderManekiAppDB
+        .EntitySet<UserVerificationCode>("UserVerificationCodes");
     opt.AddRouteComponents("odata/ManekiAppDB", oDataBuilderManekiAppDB.GetEdmModel()).Count().Filter().OrderBy()
         .Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
+
 builder.Services.AddScoped<ManekiApp.Client.ManekiAppDBService>();
 builder.Services.AddHttpClient("ManekiApp.Server")
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })

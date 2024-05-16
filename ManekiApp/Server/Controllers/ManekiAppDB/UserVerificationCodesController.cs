@@ -51,34 +51,6 @@ public partial class UserVerificationCodesController : ODataController
 
         return result;
     }
-
-    [HttpGet("/odata/ManekiAppDB/UserVerificationCodesByUserId(UserId={UserId})")]
-    public IActionResult GetUserVerificationCodeByUserId(string userId)
-    {
-        var item = context.UserVerificationCodes
-            .FirstOrDefault(i => i.UserId == userId);
-
-        _logger.LogInformation("Logging all UserVerificationCode items:");
-        foreach (var verificationCode in context.UserVerificationCodes)
-            _logger.LogInformation(
-                $"UserID: {verificationCode.UserId}, Code: {verificationCode.Code}, ExpiryTime: {verificationCode.ExpiryTime}");
-
-        if (item == null)
-        {
-            _logger.LogInformation($"UserVerificationCode was not found for UserId: {userId}");
-            return NotFound();
-        }
-
-        if (item.ExpiryTime <= DateTime.UtcNow)
-        {
-            _logger.LogInformation($"UserVerificationCode for UserId: {userId} has expired");
-            return NotFound();
-        }
-
-        _logger.LogInformation($"Code: {item.Code}");
-        return Ok(item);
-    }
-
     partial void OnUserVerificationCodeDeleted(UserVerificationCode item);
     partial void OnAfterUserVerificationCodeDeleted(UserVerificationCode item);
 

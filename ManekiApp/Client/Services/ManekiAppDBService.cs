@@ -130,12 +130,9 @@ namespace ManekiApp.Client
         public async Task<UserVerificationCode> GetUserVerificationCodeByUserId(
             string userId)
         {
-            var uri = new Uri(baseUri, $"UserVerificationCodesByUserId(UserId={userId})");
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-            var response = await httpClient.SendAsync(httpRequestMessage);
-
-            return await response
-                .ReadAsync<UserVerificationCode>();
+            var filterQuery = $"UserId eq '{userId}'";
+            var result = await GetUserVerificationCodes(filterQuery, count: true);
+            return result.Value.FirstOrDefault(item =>item.ExpiryTime >= DateTime.UtcNow);
         }
 
 
