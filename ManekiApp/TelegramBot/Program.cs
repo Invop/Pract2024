@@ -1,11 +1,12 @@
 using Hangfire;
+using Hangfire.PostgreSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHangfire(x =>
     x.UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
-        .UseSqlServerStorage("Server=localhost;Database=Hangfire;User Id=sa;Password=ChangeMe1;TrustServerCertificate=True;")
+        .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireDBConnection"))
 );
 
 
