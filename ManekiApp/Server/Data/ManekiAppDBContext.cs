@@ -1,6 +1,4 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
+using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManekiApp.Server.Data
@@ -19,14 +17,18 @@ namespace ManekiApp.Server.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<UserVerificationCode>()
+                .HasIndex(p => p.UserId)
+                .IsUnique();
             base.OnModelCreating(builder);
             this.OnModelBuilding(builder);
         }
+
+        public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Conventions.Add(_ => new BlankTriggerAddingConvention());
         }
-    
     }
 }

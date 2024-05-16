@@ -1,0 +1,1 @@
+GET https://localhost:5001/odata/ManekiAppDB/UserVerificationCodesByUserId(UserId=68f0c76f-aacd-4263-b007-a4e14eb8fa3f) HTTP/1.1
