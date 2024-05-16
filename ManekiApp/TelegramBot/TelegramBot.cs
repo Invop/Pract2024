@@ -1,3 +1,4 @@
+using ManekiApp.TelegramBot.Models;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -24,21 +25,19 @@ public class TelegramBot
 
         ReceiverOptions receiverOptions = new()
         {
-            AllowedUpdates = Array.Empty<UpdateType>() // receive all update types except ChatMember related updates
+            AllowedUpdates = Array.Empty<UpdateType>()
         };
 
         _client.StartReceiving(
             async (botClient, update, cancellationToken) =>
             {
                 using var scope = _serviceScopeFactory.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
-                await HandleUpdateAsync(context, botClient, update, cancellationToken);
+                await HandleUpdateAsync(scope.ServiceProvider, botClient, update, cancellationToken);
             },
             HandlePollingErrorAsync,
             receiverOptions,
             cts.Token
         );
-
 
         var me = await _client.GetMeAsync();
 
@@ -49,8 +48,7 @@ public class TelegramBot
         cts.Cancel();
     }
 
-
-    private static async Task HandleUpdateAsync(ApplicationIdentityDbContext context, ITelegramBotClient botClient,
+    private static async Task HandleUpdateAsync(IServiceProvider services, ITelegramBotClient botClient,
         Update update, CancellationToken cancellationToken)
     {
         if (update.Message is not { } message)
@@ -62,18 +60,47 @@ public class TelegramBot
 
         Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
-        if (messageText == "/check_id")
-        {
-            var userExists =
-                await context.Users.AnyAsync(user => user.TelegramId == chatId.ToString(), cancellationToken);
-            var response = userExists ? "User exists." : "User does not exist.";
+        // Get relevant services
+        var context = services.GetRequiredService<ApplicationIdentityDbContext>();
+        var scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
 
-            await botClient.SendTextMessageAsync(chatId, response, cancellationToken: cancellationToken);
-        }
-        else
+        var user = await context.Users.FirstOrDefaultAsync(u => u.TelegramId == chatId.ToString(), cancellationToken);
+
+        if (user == null)
         {
-            // Echo received message text
-            await botClient.SendTextMessageAsync(chatId, "You said:\n" + messageText,
+            await botClient.SendTextMessageAsync(chatId, "User does not exist.", cancellationToken: cancellationToken);
+            return;
+        }
+
+        using (var scope = scopeFactory.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+
+            // Get existing code or generate a new one
+            var verificationCode = await dbContext
+                .UserVerificationCodes
+                .FirstOrDefaultAsync(c => c.UserId == user.Id && c.ExpiryTime > DateTime.UtcNow, cancellationToken);
+
+            if (verificationCode == null)
+            {
+                var newCode = CodeGenerator.GenerateCode();
+                verificationCode = new UserVerificationCode
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    Code = newCode,
+                    ExpiryTime = DateTime.UtcNow.AddMinutes(15)
+                };
+
+                await dbContext.UserVerificationCodes.AddAsync(verificationCode, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                await botClient.SendTextMessageAsync(chatId, $"Generated a new code: {newCode}",
+                    cancellationToken: cancellationToken);
+                return;
+            }
+
+            await botClient.SendTextMessageAsync(chatId, $"Your current code is: {verificationCode.Code}",
                 cancellationToken: cancellationToken);
         }
     }

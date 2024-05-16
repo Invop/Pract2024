@@ -28,4 +28,6 @@ public partial class ApplicationIdentityDbContext : IdentityDbContext<Applicatio
 
         OnModelBuilding(builder);
     }
+
+    public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
 }
