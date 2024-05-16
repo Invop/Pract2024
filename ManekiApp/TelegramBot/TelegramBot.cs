@@ -77,6 +77,14 @@ public class TelegramBot
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
 
             // Get existing code or generate a new one
+
+            if (await dbContext.Users.FirstOrDefaultAsync(c => c.TelegramConfirmed && c.Id == user.Id, cancellationToken: cancellationToken) != null)
+            {
+                await botClient.SendTextMessageAsync(chatId, $"Your account has already been successfully verified.",
+                    cancellationToken: cancellationToken);
+                return;
+            }
+            
             var existingCode =
                 await dbContext.UserVerificationCodes.FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken);
             if (existingCode != null)
