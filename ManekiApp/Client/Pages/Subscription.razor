@@ -1,0 +1,49 @@
+@using Radzen
+
+<div class="subscription-container">
+    
+    <RadzenRow>
+        <RadzenColumn SizeMD="4">
+            <RadzenCard>
+                <RadzenHeading Size="H3" Text="Bronze Tier"/>
+                <p>Support us with $5/month</p>
+                <ul>
+                    <li>Access to community posts</li>
+                    <li>Early access to new content</li>
+                </ul>
+                <RadzenButton Text="Subscribe" Click="@(() => Subscribe("Bronze"))" Style="width: 100%;"/>
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeMD="4">
+            <RadzenCard>
+                <RadzenHeading Size="H3" Text="Silver Tier"/>
+                <p>Support us with $10/month</p>
+                <ul>
+                    <li>All Bronze benefits</li>
+                    <li>Monthly Q&A session</li>
+                </ul>
+                <RadzenButton Text="Subscribe" Click="@(() => Subscribe("Silver"))" Style="width: 100%;"/>
+            </RadzenCard>
+        </RadzenColumn>
+        <RadzenColumn SizeMD="4">
+        <RadzenCard>
+            <RadzenHeading Size="H3" Text="Gold Tier"/>
+            <p>Support us with $20/month</p>
+            <ul>
+                <li>All Silver benefits</li>
+                <li>Exclusive merchandise</li>
+            </ul>
+            <RadzenButton Text="Subscribe" Click="@(() => Subscribe("Gold"))" Style="width: 100%;"/>
+        </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+    
+</div>
+
+@code {
+    private void Subscribe(string tier)
+    {
+        // Handle the subscription logic here
+        Console.WriteLine($"Subscribed to {tier} tier!");
+    }
+}
