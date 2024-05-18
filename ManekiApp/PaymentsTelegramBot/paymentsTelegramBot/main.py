@@ -32,44 +32,12 @@ PAYMENT_PROVIDER_TOKEN = "284685063:TEST:NGJhYzcwNzZmODA3"
 async def start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Displays info on how to use the bot."""
     msg = (
-        "Use /shipping to get an invoice for shipping-payment, or /noshipping for an "
-        "invoice without shipping."
+        "Use /noshipping for an "
+        "invoice without shipping.\n"
+        "USE SAMPLE CARD ONLY 4242 4242 4242 4242"
     )
 
     await update.message.reply_text(msg)
-
-
-async def start_with_shipping_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Sends an invoice with shipping-payment."""
-    chat_id = update.message.chat_id
-    title = "Payment Example"
-    description = "Payment Example using python-telegram-bot"
-    # select a payload just for you to recognize its the donation from your bot
-    payload = "Custom-Payload"
-    # In order to get a provider_token see https://core.telegram.org/bots/payments#getting-a-token
-    currency = "USD"
-    # price in dollars
-    price = 1
-    # price * 100 so as to include 2 decimal points
-    # check https://core.telegram.org/bots/payments#supported-currencies for more details
-    prices = [LabeledPrice("Test", price * 100)]
-
-    # optionally pass need_name=True, need_phone_number=True,
-    # need_email=True, need_shipping_address=True, is_flexible=True
-    await context.bot.send_invoice(
-        chat_id,
-        title,
-        description,
-        payload,
-        PAYMENT_PROVIDER_TOKEN,
-        currency,
-        prices,
-        need_name=False,
-        need_phone_number=False,
-        need_email=False,
-        need_shipping_address=False,
-        is_flexible=True,
-    )
 
 
 async def start_without_shipping_callback(
@@ -140,7 +108,6 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start_callback))
 
     # Add command handler to start the payment invoice
-    application.add_handler(CommandHandler("shipping", start_with_shipping_callback))
     application.add_handler(CommandHandler("noshipping", start_without_shipping_callback))
 
     # Optional handler if your product requires shipping
