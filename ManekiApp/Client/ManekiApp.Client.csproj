@@ -16,6 +16,9 @@
     <Compile Update="..\Server\Models\ManekiAppDB\Image.cs">
       <Link>ManekiAppDB\Image.cs</Link>
     </Compile>
+    <Compile Update="..\Server\Models\ManekiAppDB\UserSubscription.cs">
+      <Link>ManekiAppDB\UserSubscription.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Identity">

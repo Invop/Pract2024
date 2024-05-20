@@ -3,6 +3,7 @@ using System;
 using ManekiApp.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ManekiApp.Server.Migrations
 {
     [DbContext(typeof(ManekiAppDBContext))]
-    partial class ManekiAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240520152044_AuthorPageFKS")]
+    partial class AuthorPageFKS
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,71 +214,6 @@ namespace ManekiApp.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Subscription", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AuthorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("PermissionLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Subscription", "public", t =>
-                        {
-                            t.HasTrigger("Subscription_Trigger");
-                        });
-                });
-
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserSubscription", b =>
-                {
-                    b.Property<Guid>("SubscriptionId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text")
-                        .HasColumnOrder(1);
-
-                    b.Property<DateTime>("EndsAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCanceled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ReceiveNotifications")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("SubscribedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("SubscriptionId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSubscription", "public", t =>
-                        {
-                            t.HasTrigger("UserSubscription_Trigger");
-                        });
-                });
-
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -350,56 +288,14 @@ namespace ManekiApp.Server.Migrations
                     b.Navigation("AuthorPage");
                 });
 
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Subscription", b =>
-                {
-                    b.HasOne("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", "AuthorPage")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AuthorPage");
-                });
-
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserSubscription", b =>
-                {
-                    b.HasOne("ManekiApp.Server.Models.ManekiAppDB.Subscription", "Subscription")
-                        .WithMany("UserSubscriptions")
-                        .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "User")
-                        .WithMany("UserSubscriptions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Subscription");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ManekiApp.Server.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("UserSubscriptions");
-                });
-
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", b =>
                 {
                     b.Navigation("Posts");
-
-                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Post", b =>
                 {
                     b.Navigation("Images");
-                });
-
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Subscription", b =>
-                {
-                    b.Navigation("UserSubscriptions");
                 });
 #pragma warning restore 612, 618
         }

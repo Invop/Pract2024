@@ -21,8 +21,31 @@ namespace ManekiApp.Server.Data
                 .HasIndex(p => p.UserId)
                 .IsUnique();
             base.OnModelCreating(builder);
-            this.OnModelBuilding(builder);
-        }
+
+            builder.Entity<Post>()
+                .HasOne(p => p.AuthorPage)
+                .WithMany(ap => ap.Posts)
+                .HasForeignKey(p => p.AuthorPageId);
+            
+            builder.Entity<Subscription>()
+                .HasOne(us => us.AuthorPage)
+                .WithMany(ap => ap.Subscriptions)
+                .HasForeignKey(s => s.AuthorId);
+            
+            builder.Entity<UserSubscription>()
+                .HasKey(us => new { us.SubscriptionId, us.UserId });
+
+            // One-to-many relationship between Subscription and UserSubscription
+            builder.Entity<UserSubscription>()
+                .HasOne(us => us.Subscription)
+                .WithMany(s => s.UserSubscriptions)
+                .HasForeignKey(us => us.SubscriptionId);
+
+            // One-to-many relationship between ApplicationUser and UserSubscription
+            builder.Entity<UserSubscription>()
+                .HasOne(us => us.User)
+                .WithMany(u => u.UserSubscriptions)
+                .HasForeignKey(us => us.UserId);        }
 
         public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
         public DbSet<AuthorPage> AuthorPages { get; set; }

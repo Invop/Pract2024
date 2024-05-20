@@ -25,6 +25,7 @@ public class AuthorPage
     }
     
     public ICollection<Post> Posts { get; set; } = new List<Post>();
+    public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     
     [Required]
     public string UserId { get; set; }

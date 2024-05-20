@@ -37,5 +37,8 @@ namespace ManekiApp.Server.Models
         }
 
         public ICollection<ApplicationRole> Roles { get; set; }
+        
+        public ICollection<ManekiAppDB.UserSubscription> UserSubscriptions { get; set; }
+
     }
 }
