@@ -49,6 +49,8 @@ namespace ManekiApp.Server.Data
 
         public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
         public DbSet<AuthorPage> AuthorPages { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Image> Images { get; set; }
 

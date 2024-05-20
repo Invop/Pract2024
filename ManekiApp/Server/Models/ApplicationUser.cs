@@ -38,6 +38,18 @@ namespace ManekiApp.Server.Models
 
         public ICollection<ApplicationRole> Roles { get; set; }
         
+        /*
+            New attributes
+        */
+        
+        [Required] public string FirstName { get; set; }
+        
+        [Required] public string LastName { get; set; }
+        
+        [Required] public string About { get; set; }
+        
+        public byte[] ProfilePicture { get; set; }
+        
         public ICollection<ManekiAppDB.UserSubscription> UserSubscriptions { get; set; }
 
     }
