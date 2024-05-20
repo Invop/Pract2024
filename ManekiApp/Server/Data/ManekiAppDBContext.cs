@@ -25,6 +25,8 @@ namespace ManekiApp.Server.Data
         }
 
         public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
