@@ -14,7 +14,7 @@
     <Compile Include="../Server/Models/**/*.cs" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
     <Compile Update="..\Server\Models\ManekiAppDB\Image.cs">
-      <Link>ManekiAppDB\Images.cs</Link>
+      <Link>ManekiAppDB\Image.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
