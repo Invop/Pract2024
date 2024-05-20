@@ -17,9 +17,10 @@ public class Subscription
     
     [Required] public int PermissionLevel { get; set; }
     
-    [Required] public Guid AuthorId { get; set; }
+    [Required] 
+    [ForeignKey("AuthorPage")]
+    public Guid AuthorId { get; set; }
     
-    [ForeignKey("AuthorId")]
     public AuthorPage AuthorPage { get; set; }
     
     public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();

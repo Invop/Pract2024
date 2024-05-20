@@ -28,8 +28,8 @@ public class AuthorPage
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     
     [Required]
+    [ForeignKey("ApplicationUser")]
     public string UserId { get; set; }
 
-    [ForeignKey("UserId")]
-    public ApplicationUser UserOwner { get; set; }
+    public ApplicationUser ApplicationUser { get; set; }
 }

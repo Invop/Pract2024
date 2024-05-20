@@ -16,8 +16,9 @@ public class Post
     
     [Required] public DateTime EditedAt { get; set; }
     
-    [Required] public Guid AuthorPageId { get; set; }
+    [Required] 
+    [ForeignKey("AuthorPage")]
+    public Guid AuthorPageId { get; set; }
     
-    [ForeignKey("AuthorPageId")]
     public AuthorPage AuthorPage { get; set; }
 }

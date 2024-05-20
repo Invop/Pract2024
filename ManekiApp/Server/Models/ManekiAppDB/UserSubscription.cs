@@ -6,10 +6,15 @@ namespace ManekiApp.Server.Models.ManekiAppDB;
 [Table("UserSubscription", Schema = "public")]
 public class UserSubscription
 {
-    [Key, Column(Order = 0)]
+    [Key]
+    public Guid Id { get; set; }
+    
+    [Required] 
+    [ForeignKey("Subscription")]
     public Guid SubscriptionId { get; set; }
 
-    [Key, Column(Order = 1)]
+    [Required] 
+    [ForeignKey("ApplicationUser")]
     public string UserId { get; set; }
 
     [Required]
@@ -23,10 +28,8 @@ public class UserSubscription
 
     [Required]
     public bool ReceiveNotifications { get; set; }
-
-    [ForeignKey("SubscriptionId")]
+    
     public Subscription Subscription { get; set; }
 
-    [ForeignKey("UserId")]
-    public ApplicationUser User { get; set; }
+    public ApplicationUser ApplicationUser { get; set; }
 }

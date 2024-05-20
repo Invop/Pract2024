@@ -17,9 +17,9 @@ namespace ManekiApp.Server.Models.ManekiAppDB
         public string ContentType { get; set; }
 
         [Required]
+        [ForeignKey("Post")]
         public Guid PostId { get; set; }
 
-        [ForeignKey("PostId")]
         public Post Post { get; set; }
     }
 }

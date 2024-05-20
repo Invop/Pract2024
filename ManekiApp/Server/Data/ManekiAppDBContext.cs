@@ -31,9 +31,6 @@ namespace ManekiApp.Server.Data
                 .HasOne(us => us.AuthorPage)
                 .WithMany(ap => ap.Subscriptions)
                 .HasForeignKey(s => s.AuthorId);
-            
-            builder.Entity<UserSubscription>()
-                .HasKey(us => new { us.SubscriptionId, us.UserId });
 
             // One-to-many relationship between Subscription and UserSubscription
             builder.Entity<UserSubscription>()
@@ -43,7 +40,7 @@ namespace ManekiApp.Server.Data
 
             // One-to-many relationship between ApplicationUser and UserSubscription
             builder.Entity<UserSubscription>()
-                .HasOne(us => us.User)
+                .HasOne(us => us.ApplicationUser)
                 .WithMany(u => u.UserSubscriptions)
                 .HasForeignKey(us => us.UserId);        }
 

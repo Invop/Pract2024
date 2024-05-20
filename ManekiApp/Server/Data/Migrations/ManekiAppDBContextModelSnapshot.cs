@@ -68,7 +68,6 @@ namespace ManekiApp.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("About")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
@@ -84,11 +83,9 @@ namespace ManekiApp.Server.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
@@ -261,13 +258,9 @@ namespace ManekiApp.Server.Migrations
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserSubscription", b =>
                 {
-                    b.Property<Guid>("SubscriptionId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text")
-                        .HasColumnOrder(1);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndsAt")
                         .HasColumnType("timestamp with time zone");
@@ -281,7 +274,16 @@ namespace ManekiApp.Server.Migrations
                     b.Property<DateTime>("SubscribedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("SubscriptionId", "UserId");
+                    b.Property<Guid>("SubscriptionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId");
 
                     b.HasIndex("UserId");
 
@@ -334,13 +336,13 @@ namespace ManekiApp.Server.Migrations
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", b =>
                 {
-                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "UserOwner")
+                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserOwner");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Image", b =>
@@ -384,15 +386,15 @@ namespace ManekiApp.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "User")
+                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("UserSubscriptions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Subscription");
+                    b.Navigation("ApplicationUser");
 
-                    b.Navigation("User");
+                    b.Navigation("Subscription");
                 });
 
             modelBuilder.Entity("ManekiApp.Server.Models.ApplicationUser", b =>
