@@ -24,8 +24,10 @@ public class AuthorPage
         set => SocialLinks = value != null ? JsonSerializer.Serialize(value) : null;
     }
     
+    public ICollection<Post> Posts { get; set; } = new List<Post>();
+    
     [Required]
-    public Guid UserId { get; set; }
+    public string UserId { get; set; }
 
     [ForeignKey("UserId")]
     public ApplicationUser UserOwner { get; set; }

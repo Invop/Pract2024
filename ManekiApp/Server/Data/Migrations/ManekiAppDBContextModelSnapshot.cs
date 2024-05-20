@@ -22,6 +22,141 @@ namespace ManekiApp.Server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ApplicationRoleApplicationUser", b =>
+                {
+                    b.Property<string>("RolesId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
+                    b.HasKey("RolesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ApplicationRoleApplicationUser", t =>
+                        {
+                            t.HasTrigger("ApplicationRoleApplicationUser_Trigger");
+                        });
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ApplicationRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationRole", t =>
+                        {
+                            t.HasTrigger("ApplicationRole_Trigger");
+                        });
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TelegramConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("TelegramId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationUser", t =>
+                        {
+                            t.HasTrigger("ApplicationUser_Trigger");
+                        });
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("ProfileImage")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("SocialLinks")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuthorPage", "public", t =>
+                        {
+                            t.HasTrigger("AuthorPage_Trigger");
+                        });
+                });
+
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Image", b =>
                 {
                     b.Property<Guid>("Id")
@@ -54,6 +189,9 @@ namespace ManekiApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("AuthorPageId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
@@ -64,6 +202,8 @@ namespace ManekiApp.Server.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorPageId");
 
                     b.ToTable("Post", "public", t =>
                         {
@@ -97,6 +237,32 @@ namespace ManekiApp.Server.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ApplicationRoleApplicationUser", b =>
+                {
+                    b.HasOne("ManekiApp.Server.Models.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", b =>
+                {
+                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "UserOwner")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserOwner");
+                });
+
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Image", b =>
                 {
                     b.HasOne("ManekiApp.Server.Models.ManekiAppDB.Post", "Post")
@@ -106,6 +272,22 @@ namespace ManekiApp.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Post", b =>
+                {
+                    b.HasOne("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", "AuthorPage")
+                        .WithMany("Posts")
+                        .HasForeignKey("AuthorPageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AuthorPage");
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Post", b =>
