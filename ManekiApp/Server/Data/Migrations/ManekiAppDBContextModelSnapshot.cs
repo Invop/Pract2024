@@ -22,6 +22,55 @@ namespace ManekiApp.Server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Image", "public", t =>
+                        {
+                            t.HasTrigger("Image_Trigger");
+                        });
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Post", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EditedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Post", "public", t =>
+                        {
+                            t.HasTrigger("Post_Trigger");
+                        });
+                });
+
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -46,6 +95,22 @@ namespace ManekiApp.Server.Migrations
                         {
                             t.HasTrigger("UserVerificationCode_Trigger");
                         });
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Image", b =>
+                {
+                    b.HasOne("ManekiApp.Server.Models.ManekiAppDB.Post", "Post")
+                        .WithMany("Images")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Post", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }
