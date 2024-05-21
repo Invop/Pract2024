@@ -4,14 +4,14 @@
 <RadzenRow>
     <RadzenColumn SizeMD="12">
         <RadzenTemplateForm TItem="ManekiApp.Server.Models.ApplicationUser" Data="@user" Visible="@(user != null)" Submit="@FormSubmit">
-            <RadzenAlert Title="Cannot create user" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
+            <RadzenAlert Title="Cannot create user" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
 
              <RadzenRow style="margin-bottom: 1rem">
                 <RadzenColumn SizeMD="3">
                     <RadzenLabel Component="Email" style="width: 100%" Text="Email" />
                 </RadzenColumn>
                 <RadzenColumn SizeMD="9">
-                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@(user.Email)" Name="Email" />
+                    <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" @bind-Value="@(user.Email)" Name="Email" />
                     <RadzenRequiredValidator Component="Email" Text="Email is required" />
                 </RadzenColumn>
             </RadzenRow>
@@ -20,7 +20,7 @@
                     <RadzenLabel Component="RoleNames" style="width: 100%" Text="Roles" />
                 </RadzenColumn>
                 <RadzenColumn SizeMD="9">
-                    <RadzenDropDown Data="@roles" Multiple="true" style="width: 100%" TextProperty="Name"
+                    <RadzenDropDown Data="@roles" Multiple="true" style="width: 100%; border-radius: 10px" TextProperty="Name"
                         @bind-Value="@(userRoles)" ValueProperty="Id" Name="Roles" />
                 </RadzenColumn>
             </RadzenRow>
@@ -29,7 +29,7 @@
                     <RadzenLabel Component="Password" style="width: 100%" Text="Password" />
                 </RadzenColumn>
                 <RadzenColumn SizeMD="9">
-                    <RadzenPassword style="display: block; width: 100%" @bind-Value="@(user.Password)"
+                    <RadzenPassword style="display: block; width: 100%; border-radius: 10px" @bind-Value="@(user.Password)"
                         Name="Password" />
                     <RadzenRequiredValidator Component="Password" Text="Password is required" />
                 </RadzenColumn>
@@ -39,15 +39,15 @@
                     <RadzenLabel Component="ConfirmPassword" style="width: 100%" Text="Confirm password" />
                 </RadzenColumn>
                 <RadzenColumn SizeMD="9">
-                    <RadzenPassword style="display: block; width: 100%" @bind-Value="@(user.ConfirmPassword)"
+                    <RadzenPassword style="display: block; width: 100%; border-radius: 10px" @bind-Value="@(user.ConfirmPassword)"
                         Name="ConfirmPassword" />
-                    <RadzenRequiredValidator Component="ConfirmPassword" Text="ConfirmPassword is required" />
+                    <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm Password is required" />
                     <RadzenCompareValidator Text="Passwords must match" Component="ConfirmPassword" Value="@user.Password" />
                 </RadzenColumn>
             </RadzenRow>
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
-                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Click="@CancelClick" Variant="Variant.Flat" />
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" Style="border-radius: 10px; background-color: #577957" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Click="@CancelClick" Variant="Variant.Flat" Style="border-radius: 10px; background-color: #d8d8d8" />
             </RadzenStack>
         </RadzenTemplateForm>
     </RadzenColumn>

@@ -2,7 +2,7 @@
 @page "/login"
 
 <PageTitle>Login</PageTitle>
-<RadzenText Text="Login" TextStyle="Radzen.Blazor.TextStyle.H5" class="mb-4" TagName="Radzen.Blazor.TagName.H2" Style="font-family: Georgia; font-weight: bold" />
+<RadzenText Text="Login" TextStyle="Radzen.Blazor.TextStyle.H5" class="mb-4" TagName="Radzen.Blazor.TagName.H2" Style="font-weight: bold" />
 <RadzenRow Style="border-radius: 5px; border: 5px hidden #424242">
     <RadzenColumn SizeMD="12">
         <RadzenTemplateForm Action="@($"account/login?redirectUrl={redirectUrl}")" Data="@("login")"
@@ -10,7 +10,7 @@
             <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Danger" Visible="@errorVisible" Style="color: #ff2800; background-color: rgba(255, 40, 0, 0.19); border-radius: 10px; border: 1px solid #ff2800">@error</RadzenAlert>
             <RadzenAlert Shade="Radzen.Shade.Lighter" Variant="Radzen.Variant.Flat" Size="Radzen.AlertSize.Small" AlertStyle="Radzen.AlertStyle.Info" Visible="@infoVisible" Style="border-radius: 10px; border: 1px solid #2196f3">@info</RadzenAlert>
             <RadzenLogin AllowResetPassword="false" AllowRegister="true"
-                         Register=@(args => OnRegister()) Style="font-family: Georgia; color: #000000; text-align: left; text-transform: none; text-decoration: none" LoginText="Login" class="custom-login-button" RememberMe="false"
+                         Register=@(args => OnRegister()) Style="color: #000000; text-align: left; text-transform: none; text-decoration: none; border: 0px none #000000" LoginText="Login" class="custom-login-button" RememberMe="false"
             />
         </RadzenTemplateForm>
     </RadzenColumn>

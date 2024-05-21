@@ -9,13 +9,13 @@
         </RadzenColumn>
         <RadzenColumn Size="12" SizeMD="6">
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
-                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddClick" Variant="Variant.Flat" />
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddClick" Variant="Variant.Flat" Style="width: 180px; background-color: #727077; border-radius: 10px" />
             </RadzenStack>
         </RadzenColumn>
     </RadzenRow>
     <RadzenRow>
         <RadzenColumn SizeMD="12">
-            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible">@error</RadzenAlert>
+            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible" Style="background-color: #f6685d; color: #fefefe; border-radius: 10px; border: 1px solid #ff2800; width: 496px; height: 95px; text-transform: none">@error</RadzenAlert>
             <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30}) AllowSorting="true" Data="@roles" TItem="ManekiApp.Server.Models.ApplicationRole">
                 <Columns>
                     <RadzenDataGridColumn TItem="ManekiApp.Server.Models.ApplicationRole" Property="Name" Title="Name" />
