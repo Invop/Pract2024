@@ -14,8 +14,6 @@ namespace ManekiApp.Server.Models.ManekiAppDB
         [Required]
         public Guid Id { get; set; }
 
-        public string Title { get; set; }
-        
         public string Content { get; set; }
 
         [Required]
@@ -25,10 +23,11 @@ namespace ManekiApp.Server.Models.ManekiAppDB
         public DateTime EditedAt { get; set; }
 
         [Required]
-        [ForeignKey("AuthorPage")]
         public Guid AuthorPageId { get; set; }
 
         public AuthorPage AuthorPage { get; set; }
+
+        public string Title { get; set; }
 
         public ICollection<Image> Images { get; set; }
     }

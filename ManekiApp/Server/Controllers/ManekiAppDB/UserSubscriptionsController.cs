@@ -112,7 +112,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 this.context.SaveChanges();
 
                 var itemToReturn = this.context.UserSubscriptions.Where(i => i.Id == key);
-                Request.QueryString = Request.QueryString.Add("$expand", "Subscription,ApplicationUser");
+                Request.QueryString = Request.QueryString.Add("$expand", "Subscription");
                 this.OnAfterUserSubscriptionUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
@@ -147,7 +147,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 this.context.SaveChanges();
 
                 var itemToReturn = this.context.UserSubscriptions.Where(i => i.Id == key);
-                Request.QueryString = Request.QueryString.Add("$expand", "Subscription,ApplicationUser");
+                Request.QueryString = Request.QueryString.Add("$expand", "Subscription");
                 this.OnAfterUserSubscriptionUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
@@ -183,7 +183,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
 
                 var itemToReturn = this.context.UserSubscriptions.Where(i => i.Id == item.Id);
 
-                Request.QueryString = Request.QueryString.Add("$expand", "Subscription,ApplicationUser");
+                Request.QueryString = Request.QueryString.Add("$expand", "Subscription");
 
                 this.OnAfterUserSubscriptionCreated(item);
 

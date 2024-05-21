@@ -27,7 +27,6 @@ namespace ManekiApp.Server.Models.ManekiAppDB
         public int PermissionLevel { get; set; }
 
         [Required]
-        [ForeignKey("AuthorPage")]
         public Guid AuthorPageId { get; set; }
 
         public AuthorPage AuthorPage { get; set; }

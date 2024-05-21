@@ -202,8 +202,8 @@ namespace ManekiApp.Server
         {
             var itemToDelete = Context.AuthorPages
                               .Where(i => i.Id == id)
-                              .Include(i => i.Subscriptions)
                               .Include(i => i.Posts)
+                              .Include(i => i.Subscriptions)
                               .FirstOrDefault();
 
             if (itemToDelete == null)
