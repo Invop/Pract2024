@@ -37,7 +37,7 @@ namespace ManekiApp.Server.Data
             builder.Entity<ManekiApp.Server.Models.ManekiAppDB.Subscription>()
               .HasOne(i => i.AuthorPage)
               .WithMany(i => i.Subscriptions)
-              .HasForeignKey(i => i.AuthorId)
+              .HasForeignKey(i => i.AuthorPageId)
               .HasPrincipalKey(i => i.Id);
 
             builder.Entity<ManekiApp.Server.Models.ManekiAppDB.UserSubscription>()

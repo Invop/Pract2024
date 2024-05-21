@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 
 namespace ManekiApp.Server.Models.ManekiAppDB
 {
@@ -16,7 +17,10 @@ namespace ManekiApp.Server.Models.ManekiAppDB
         public Subscription Subscription { get; set; }
 
         [Required]
+        [ForeignKey("User")]
         public string UserId { get; set; }
+        
+        public ApplicationUser User { get; set; }
 
         [Required]
         public DateTime SubscribedAt { get; set; }

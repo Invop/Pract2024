@@ -41,6 +41,15 @@ namespace ManekiApp.Server.Models
         */
         
         public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
-
+        
+        public AuthorPage AuthorPage { get; set; }
+        
+        public string FirstName { get; set; }
+        
+        public string LastName { get; set; }
+        
+        public string About { get; set; }
+        
+        public byte[] ProfilePicture { get; set; }
     }
 }

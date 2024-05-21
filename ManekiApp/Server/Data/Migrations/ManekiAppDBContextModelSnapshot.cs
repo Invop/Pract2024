@@ -67,6 +67,9 @@ namespace ManekiApp.Server.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("About")
+                        .HasColumnType("text");
+
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
@@ -78,6 +81,12 @@ namespace ManekiApp.Server.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -99,6 +108,9 @@ namespace ManekiApp.Server.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<byte[]>("ProfilePicture")
+                        .HasColumnType("bytea");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -148,6 +160,9 @@ namespace ManekiApp.Server.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("AuthorPage", "public", t =>
                         {
@@ -199,6 +214,9 @@ namespace ManekiApp.Server.Migrations
                     b.Property<DateTime>("EditedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorPageId");
@@ -215,7 +233,7 @@ namespace ManekiApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AuthorId")
+                    b.Property<Guid>("AuthorPageId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
@@ -235,7 +253,7 @@ namespace ManekiApp.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("AuthorPageId");
 
                     b.ToTable("Subscription", "public", t =>
                         {
@@ -318,6 +336,17 @@ namespace ManekiApp.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", b =>
+                {
+                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "User")
+                        .WithOne("AuthorPage")
+                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.Image", b =>
                 {
                     b.HasOne("ManekiApp.Server.Models.ManekiAppDB.Post", "Post")
@@ -344,7 +373,7 @@ namespace ManekiApp.Server.Migrations
                 {
                     b.HasOne("ManekiApp.Server.Models.ManekiAppDB.AuthorPage", "AuthorPage")
                         .WithMany("Subscriptions")
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("AuthorPageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -359,19 +388,21 @@ namespace ManekiApp.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "User")
                         .WithMany("UserSubscriptions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
-
                     b.Navigation("Subscription");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ManekiApp.Server.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("AuthorPage");
+
                     b.Navigation("UserSubscriptions");
                 });
 
