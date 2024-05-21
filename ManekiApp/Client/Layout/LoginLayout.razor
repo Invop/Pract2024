@@ -5,20 +5,20 @@
 <RadzenTooltip />
 <RadzenContextMenu />
 
-<RadzenLayout style="background: url('images/login.jpg'); background-size: cover;">
+<RadzenLayout style="background: url('images/bg-login.png'); background-size: cover;">
     <RadzenBody>
         <RadzenStack JustifyContent="Radzen.JustifyContent.Center" Class="rz-mx-auto rz-p-4" Style="max-width: 1440px; height: 100%;">
             <RadzenCard class="rz-shadow-3 rz-border-radius-4" style="padding: 0; overflow: hidden; background-color: var(--rz-base-background-color);">
                 <RadzenRow Gap="0">
-                    <RadzenColumn Size="12" SizeSM="6" Class="rz-background-color-primary rz-p-12" style="background-image: radial-gradient(circle at 4rem 4rem, var(--rz-primary) 0%, var(--rz-primary-darker) 80%); position: relative;">
-                        <RadzenImage Path="images/logo-login.png" style="width: 120px"></RadzenImage>
+                    <RadzenColumn Size="12" SizeSM="6" Class=" rz-p-12" style="position: relative; background-color: #A49592">
+                        <RadzenImage Path="images/maneki-logo.png" style="width: 150px; margin-top: 20px; margin-bottom: 20px"></RadzenImage>
                         <RadzenText Text="@HeaderText" TextStyle="Radzen.Blazor.TextStyle.H2"
-                                    class="rz-mt-4 rz-mt-md-12 rz-pt-0 rz-pt-md-12 rz-mb-6 rz-color-on-primary rz-display-none rz-display-sm-block" />
+                                    class="rz-mt-4 rz-mt-md-12 rz-pt-0 rz-pt-md-12 rz-mb-6 rz-color-on-primary rz-display-none rz-display-sm-block" Style="font-style: normal; font-family: Georgia; font-weight: bold; margin-top: 40px; padding-top: 40px" />
                         <RadzenText Text="@SubHeaderText" TextStyle="Radzen.Blazor.TextStyle.Body1"
-                                    class="rz-mb-12 rz-pb-0 rz-pb-md-12 rz-color-on-primary rz-display-none rz-display-sm-block">
+                                    class="rz-mb-12 rz-pb-0 rz-pb-md-12 rz-color-on-primary rz-display-none rz-display-sm-block" Style="font-family: Georgia; font-size: 18px; margin-top: 30px">
                         </RadzenText>
                     </RadzenColumn>
-                    <RadzenColumn Size="12" SizeSM="6" class="rz-p-12">
+                    <RadzenColumn Size="12" SizeSM="6" class="rz-p-12" Style="background-color: #EED8C9">
                         @Body
                     </RadzenColumn>
                 </RadzenRow>

@@ -1,28 +1,25 @@
 @inherits LayoutComponentBase
-<RadzenComponents/>
-<RadzenDialog/>
-<RadzenNotification/>
-<RadzenTooltip/>
-<RadzenContextMenu/>
+<RadzenComponents />
+
 <RadzenLayout style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body';">
     <RadzenHeader>
-        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0">
+        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0" Style="background-color: #727077">
             <RadzenColumn Size="5">
                 <RadzenSidebarToggle Click="@SidebarToggleClick"></RadzenSidebarToggle>
             </RadzenColumn>
             <RadzenColumn Size="7">
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
-                    <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick">
+                    <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick" Style="background-color: #727077">
                         <ChildContent>
 
-                            <RadzenProfileMenuItem Path="profile" Icon="settings" Text="Profile"/>
-                            <RadzenProfileMenuItem Path="application-users" Icon="person" Text="Users"/>
-                            <RadzenProfileMenuItem Path="application-roles" Icon="security" Text="Roles"/>
-                            <RadzenProfileMenuItem Text="Logout" Value="Logout" Icon="power_settings_new"/>
+                            <RadzenProfileMenuItem Path="profile" Icon="settings" Text="Profile" />
+                            <RadzenProfileMenuItem Path="application-users" Icon="person" Text="Users" />
+                            <RadzenProfileMenuItem Path="application-roles" Icon="security" Text="Roles" />
+                            <RadzenProfileMenuItem Text="Logout" Value="Logout" Icon="power_settings_new" />
                         </ChildContent>
                         <Template>
                             @Security.User?.Name
-                            <RadzenGravatar Email="@Security.User?.Name"/>
+                            <RadzenGravatar Email="@Security.User?.Name" />
                         </Template>
                     </RadzenProfileMenu>
                 </RadzenStack>
@@ -32,21 +29,29 @@
     <RadzenBody Expanded="@sidebarExpanded">
         <RadzenRow class="rz-mx-auto rz-px-4 rz-pt-2 rz-pt-md-4 rz-pt-lg-6 rz-pt-xl-12 rz-pb-2 rz-pb-lg-12" Style="max-width: 1440px;">
             <RadzenColumn Size="12">
-                @Body
+            @Body
             </RadzenColumn>
         </RadzenRow>
     </RadzenBody>
-    <RadzenSidebar Expanded="@sidebarExpanded" style="z-index: 2">
-        <RadzenStack AlignItems="AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border);">
-            <RadzenImage Path="images/logo.png" style="width: 48px; height: 48px;" AlternateText="Application logo"></RadzenImage>
-            <RadzenText Text="ManekiApp" TextStyle="TextStyle.Subtitle1" class="rz-mb-0" style="color: var(--rz-sidebar-color);"/>
+    <RadzenSidebar Expanded="@sidebarExpanded" style="z-index: 2; width: 274px">
+        <RadzenStack AlignItems="Radzen.AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border); background-color: #A49592; height: 56px; width: 275px">
+            <RadzenImage Path="images/maneki-logo.png" Style="width: 135px; float: none"></RadzenImage>
+            
         </RadzenStack>
-        <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Path=""/>
+        <RadzenPanelMenu Style="font-family: Georgia; font-size: 16px; font-weight: normal">
+            <RadzenPanelMenuItem Text="My page" Path="" Icon="person" IconColor="black" />
         </RadzenPanelMenu>
-        <RadzenStack AlignItems="AlignItems.Center" Gap="0" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding);">
-            <RadzenText Text="ManekiApp v1.0.0" TextStyle="TextStyle.Caption" TagName="TagName.P" TextAlign="TextAlign.Center"/>
-            <RadzenText Text="Copyright Ⓒ 2024" TextStyle="TextStyle.Caption" class="rz-mb-0" TagName="TagName.P" TextAlign="TextAlign.Center"/>
-        </RadzenStack>
+<RadzenPanelMenu Style="font-family: Georgia; font-size: 16px">
+            <RadzenPanelMenuItem Text="Subscriptions" Path="" Icon="subscriptions" IconColor="black" />
+        </RadzenPanelMenu>
+<RadzenPanelMenu Style="font-family: Georgia; font-size: 16px">
+    <RadzenPanelMenuItem Text="Find authors" Path="" Icon="search" IconColor="black" />
+        </RadzenPanelMenu>
+<RadzenPanelMenu Style="font-family: Georgia; font-size: 16px">
+            <RadzenPanelMenuItem Text="Settings" Path="" Icon="settings" IconColor="black" />
+        </RadzenPanelMenu>
+
+        
+
     </RadzenSidebar>
 </RadzenLayout>
