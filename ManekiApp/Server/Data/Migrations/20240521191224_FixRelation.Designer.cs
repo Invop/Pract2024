@@ -3,17 +3,20 @@ using System;
 using ManekiApp.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ManekiApp.Server.Migrations
+namespace ManekiApp.Server.Data.Migrations
 {
     [DbContext(typeof(ManekiAppDBContext))]
-    partial class ManekiAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240521191224_FixRelation")]
+    partial class FixRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
