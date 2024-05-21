@@ -3,13 +3,13 @@
 
 <RadzenLayout style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body';">
     <RadzenHeader>
-        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0">
+        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0" Style="background-color: #727077">
             <RadzenColumn Size="5">
                 <RadzenSidebarToggle Click="@SidebarToggleClick"></RadzenSidebarToggle>
             </RadzenColumn>
             <RadzenColumn Size="7">
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
-                    <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick">
+                    <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick" Style="background-color: #A49592">
                         <ChildContent>
 
                             <RadzenProfileMenuItem Path="profile" Icon="settings" Text="Profile" />
@@ -33,17 +33,25 @@
             </RadzenColumn>
         </RadzenRow>
     </RadzenBody>
-    <RadzenSidebar Expanded="@sidebarExpanded" style="z-index: 2">
-        <RadzenStack AlignItems="Radzen.AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border);">
-            <RadzenImage Path="images/logo.png"  style="width: 48px; height: 48px;" AlternateText="Application logo"></RadzenImage>
-            <RadzenText Text="ManekiApp" TextStyle="Radzen.Blazor.TextStyle.Subtitle1" class="rz-mb-0" style="color: var(--rz-sidebar-color);" />
+    <RadzenSidebar Expanded="@sidebarExpanded" style="z-index: 2; width: 274px">
+        <RadzenStack AlignItems="Radzen.AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border); background-color: #EED8C9; height: 56px; width: 275px">
+            <RadzenImage Path="images/maneki-logo.png" Style="width: 135px; float: none"></RadzenImage>
+            
         </RadzenStack>
-        <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Path="" />
+        <RadzenPanelMenu Style="font-family: Georgia; font-size: 16px; font-weight: normal">
+            <RadzenPanelMenuItem Text="My page" Path="" Icon="person" IconColor="black" />
         </RadzenPanelMenu>
-        <RadzenStack AlignItems="Radzen.AlignItems.Center" Gap="0" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding);">
-            <RadzenText Text="ManekiApp v1.0.0" TextStyle="Radzen.Blazor.TextStyle.Caption" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
-            <RadzenText Text="Copyright Ⓒ 2024" TextStyle="Radzen.Blazor.TextStyle.Caption" class="rz-mb-0" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
-        </RadzenStack>
+<RadzenPanelMenu Style="font-family: Georgia; font-size: 16px">
+            <RadzenPanelMenuItem Text="Subscriptions" Path="" Icon="subscriptions" IconColor="black" />
+        </RadzenPanelMenu>
+<RadzenPanelMenu Style="font-family: Georgia; font-size: 16px">
+    <RadzenPanelMenuItem Text="Find authors" Path="" Icon="search" IconColor="black" />
+        </RadzenPanelMenu>
+<RadzenPanelMenu Style="font-family: Georgia; font-size: 16px">
+            <RadzenPanelMenuItem Text="Settings" Path="" Icon="settings" IconColor="black" />
+        </RadzenPanelMenu>
+
+        
+
     </RadzenSidebar>
 </RadzenLayout>
