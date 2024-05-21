@@ -14,7 +14,6 @@ using ManekiAppDBService = ManekiApp.Server.ManekiAppDBService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddLogging();
-
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveWebAssemblyComponents();
 builder.Services.AddControllers();
@@ -28,16 +27,16 @@ builder.Services.AddDbContext<ManekiAppDBContext>(options =>
 builder.Services.AddControllers().AddOData(opt =>
 {
     var oDataBuilderManekiAppDB = new ODataConventionModelBuilder();
-    oDataBuilderManekiAppDB
-        .EntitySet<UserVerificationCode>("UserVerificationCodes");
-    opt.AddRouteComponents("odata/ManekiAppDB", oDataBuilderManekiAppDB.GetEdmModel()).Count().Filter().OrderBy()
-        .Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
+    oDataBuilderManekiAppDB.EntitySet<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>("AuthorPages");
+    oDataBuilderManekiAppDB.EntitySet<ManekiApp.Server.Models.ManekiAppDB.Image>("Images");
+    oDataBuilderManekiAppDB.EntitySet<ManekiApp.Server.Models.ManekiAppDB.Post>("Posts");
+    oDataBuilderManekiAppDB.EntitySet<ManekiApp.Server.Models.ManekiAppDB.Subscription>("Subscriptions");
+    oDataBuilderManekiAppDB.EntitySet<ManekiApp.Server.Models.ManekiAppDB.UserSubscription>("UserSubscriptions");
+    oDataBuilderManekiAppDB.EntitySet<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode>("UserVerificationCodes");
+    opt.AddRouteComponents("odata/ManekiAppDB", oDataBuilderManekiAppDB.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
-
 builder.Services.AddScoped<ManekiApp.Client.ManekiAppDBService>();
-builder.Services.AddHttpClient("ManekiApp.Server")
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })
-    .AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+builder.Services.AddHttpClient("ManekiApp.Server").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
@@ -46,8 +45,7 @@ builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"));
 });
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddEntityFrameworkStores<ApplicationIdentityDbContext>().AddDefaultTokenProviders();
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>().AddEntityFrameworkStores<ApplicationIdentityDbContext>().AddDefaultTokenProviders();
 builder.Services.AddControllers().AddOData(o =>
 {
     var oDataBuilder = new ODataConventionModelBuilder();
@@ -56,11 +54,8 @@ builder.Services.AddControllers().AddOData(o =>
     usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.Password)));
     usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.ConfirmPassword)));
     oDataBuilder.EntitySet<ApplicationRole>("ApplicationRoles");
-    o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select()
-        .SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
+    o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
-
-
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
 builder.Services.AddScoped<ManekiAppDBService>();
 builder.Services.AddDbContext<ManekiAppDBContext>(options =>
@@ -69,6 +64,11 @@ builder.Services.AddDbContext<ManekiAppDBContext>(options =>
 });
 builder.Services.AddScoped<ManekiAppDBService>();
 builder.Services.AddDbContext<ManekiAppDBContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"));
+});
+builder.Services.AddScoped<ManekiApp.Server.ManekiAppDBService>();
+builder.Services.AddDbContext<ManekiApp.Server.Data.ManekiAppDBContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"));
 });
@@ -97,7 +97,6 @@ app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationIdentit
 using var scope = app.Services.CreateScope();
 SeedData(scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>());
 app.Run();
-
 void SeedData(RoleManager<ApplicationRole> roleManager)
 {
     var roles = new List<string>

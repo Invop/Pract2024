@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using ManekiApp.Server.Models.ManekiAppDB;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -42,15 +40,7 @@ namespace ManekiApp.Server.Models
             New attributes
         */
         
-        [Required] public string FirstName { get; set; }
-        
-        [Required] public string LastName { get; set; }
-        
-        [Required] public string About { get; set; }
-        
-        public byte[] ProfilePicture { get; set; }
-        
-        public ICollection<ManekiAppDB.UserSubscription> UserSubscriptions { get; set; }
+        public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
 
     }
 }

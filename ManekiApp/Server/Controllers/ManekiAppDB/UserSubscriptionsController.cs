@@ -16,12 +16,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ManekiApp.Server.Controllers.ManekiAppDB
 {
-    [Route("odata/ManekiAppDB/UserVerificationCodes")]
-    public partial class UserVerificationCodesController : ODataController
+    [Route("odata/ManekiAppDB/UserSubscriptions")]
+    public partial class UserSubscriptionsController : ODataController
     {
         private ManekiApp.Server.Data.ManekiAppDBContext context;
 
-        public UserVerificationCodesController(ManekiApp.Server.Data.ManekiAppDBContext context)
+        public UserSubscriptionsController(ManekiApp.Server.Data.ManekiAppDBContext context)
         {
             this.context = context;
         }
@@ -29,34 +29,34 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
     
         [HttpGet]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCodes()
+        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.UserSubscription> GetUserSubscriptions()
         {
-            var items = this.context.UserVerificationCodes.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode>();
-            this.OnUserVerificationCodesRead(ref items);
+            var items = this.context.UserSubscriptions.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.UserSubscription>();
+            this.OnUserSubscriptionsRead(ref items);
 
             return items;
         }
 
-        partial void OnUserVerificationCodesRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> items);
+        partial void OnUserSubscriptionsRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.UserSubscription> items);
 
-        partial void OnUserVerificationCodeGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> item);
+        partial void OnUserSubscriptionGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserSubscription> item);
 
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        [HttpGet("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCode(Guid key)
+        [HttpGet("/odata/ManekiAppDB/UserSubscriptions(Id={Id})")]
+        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserSubscription> GetUserSubscription(Guid key)
         {
-            var items = this.context.UserVerificationCodes.Where(i => i.Id == key);
+            var items = this.context.UserSubscriptions.Where(i => i.Id == key);
             var result = SingleResult.Create(items);
 
-            OnUserVerificationCodeGet(ref result);
+            OnUserSubscriptionGet(ref result);
 
             return result;
         }
-        partial void OnUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnUserSubscriptionDeleted(ManekiApp.Server.Models.ManekiAppDB.UserSubscription item);
+        partial void OnAfterUserSubscriptionDeleted(ManekiApp.Server.Models.ManekiAppDB.UserSubscription item);
 
-        [HttpDelete("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public IActionResult DeleteUserVerificationCode(Guid key)
+        [HttpDelete("/odata/ManekiAppDB/UserSubscriptions(Id={Id})")]
+        public IActionResult DeleteUserSubscription(Guid key)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
 
 
-                var item = this.context.UserVerificationCodes
+                var item = this.context.UserSubscriptions
                     .Where(i => i.Id == key)
                     .FirstOrDefault();
 
@@ -74,10 +74,10 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeDeleted(item);
-                this.context.UserVerificationCodes.Remove(item);
+                this.OnUserSubscriptionDeleted(item);
+                this.context.UserSubscriptions.Remove(item);
                 this.context.SaveChanges();
-                this.OnAfterUserVerificationCodeDeleted(item);
+                this.OnAfterUserSubscriptionDeleted(item);
 
                 return new NoContentResult();
 
@@ -89,12 +89,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnUserSubscriptionUpdated(ManekiApp.Server.Models.ManekiAppDB.UserSubscription item);
+        partial void OnAfterUserSubscriptionUpdated(ManekiApp.Server.Models.ManekiAppDB.UserSubscription item);
 
-        [HttpPut("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPut("/odata/ManekiAppDB/UserSubscriptions(Id={Id})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PutUserVerificationCode(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult PutUserSubscription(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.UserSubscription item)
         {
             try
             {
@@ -107,13 +107,13 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnUserSubscriptionUpdated(item);
+                this.context.UserSubscriptions.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
-                
-                this.OnAfterUserVerificationCodeUpdated(item);
+                var itemToReturn = this.context.UserSubscriptions.Where(i => i.Id == key);
+                Request.QueryString = Request.QueryString.Add("$expand", "Subscription,ApplicationUser");
+                this.OnAfterUserSubscriptionUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -123,9 +123,9 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        [HttpPatch("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPatch("/odata/ManekiAppDB/UserSubscriptions(Id={Id})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PatchUserVerificationCode(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> patch)
+        public IActionResult PatchUserSubscription(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.UserSubscription> patch)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest(ModelState);
                 }
 
-                var item = this.context.UserVerificationCodes.Where(i => i.Id == key).FirstOrDefault();
+                var item = this.context.UserSubscriptions.Where(i => i.Id == key).FirstOrDefault();
 
                 if (item == null)
                 {
@@ -142,13 +142,13 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
                 patch.Patch(item);
 
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnUserSubscriptionUpdated(item);
+                this.context.UserSubscriptions.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
-                
-                this.OnAfterUserVerificationCodeUpdated(item);
+                var itemToReturn = this.context.UserSubscriptions.Where(i => i.Id == key);
+                Request.QueryString = Request.QueryString.Add("$expand", "Subscription,ApplicationUser");
+                this.OnAfterUserSubscriptionUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -158,12 +158,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnUserSubscriptionCreated(ManekiApp.Server.Models.ManekiAppDB.UserSubscription item);
+        partial void OnAfterUserSubscriptionCreated(ManekiApp.Server.Models.ManekiAppDB.UserSubscription item);
 
         [HttpPost]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.UserSubscription item)
         {
             try
             {
@@ -177,15 +177,15 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest();
                 }
 
-                this.OnUserVerificationCodeCreated(item);
-                this.context.UserVerificationCodes.Add(item);
+                this.OnUserSubscriptionCreated(item);
+                this.context.UserSubscriptions.Add(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == item.Id);
+                var itemToReturn = this.context.UserSubscriptions.Where(i => i.Id == item.Id);
 
-                
+                Request.QueryString = Request.QueryString.Add("$expand", "Subscription,ApplicationUser");
 
-                this.OnAfterUserVerificationCodeCreated(item);
+                this.OnAfterUserSubscriptionCreated(item);
 
                 return new ObjectResult(SingleResult.Create(itemToReturn))
                 {

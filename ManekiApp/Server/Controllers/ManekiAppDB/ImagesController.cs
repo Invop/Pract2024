@@ -16,12 +16,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ManekiApp.Server.Controllers.ManekiAppDB
 {
-    [Route("odata/ManekiAppDB/UserVerificationCodes")]
-    public partial class UserVerificationCodesController : ODataController
+    [Route("odata/ManekiAppDB/Images")]
+    public partial class ImagesController : ODataController
     {
         private ManekiApp.Server.Data.ManekiAppDBContext context;
 
-        public UserVerificationCodesController(ManekiApp.Server.Data.ManekiAppDBContext context)
+        public ImagesController(ManekiApp.Server.Data.ManekiAppDBContext context)
         {
             this.context = context;
         }
@@ -29,34 +29,34 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
     
         [HttpGet]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCodes()
+        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.Image> GetImages()
         {
-            var items = this.context.UserVerificationCodes.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode>();
-            this.OnUserVerificationCodesRead(ref items);
+            var items = this.context.Images.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.Image>();
+            this.OnImagesRead(ref items);
 
             return items;
         }
 
-        partial void OnUserVerificationCodesRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> items);
+        partial void OnImagesRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.Image> items);
 
-        partial void OnUserVerificationCodeGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> item);
+        partial void OnImageGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.Image> item);
 
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        [HttpGet("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCode(Guid key)
+        [HttpGet("/odata/ManekiAppDB/Images(Id={Id})")]
+        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.Image> GetImage(Guid key)
         {
-            var items = this.context.UserVerificationCodes.Where(i => i.Id == key);
+            var items = this.context.Images.Where(i => i.Id == key);
             var result = SingleResult.Create(items);
 
-            OnUserVerificationCodeGet(ref result);
+            OnImageGet(ref result);
 
             return result;
         }
-        partial void OnUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnImageDeleted(ManekiApp.Server.Models.ManekiAppDB.Image item);
+        partial void OnAfterImageDeleted(ManekiApp.Server.Models.ManekiAppDB.Image item);
 
-        [HttpDelete("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public IActionResult DeleteUserVerificationCode(Guid key)
+        [HttpDelete("/odata/ManekiAppDB/Images(Id={Id})")]
+        public IActionResult DeleteImage(Guid key)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
 
 
-                var item = this.context.UserVerificationCodes
+                var item = this.context.Images
                     .Where(i => i.Id == key)
                     .FirstOrDefault();
 
@@ -74,10 +74,10 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeDeleted(item);
-                this.context.UserVerificationCodes.Remove(item);
+                this.OnImageDeleted(item);
+                this.context.Images.Remove(item);
                 this.context.SaveChanges();
-                this.OnAfterUserVerificationCodeDeleted(item);
+                this.OnAfterImageDeleted(item);
 
                 return new NoContentResult();
 
@@ -89,12 +89,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnImageUpdated(ManekiApp.Server.Models.ManekiAppDB.Image item);
+        partial void OnAfterImageUpdated(ManekiApp.Server.Models.ManekiAppDB.Image item);
 
-        [HttpPut("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPut("/odata/ManekiAppDB/Images(Id={Id})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PutUserVerificationCode(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult PutImage(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.Image item)
         {
             try
             {
@@ -107,13 +107,13 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnImageUpdated(item);
+                this.context.Images.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
-                
-                this.OnAfterUserVerificationCodeUpdated(item);
+                var itemToReturn = this.context.Images.Where(i => i.Id == key);
+                Request.QueryString = Request.QueryString.Add("$expand", "Post");
+                this.OnAfterImageUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -123,9 +123,9 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        [HttpPatch("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPatch("/odata/ManekiAppDB/Images(Id={Id})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PatchUserVerificationCode(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> patch)
+        public IActionResult PatchImage(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.Image> patch)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest(ModelState);
                 }
 
-                var item = this.context.UserVerificationCodes.Where(i => i.Id == key).FirstOrDefault();
+                var item = this.context.Images.Where(i => i.Id == key).FirstOrDefault();
 
                 if (item == null)
                 {
@@ -142,13 +142,13 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
                 patch.Patch(item);
 
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnImageUpdated(item);
+                this.context.Images.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
-                
-                this.OnAfterUserVerificationCodeUpdated(item);
+                var itemToReturn = this.context.Images.Where(i => i.Id == key);
+                Request.QueryString = Request.QueryString.Add("$expand", "Post");
+                this.OnAfterImageUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -158,12 +158,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnImageCreated(ManekiApp.Server.Models.ManekiAppDB.Image item);
+        partial void OnAfterImageCreated(ManekiApp.Server.Models.ManekiAppDB.Image item);
 
         [HttpPost]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.Image item)
         {
             try
             {
@@ -177,15 +177,15 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest();
                 }
 
-                this.OnUserVerificationCodeCreated(item);
-                this.context.UserVerificationCodes.Add(item);
+                this.OnImageCreated(item);
+                this.context.Images.Add(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == item.Id);
+                var itemToReturn = this.context.Images.Where(i => i.Id == item.Id);
 
-                
+                Request.QueryString = Request.QueryString.Add("$expand", "Post");
 
-                this.OnAfterUserVerificationCodeCreated(item);
+                this.OnAfterImageCreated(item);
 
                 return new ObjectResult(SingleResult.Create(itemToReturn))
                 {

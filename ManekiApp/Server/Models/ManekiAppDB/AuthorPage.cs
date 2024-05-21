@@ -1,35 +1,33 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace ManekiApp.Server.Models.ManekiAppDB;
-
-[Table("AuthorPage", Schema = "public")]
-public class AuthorPage
+namespace ManekiApp.Server.Models.ManekiAppDB
 {
-    [Key] [Required] public Guid Id { get; set; }
-
-    [Required] public string Title { get; set; }
-
-    [Required] public string Description { get; set; }
-    
-    public byte[] ProfileImage { get; set; }
-    
-    public string SocialLinks { get; set; }
-
-    [NotMapped]
-    public Dictionary<string, string> SocialLinksDict
+    [Table("AuthorPage", Schema = "public")]
+    public partial class AuthorPage
     {
-        get => SocialLinks != null ? JsonSerializer.Deserialize<Dictionary<string, string>>(SocialLinks) : null;
-        set => SocialLinks = value != null ? JsonSerializer.Serialize(value) : null;
-    }
-    
-    public ICollection<Post> Posts { get; set; } = new List<Post>();
-    public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-    
-    [Required]
-    public string UserId { get; set; }
+        [Key]
+        public Guid Id { get; set; }
 
-    [ForeignKey("UserId")]
-    public ApplicationUser UserOwner { get; set; }
+        [Required]
+        public string Title { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        public byte[] ProfileImage { get; set; }
+
+        public string SocialLinks { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
+        public ICollection<Subscription> Subscriptions { get; set; }
+
+        public ICollection<Post> Posts { get; set; }
+    }
 }

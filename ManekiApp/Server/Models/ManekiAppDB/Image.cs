@@ -1,11 +1,14 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ManekiApp.Server.Models.ManekiAppDB
 {
     [Table("Image", Schema = "public")]
-    public class Image
+    public partial class Image
     {
         [Key]
         [Required]
@@ -19,7 +22,6 @@ namespace ManekiApp.Server.Models.ManekiAppDB
         [Required]
         public Guid PostId { get; set; }
 
-        [ForeignKey("PostId")]
         public Post Post { get; set; }
     }
 }

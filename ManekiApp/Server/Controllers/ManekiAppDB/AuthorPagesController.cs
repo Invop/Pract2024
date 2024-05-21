@@ -16,12 +16,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ManekiApp.Server.Controllers.ManekiAppDB
 {
-    [Route("odata/ManekiAppDB/UserVerificationCodes")]
-    public partial class UserVerificationCodesController : ODataController
+    [Route("odata/ManekiAppDB/AuthorPages")]
+    public partial class AuthorPagesController : ODataController
     {
         private ManekiApp.Server.Data.ManekiAppDBContext context;
 
-        public UserVerificationCodesController(ManekiApp.Server.Data.ManekiAppDBContext context)
+        public AuthorPagesController(ManekiApp.Server.Data.ManekiAppDBContext context)
         {
             this.context = context;
         }
@@ -29,34 +29,34 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
     
         [HttpGet]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCodes()
+        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> GetAuthorPages()
         {
-            var items = this.context.UserVerificationCodes.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode>();
-            this.OnUserVerificationCodesRead(ref items);
+            var items = this.context.AuthorPages.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>();
+            this.OnAuthorPagesRead(ref items);
 
             return items;
         }
 
-        partial void OnUserVerificationCodesRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> items);
+        partial void OnAuthorPagesRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> items);
 
-        partial void OnUserVerificationCodeGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> item);
+        partial void OnAuthorPageGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> item);
 
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        [HttpGet("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCode(Guid key)
+        [HttpGet("/odata/ManekiAppDB/AuthorPages(Id={Id})")]
+        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> GetAuthorPage(Guid key)
         {
-            var items = this.context.UserVerificationCodes.Where(i => i.Id == key);
+            var items = this.context.AuthorPages.Where(i => i.Id == key);
             var result = SingleResult.Create(items);
 
-            OnUserVerificationCodeGet(ref result);
+            OnAuthorPageGet(ref result);
 
             return result;
         }
-        partial void OnUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnAuthorPageDeleted(ManekiApp.Server.Models.ManekiAppDB.AuthorPage item);
+        partial void OnAfterAuthorPageDeleted(ManekiApp.Server.Models.ManekiAppDB.AuthorPage item);
 
-        [HttpDelete("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public IActionResult DeleteUserVerificationCode(Guid key)
+        [HttpDelete("/odata/ManekiAppDB/AuthorPages(Id={Id})")]
+        public IActionResult DeleteAuthorPage(Guid key)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
 
 
-                var item = this.context.UserVerificationCodes
+                var item = this.context.AuthorPages
                     .Where(i => i.Id == key)
                     .FirstOrDefault();
 
@@ -74,10 +74,10 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeDeleted(item);
-                this.context.UserVerificationCodes.Remove(item);
+                this.OnAuthorPageDeleted(item);
+                this.context.AuthorPages.Remove(item);
                 this.context.SaveChanges();
-                this.OnAfterUserVerificationCodeDeleted(item);
+                this.OnAfterAuthorPageDeleted(item);
 
                 return new NoContentResult();
 
@@ -89,12 +89,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnAuthorPageUpdated(ManekiApp.Server.Models.ManekiAppDB.AuthorPage item);
+        partial void OnAfterAuthorPageUpdated(ManekiApp.Server.Models.ManekiAppDB.AuthorPage item);
 
-        [HttpPut("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPut("/odata/ManekiAppDB/AuthorPages(Id={Id})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PutUserVerificationCode(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult PutAuthorPage(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.AuthorPage item)
         {
             try
             {
@@ -107,13 +107,13 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnAuthorPageUpdated(item);
+                this.context.AuthorPages.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
+                var itemToReturn = this.context.AuthorPages.Where(i => i.Id == key);
                 
-                this.OnAfterUserVerificationCodeUpdated(item);
+                this.OnAfterAuthorPageUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -123,9 +123,9 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        [HttpPatch("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPatch("/odata/ManekiAppDB/AuthorPages(Id={Id})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PatchUserVerificationCode(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> patch)
+        public IActionResult PatchAuthorPage(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> patch)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest(ModelState);
                 }
 
-                var item = this.context.UserVerificationCodes.Where(i => i.Id == key).FirstOrDefault();
+                var item = this.context.AuthorPages.Where(i => i.Id == key).FirstOrDefault();
 
                 if (item == null)
                 {
@@ -142,13 +142,13 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
                 patch.Patch(item);
 
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnAuthorPageUpdated(item);
+                this.context.AuthorPages.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
+                var itemToReturn = this.context.AuthorPages.Where(i => i.Id == key);
                 
-                this.OnAfterUserVerificationCodeUpdated(item);
+                this.OnAfterAuthorPageUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -158,12 +158,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnAuthorPageCreated(ManekiApp.Server.Models.ManekiAppDB.AuthorPage item);
+        partial void OnAfterAuthorPageCreated(ManekiApp.Server.Models.ManekiAppDB.AuthorPage item);
 
         [HttpPost]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.AuthorPage item)
         {
             try
             {
@@ -177,15 +177,15 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest();
                 }
 
-                this.OnUserVerificationCodeCreated(item);
-                this.context.UserVerificationCodes.Add(item);
+                this.OnAuthorPageCreated(item);
+                this.context.AuthorPages.Add(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == item.Id);
+                var itemToReturn = this.context.AuthorPages.Where(i => i.Id == item.Id);
 
                 
 
-                this.OnAfterUserVerificationCodeCreated(item);
+                this.OnAfterAuthorPageCreated(item);
 
                 return new ObjectResult(SingleResult.Create(itemToReturn))
                 {

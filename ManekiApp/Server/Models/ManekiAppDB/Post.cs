@@ -1,23 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace ManekiApp.Server.Models.ManekiAppDB;
-
-[Table("Post", Schema = "public")]
-public class Post
+namespace ManekiApp.Server.Models.ManekiAppDB
 {
-    [Key] [Required] public Guid Id { get; set; }
+    [Table("Post", Schema = "public")]
+    public partial class Post
+    {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
 
-    public string Content { get; set; }
+        public string Content { get; set; }
 
-    public ICollection<Image> Images { get; set; } = new List<Image>();
-    
-    [Required] public DateTime CreatedAt { get; set; }
-    
-    [Required] public DateTime EditedAt { get; set; }
-    
-    [Required] public Guid AuthorPageId { get; set; }
-    
-    [ForeignKey("AuthorPageId")]
-    public AuthorPage AuthorPage { get; set; }
+        [Required]
+        public DateTime CreatedAt { get; set; }
+
+        [Required]
+        public DateTime EditedAt { get; set; }
+
+        [Required]
+        public Guid AuthorPageId { get; set; }
+
+        public AuthorPage AuthorPage { get; set; }
+
+        public ICollection<Image> Images { get; set; }
+    }
 }

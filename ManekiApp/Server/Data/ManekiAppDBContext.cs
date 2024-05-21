@@ -1,5 +1,8 @@
-using ManekiApp.Server.Models.ManekiAppDB;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using ManekiApp.Server.Models.ManekiAppDB;
 
 namespace ManekiApp.Server.Data
 {
@@ -17,42 +20,49 @@ namespace ManekiApp.Server.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<UserVerificationCode>()
-                .HasIndex(p => p.UserId)
-                .IsUnique();
             base.OnModelCreating(builder);
 
-            builder.Entity<Post>()
-                .HasOne(p => p.AuthorPage)
-                .WithMany(ap => ap.Posts)
-                .HasForeignKey(p => p.AuthorPageId);
-            
-            builder.Entity<Subscription>()
-                .HasOne(us => us.AuthorPage)
-                .WithMany(ap => ap.Subscriptions)
-                .HasForeignKey(s => s.AuthorId);
-            
-            builder.Entity<UserSubscription>()
-                .HasKey(us => new { us.SubscriptionId, us.UserId });
+            builder.Entity<ManekiApp.Server.Models.ManekiAppDB.Image>()
+              .HasOne(i => i.Post)
+              .WithMany(i => i.Images)
+              .HasForeignKey(i => i.PostId)
+              .HasPrincipalKey(i => i.Id);
 
-            // One-to-many relationship between Subscription and UserSubscription
-            builder.Entity<UserSubscription>()
-                .HasOne(us => us.Subscription)
-                .WithMany(s => s.UserSubscriptions)
-                .HasForeignKey(us => us.SubscriptionId);
+            builder.Entity<ManekiApp.Server.Models.ManekiAppDB.Post>()
+              .HasOne(i => i.AuthorPage)
+              .WithMany(i => i.Posts)
+              .HasForeignKey(i => i.AuthorPageId)
+              .HasPrincipalKey(i => i.Id);
 
-            // One-to-many relationship between ApplicationUser and UserSubscription
-            builder.Entity<UserSubscription>()
-                .HasOne(us => us.User)
-                .WithMany(u => u.UserSubscriptions)
-                .HasForeignKey(us => us.UserId);        }
+            builder.Entity<ManekiApp.Server.Models.ManekiAppDB.Subscription>()
+              .HasOne(i => i.AuthorPage)
+              .WithMany(i => i.Subscriptions)
+              .HasForeignKey(i => i.AuthorId)
+              .HasPrincipalKey(i => i.Id);
 
-        public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
-        public DbSet<AuthorPage> AuthorPages { get; set; }
-        public DbSet<Subscription> Subscriptions { get; set; }
-        public DbSet<UserSubscription> UserSubscriptions { get; set; }
-        public DbSet<Post> Posts { get; set; }
-        public DbSet<Image> Images { get; set; }
+            builder.Entity<ManekiApp.Server.Models.ManekiAppDB.UserSubscription>()
+              .HasOne(i => i.Subscription)
+              .WithMany(i => i.UserSubscriptions)
+              .HasForeignKey(i => i.SubscriptionId)
+              .HasPrincipalKey(i => i.Id);
+
+            builder.Entity<ManekiApp.Server.Models.ManekiAppDB.Subscription>()
+              .Property(p => p.Price)
+              .HasPrecision(18,2);
+            this.OnModelBuilding(builder);
+        }
+
+        public DbSet<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> AuthorPages { get; set; }
+
+        public DbSet<ManekiApp.Server.Models.ManekiAppDB.Image> Images { get; set; }
+
+        public DbSet<ManekiApp.Server.Models.ManekiAppDB.Post> Posts { get; set; }
+
+        public DbSet<ManekiApp.Server.Models.ManekiAppDB.Subscription> Subscriptions { get; set; }
+
+        public DbSet<ManekiApp.Server.Models.ManekiAppDB.UserSubscription> UserSubscriptions { get; set; }
+
+        public DbSet<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> UserVerificationCodes { get; set; }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
