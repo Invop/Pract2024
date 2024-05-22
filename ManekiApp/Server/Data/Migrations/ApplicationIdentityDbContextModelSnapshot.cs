@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ManekiApp.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationIdentityDbContext))]
-    partial class IdentityModelSnapshot : ModelSnapshot
+    partial class ApplicationIdentityDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -106,6 +106,9 @@ namespace ManekiApp.Server.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<Guid?>("UserVerificationCodeId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -115,7 +118,32 @@ namespace ManekiApp.Server.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("UserVerificationCodeId");
+
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Code")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserVerificationCode", "public");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -222,6 +250,27 @@ namespace ManekiApp.Server.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode", "UserVerificationCode")
+                        .WithMany()
+                        .HasForeignKey("UserVerificationCodeId");
+
+                    b.Navigation("UserVerificationCode");
+                });
+
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode", b =>
+                {
+                    b.HasOne("ManekiApp.Server.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("ForeignKey_UserVerificationCode_ApplicationUser");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -17,6 +17,6 @@
     <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\ManekiAppDB\"/>
+    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 </Project>
