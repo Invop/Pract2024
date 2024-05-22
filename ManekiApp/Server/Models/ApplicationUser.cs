@@ -40,5 +40,7 @@ namespace ManekiApp.Server.Models
         public ICollection<ApplicationRole> Roles { get; set; }
         
         public virtual UserVerificationCode UserVerificationCode { get; set; }
+        public virtual AuthorPage AuthorPage { get; set; }
+        public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
     }
 }
