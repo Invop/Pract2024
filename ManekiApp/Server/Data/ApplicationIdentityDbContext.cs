@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 using ManekiApp.Server.Models;
+using ManekiApp.Server.Models.ManekiAppDB;
 
 namespace ManekiApp.Server.Data
 {
@@ -30,6 +31,13 @@ namespace ManekiApp.Server.Data
                    .HasMany(u => u.Roles)
                    .WithMany(r => r.Users)
                    .UsingEntity<IdentityUserRole<string>>();
+            
+            builder.Entity<UserVerificationCode>()
+                .HasOne(uvc => uvc.User)
+                .WithMany()
+                .HasForeignKey(uvc => uvc.UserId)
+                .HasConstraintName("ForeignKey_UserVerificationCode_ApplicationUser")
+                .IsRequired();
 
             this.OnModelBuilding(builder);
         }
