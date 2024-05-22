@@ -13,6 +13,7 @@ namespace ManekiApp.Server.Data
 {
     public partial class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
+        public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
         public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
         {
         }
