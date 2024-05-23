@@ -3,13 +3,13 @@
 
 <RadzenLayout style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body';">
     <RadzenHeader>
-        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0" Style="background-color: #727077">
+        <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0" Style="background-color: #bdaba6">
             <RadzenColumn Size="5">
                 <RadzenSidebarToggle Click="@SidebarToggleClick"></RadzenSidebarToggle>
             </RadzenColumn>
             <RadzenColumn Size="7">
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
-                    <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick" Style="background-color: #727077">
+                    <RadzenProfileMenu Visible="@Security.IsAuthenticated()" Click="@ProfileMenuClick" Style="background-color: #bdaba6">
                         <ChildContent>
 
                             <RadzenProfileMenuItem Path="profile" Icon="settings" Text="Profile" />
@@ -34,28 +34,23 @@
         </RadzenRow>
     </RadzenBody>
     <RadzenSidebar Expanded="@sidebarExpanded" style="z-index: 2; width: 274px">
-        <RadzenStack AlignItems="Radzen.AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border); background-color: #A49592; height: 56px; width: 275px">
-            <RadzenImage Path="images/maneki-logo.png" Style="width: 135px; float: none"></RadzenImage>
-            
+        <RadzenStack Gap=7 Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border); background-color: #e7d8d4; height: 56px; width: 275px">
+            <RadzenImage Path="images/paw.png" Style="width: 40px; float: none"></RadzenImage>
+            <RadzenText Text="Maneki" Style="font-weight: bold; color: #000000; font-family: Georgia; font-size: 27px; margin-bottom: 0px; width: 107px; height: 33px" />
         </RadzenStack>
         <RadzenPanelMenu Style="font-size: 16px">
-            <RadzenPanelMenuItem Text="Profile" Path="" Icon="person" IconColor="black" />
-            </RadzenPanelMenu>
-<RadzenPanelMenu Style="font-size: 16px">
-            <RadzenPanelMenuItem Text="Feed" Path="" Icon="home" IconColor="black" />
-        </RadzenPanelMenu>
-        
-<RadzenPanelMenu Style="font-size: 16px">
-            <RadzenPanelMenuItem Text="Subscriptions" Path="" Icon="card_membership" IconColor="black" />
-        </RadzenPanelMenu>
-<RadzenPanelMenu Style="font-size: 16px">
-    <RadzenPanelMenuItem Text="Search authors" Path="" Icon="search" IconColor="black" />
-        </RadzenPanelMenu>
-<RadzenPanelMenu Style="font-size: 16px">
-            <RadzenPanelMenuItem Text="Settings" Path="" Icon="settings" IconColor="black" />
-        </RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Profile" Path="profile" Icon="person" IconColor="black" />
 
-        
+            <RadzenPanelMenuItem Text="Feed" Path="feed" Icon="home" IconColor="black" />
+
+            <RadzenPanelMenuItem Text="Subscriptions" Path="subscriptions" Icon="card_membership" IconColor="black" />
+
+            <RadzenPanelMenuItem Text="Search" Path="search" Icon="search" IconColor="black" />
+
+            <RadzenPanelMenuItem Text="Analytics" Path="analytics" Icon="bar_chart" IconColor="black" />
+
+            <RadzenPanelMenuItem Text="Settings" Path="settings" Icon="settings" IconColor="black" />
+        </RadzenPanelMenu>
 
     </RadzenSidebar>
 </RadzenLayout>
