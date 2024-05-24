@@ -1,0 +1,6 @@
+@TelegramPayBot_HostAddress = http://localhost:5283
+
+GET {{TelegramPayBot_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
