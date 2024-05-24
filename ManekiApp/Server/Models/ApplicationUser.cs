@@ -41,6 +41,10 @@ namespace ManekiApp.Server.Models
         
         public virtual UserVerificationCode UserVerificationCode { get; set; }
         public virtual AuthorPage AuthorPage { get; set; }
+        
+        public virtual UserChatPurchases UserChatPurchases { get; set; }
+        
+        public virtual UserNotificationChats UserNotificationChats { get; set; }
         public ICollection<UserSubscription> UserSubscriptions { get; set; } = new List<UserSubscription>();
     }
 }

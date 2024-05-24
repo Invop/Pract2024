@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +15,8 @@ namespace ManekiApp.Server.Data
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
-
+        public DbSet<UserNotificationChats> UserNotificationChats { get; set; }
+        public DbSet<UserChatPurchases> UserChatPurchases { get; set; }
         public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
         {
         }
