@@ -51,39 +51,12 @@ public class TelegramBot
         using var scope = _serviceScopeFactory.CreateScope();
         if (update.Type == UpdateType.PreCheckoutQuery)
         {
-            var preCheckoutQuery = update.PreCheckoutQuery;
-            // Check preCheckoutQuery is not null if required
-            await botClient.AnswerPreCheckoutQueryAsync(preCheckoutQuery.Id, cancellationToken: cancellationToken);
-
-            Console.WriteLine(1);
-            // Check Message is not null if required
-            var paymentFromMessage = update.Message?.SuccessfulPayment;
-            if (paymentFromMessage != null)
-            {
-                await botClient.SendTextMessageAsync(chatId, "Thank you for your payment!", cancellationToken: cancellationToken);
-
-            }
+            await botClient.AnswerPreCheckoutQueryAsync(update.PreCheckoutQuery.Id, cancellationToken: cancellationToken);
         }
-        else if (update.Type == UpdateType.ShippingQuery)
+        else if (update.Type == UpdateType.Message && update.Message.SuccessfulPayment != null)
         {
-            var shippingQuery = update.ShippingQuery;
-            if (shippingQuery.InvoicePayload == "Custom-Payload")
-            {
-                var shippingOptions = new List<ShippingOption>
-                {
-                    new ShippingOption() { Id = "1", Title = "Shipping Option A", Prices = new[] { new LabeledPrice("A", 100) } },
-                    new ShippingOption() { Id = "2", Title = "Shipping Option B", Prices = new[]
-                    {
-                        new LabeledPrice("B1", 150),
-                        new LabeledPrice("B2", 200)
-                    }}
-                };
-                await botClient.AnswerShippingQueryAsync(shippingQuery.Id, shippingOptions, cancellationToken: cancellationToken);
-            }
-            else
-            {
-                await botClient.AnswerShippingQueryAsync(shippingQuery.Id, errorMessage: "Something went wrong...", cancellationToken: cancellationToken);
-            }
+            SuccessfulPayment successfulPayment = update.Message.SuccessfulPayment;
+            Console.WriteLine($"successful");
         }
         else if (update.Type == UpdateType.Message && update.Message!.Text != null)
         {
