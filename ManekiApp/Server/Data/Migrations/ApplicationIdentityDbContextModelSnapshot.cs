@@ -239,42 +239,28 @@ namespace ManekiApp.Server.Data.Migrations
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserChatPurchases", b =>
                 {
-                    b.Property<Guid>("UserChatPurchaseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.Property<string>("TelegramChatId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserChatPurchaseId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasKey("UserId");
 
                     b.ToTable("UserChatPurchases");
                 });
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserNotificationChats", b =>
                 {
-                    b.Property<Guid>("UserNotificationChatId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.Property<string>("TelegramChatId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserNotificationChatId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasKey("UserId");
 
                     b.ToTable("UserNotificationChats");
                 });
@@ -500,7 +486,9 @@ namespace ManekiApp.Server.Data.Migrations
                 {
                     b.HasOne("ManekiApp.Server.Models.ApplicationUser", "ApplicationUser")
                         .WithOne("UserChatPurchases")
-                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserChatPurchases", "UserId");
+                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserChatPurchases", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ApplicationUser");
                 });
@@ -509,7 +497,9 @@ namespace ManekiApp.Server.Data.Migrations
                 {
                     b.HasOne("ManekiApp.Server.Models.ApplicationUser", "ApplicationUser")
                         .WithOne("UserNotificationChats")
-                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserNotificationChats", "UserId");
+                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserNotificationChats", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ApplicationUser");
                 });
