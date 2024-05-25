@@ -5,6 +5,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Payments;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace ManekiApp.TelegramPayBot;
 
@@ -45,39 +46,108 @@ public class TelegramBot
         // Send cancellation request to stop bot
         cts.Cancel();
     }
-
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        if (update.Type == UpdateType.PreCheckoutQuery)
+
+        switch (update.Type)
         {
-            await botClient.AnswerPreCheckoutQueryAsync(update.PreCheckoutQuery.Id, cancellationToken: cancellationToken);
+            case UpdateType.PreCheckoutQuery:
+                await HandlePreCheckoutQueryAsync(botClient, update, cancellationToken);
+                break;
+            
+            case UpdateType.Message:
+                await HandleMessageAsync(botClient, update, cancellationToken);
+                break;
+            case UpdateType.CallbackQuery:
+                switch (update.CallbackQuery?.Data)
+                {
+                    case "/noshipping":
+                        await HandleNoShippingCommandAsync(botClient, update, cancellationToken);
+                        break;
+                    default:
+                        Console.WriteLine($"Unhandled callback data: {update.CallbackQuery?.Data}");
+                        break;
+                }
+                break;
+            default:
+                Console.WriteLine($"Unhandled update type: {update.Type}");
+                break;
         }
-        else if (update.Type == UpdateType.Message && update.Message.SuccessfulPayment != null)
+    }
+
+    private async Task HandlePreCheckoutQueryAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        await botClient.AnswerPreCheckoutQueryAsync(update.PreCheckoutQuery.Id, cancellationToken: cancellationToken);
+    }
+
+    private async Task HandleMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        if (update.Message.SuccessfulPayment != null)
         {
-            SuccessfulPayment successfulPayment = update.Message.SuccessfulPayment;
-            Console.WriteLine($"successful");
+            await HandleSuccessfulPaymentAsync(update);
         }
-        else if (update.Type == UpdateType.Message && update.Message!.Text != null)
+        else if (update.Message?.Text != null)
         {
-            if (update.Message.Text == "/start")
+            await HandleTextMessageAsync(botClient, update, cancellationToken);
+        }
+    }
+
+    private async Task HandleSuccessfulPaymentAsync(Update update)
+    {
+        SuccessfulPayment successfulPayment = update.Message.SuccessfulPayment;
+        Console.WriteLine($"Successful payment: {successfulPayment}");
+    }
+
+    private async Task HandleTextMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        switch (update.Message.Text)
+        {
+            case "/start":
+                await HandleStartCommandAsync(botClient, update, cancellationToken);
+                break;
+            
+            default:
+                Console.WriteLine($"Unhandled message text: {update.Message.Text}");
+                break;
+        }
+    }
+
+    private async Task HandleStartCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        var message = update.Message;
+
+        var inlineKeyboard = new InlineKeyboardMarkup(new[]
+        {
+            new [] // First row
             {
-                var message = update.Message;
-                chatId = message.Chat.Id;
-                await botClient.SendTextMessageAsync(
-                    chatId,
-                    "Use /noshipping for an invoice without shipping. USE SAMPLE CARD ONLY 4242 4242 4242 4242",
-                    cancellationToken: cancellationToken);
-            }
-            else if (update.Message.Text == "/noshipping")
+                InlineKeyboardButton.WithCallbackData("No Shipping", "/noshipping"),
+                InlineKeyboardButton.WithCallbackData("Button 2", "Button 2")
+            },
+            new [] // Second row
             {
-                 chatId = update.Message.Chat.Id; // Not sure where chatId is defined initially
-                await SendInvoiceAsync(botClient, chatId, cancellationToken);
+                InlineKeyboardButton.WithCallbackData("Button 3", "Button 3"),
+                InlineKeyboardButton.WithCallbackData("Button 4", "Button 4")
             }
-            else
-            {
-                Console.WriteLine(1);
-            }
+        });
+
+        await botClient.SendTextMessageAsync(
+            message.Chat.Id,
+            "Use /noshipping for an invoice without shipping. USE SAMPLE CARD ONLY 4242 4242 4242 4242",
+            replyMarkup: inlineKeyboard,
+            cancellationToken: cancellationToken);
+    }
+
+    private async Task HandleNoShippingCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        var chatId = update.CallbackQuery?.Message.Chat.Id;
+        if(chatId.HasValue)
+        {
+            await SendInvoiceAsync(botClient, chatId.Value, cancellationToken);
+        }
+        else
+        {
+            Console.WriteLine("Chat Id is null");
         }
     }
 
