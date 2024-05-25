@@ -6,10 +6,6 @@ using ManekiApp.TelegramPayBot;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-builder.Services.AddDbContext<TgBotDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
-
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
 

@@ -20,6 +20,7 @@ public class TelegramBot
     {
         _serviceScopeFactory = serviceScopeFactory;
         _client = new TelegramBotClient(botToken);
+        
     }
 
     public async Task Start()
@@ -48,7 +49,6 @@ public class TelegramBot
     }
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        using var scope = _serviceScopeFactory.CreateScope();
 
         switch (update.Type)
         {
@@ -116,26 +116,43 @@ public class TelegramBot
     private async Task HandleStartCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         var message = update.Message;
-
-        var inlineKeyboard = new InlineKeyboardMarkup(new[]
+        string telegramId = message.Chat.Id.ToString();
+        bool userExists;
+        using(var scope = _serviceScopeFactory.CreateScope())
         {
-            new [] // First row
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>(); 
+            userExists = context.Users.Any(u => u.TelegramId == telegramId);
+        }
+        if (userExists)
+        {
+            var inlineKeyboard = new InlineKeyboardMarkup(new[]
             {
-                InlineKeyboardButton.WithCallbackData("No Shipping", "/noshipping"),
-                InlineKeyboardButton.WithCallbackData("Button 2", "Button 2")
-            },
-            new [] // Second row
-            {
-                InlineKeyboardButton.WithCallbackData("Button 3", "Button 3"),
-                InlineKeyboardButton.WithCallbackData("Button 4", "Button 4")
-            }
-        });
+                new [] // First row
+                {
+                    InlineKeyboardButton.WithCallbackData("No Shipping", "/noshipping"),
+                    InlineKeyboardButton.WithCallbackData("Button 2", "Button 2")
+                },
+                new [] // Second row
+                {
+                    InlineKeyboardButton.WithCallbackData("Button 3", "Button 3"),
+                    InlineKeyboardButton.WithCallbackData("Button 4", "Button 4")
+                }
+            });
 
-        await botClient.SendTextMessageAsync(
-            message.Chat.Id,
-            "Use /noshipping for an invoice without shipping. USE SAMPLE CARD ONLY 4242 4242 4242 4242",
-            replyMarkup: inlineKeyboard,
-            cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(
+                message.Chat.Id,
+                "Use /noshipping for an invoice without shipping. USE SAMPLE CARD ONLY 4242 4242 4242 4242",
+                replyMarkup: inlineKeyboard,
+                cancellationToken: cancellationToken);
+        }
+        else 
+        {
+            // For example, send the error message to the user
+            await botClient.SendTextMessageAsync(
+                message.Chat.Id,
+                "You are not a registered user. Please register on our platform.",
+                cancellationToken: cancellationToken);
+        }
     }
 
     private async Task HandleNoShippingCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)

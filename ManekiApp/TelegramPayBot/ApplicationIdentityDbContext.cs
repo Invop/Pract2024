@@ -7,6 +7,8 @@ namespace ManekiApp.TelegramPayBot;
 
 public partial class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {
+    
+    public DbSet<UserChatPayment> UserChatPayment { get; set; }
     public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
     {
     }
