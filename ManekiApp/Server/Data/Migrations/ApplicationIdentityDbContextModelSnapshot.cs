@@ -237,7 +237,7 @@ namespace ManekiApp.Server.Data.Migrations
                     b.ToTable("Subscription", "public");
                 });
 
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserChatPurchases", b =>
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserChatNotification", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -248,10 +248,10 @@ namespace ManekiApp.Server.Data.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserChatPurchases");
+                    b.ToTable("UserChatNotification");
                 });
 
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserNotificationChats", b =>
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserChatPayment", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -262,7 +262,7 @@ namespace ManekiApp.Server.Data.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserNotificationChats");
+                    b.ToTable("UserChatPayment");
                 });
 
             modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserSubscription", b =>
@@ -482,22 +482,22 @@ namespace ManekiApp.Server.Data.Migrations
                     b.Navigation("AuthorPage");
                 });
 
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserChatPurchases", b =>
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserChatNotification", b =>
                 {
                     b.HasOne("ManekiApp.Server.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne("UserChatPurchases")
-                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserChatPurchases", "UserId")
+                        .WithOne("UserChatNotification")
+                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserChatNotification", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserNotificationChats", b =>
+            modelBuilder.Entity("ManekiApp.Server.Models.ManekiAppDB.UserChatPayment", b =>
                 {
                     b.HasOne("ManekiApp.Server.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne("UserNotificationChats")
-                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserNotificationChats", "UserId")
+                        .WithOne("UserChatPayment")
+                        .HasForeignKey("ManekiApp.Server.Models.ManekiAppDB.UserChatPayment", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -591,9 +591,9 @@ namespace ManekiApp.Server.Data.Migrations
                 {
                     b.Navigation("AuthorPage");
 
-                    b.Navigation("UserChatPurchases");
+                    b.Navigation("UserChatNotification");
 
-                    b.Navigation("UserNotificationChats");
+                    b.Navigation("UserChatPayment");
 
                     b.Navigation("UserSubscriptions");
                 });

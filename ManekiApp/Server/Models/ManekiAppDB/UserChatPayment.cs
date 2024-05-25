@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManekiApp.Server.Models.ManekiAppDB;
 
-public class UserNotificationChats
+public class UserChatPayment
 {
     [Required]
     public string TelegramChatId { get; set; }

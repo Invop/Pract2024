@@ -15,8 +15,8 @@ namespace ManekiApp.Server.Data
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
-        public DbSet<UserNotificationChats> UserNotificationChats { get; set; }
-        public DbSet<UserChatPurchases> UserChatPurchases { get; set; }
+        public DbSet<UserChatNotification> UserChatNotification { get; set; }
+        public DbSet<UserChatPayment> UserChatPayment { get; set; }
         public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
         {
         }
