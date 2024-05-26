@@ -7,44 +7,52 @@
     <RadzenStack Style="background-color: #eee6e6; color: f2eeee Hex 242 R 238 G; padding: 20px; border-radius: 10px">
         <RadzenTemplateForm TItem="dynamic">
             <RadzenRow>
-                <RadzenText Text="You can edit your personal data" Style="font-weight: bold; font-size: 20px" />
-                    <RadzenColumn Size="12" SizeMD="3">
-                        <RadzenLabel Component="Username" style="width: 100%" Text="Username"></RadzenLabel>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%" Name="Username" Placeholder="Anton_pt" Trim="false"></RadzenTextBox>
-                    </RadzenColumn>
 
-                    <RadzenColumn Size="12" SizeMD="3">
-                        <RadzenLabel Component="Name" style="width: 100%" Text="Name"></RadzenLabel>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%" Name="Name" Placeholder="Anton" Trim="false"></RadzenTextBox>
-                    </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="12">
+                    <RadzenText Text="You can edit your personal data" Style="font-weight: bold; font-size: 20px" />
+                </RadzenColumn>
 
-                    <RadzenColumn Size="12" SizeMD="3">
-                        <RadzenLabel Component="Surname" style="width: 100%" Text="Surname"></RadzenLabel>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%" Name="Surname" Placeholder="Ptushkin" Trim="false"></RadzenTextBox>
-                    </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="3" >
+                    <RadzenLabel Component="Username" style="width: 100%; margin-top: 8px" Text="Username"></RadzenLabel>
+                </RadzenColumn>
 
-                    <RadzenColumn Size="12" SizeMD="3">
-                        <RadzenLabel Text="Birthday" Component="DatePickerDateOnlyType" Style="margin-right: 8px; vertical-align: middle;"/>
-                    </RadzenColumn>
-                    <RadzenColumn Size="12" SizeMD="9">    
-                        <RadzenDatePicker @bind-Value="@value" DateFormat="MM/dd/yyyy" Name="DatePickerDateOnlyType"/>
-                    </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" Name="Username" Placeholder="Anton_pt" Trim="false"></RadzenTextBox>
+                </RadzenColumn>
 
-                    <RadzenColumn Size="12" SizeMD="3">
-                        <RadzenLabel Text="Your avatar" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
-                    </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="3">
+                    <RadzenLabel Component="Name" style="width: 100%; margin-top: 8px" Text="Name"></RadzenLabel>
+                </RadzenColumn>
 
-                    <RadzenColumn Size="12" SizeMD="9">
+                <RadzenColumn Size="12" SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" Name="Name" Placeholder="Anton" Trim="false"></RadzenTextBox>
+                </RadzenColumn>
+
+                <RadzenColumn Size="12" SizeMD="3">
+                    <RadzenLabel Component="Surname" style="width: 100%; margin-top: 8px" Text="Surname"></RadzenLabel>
+                </RadzenColumn>
+
+                <RadzenColumn Size="12" SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" Name="Surname" Placeholder="Ptushkin" Trim="false"></RadzenTextBox>
+                </RadzenColumn>
+
+                <RadzenColumn Size="12" SizeMD="3">
+                    <RadzenLabel Text="Birthday" Component="DatePickerDateOnlyType" Style="margin-right: 8px; vertical-align: middle; margin-top: 8px"/>
+                </RadzenColumn>
+
+                <RadzenColumn Size="12" SizeMD="9">    
+                    <RadzenDatePicker @bind-Value="@value" DateFormat="MM/dd/yyyy" Name="DatePickerDateOnlyType"/>
+                </RadzenColumn>
+
+                <RadzenColumn Size="12" SizeMD="3">
+                    <RadzenLabel Text="Your avatar" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
+                </RadzenColumn>
+
+                <RadzenColumn Size="12" SizeMD="9">
 
 
 
-                    </RadzenColumn>
+                </RadzenColumn>    
 
             </RadzenRow>
 
