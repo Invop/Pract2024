@@ -19,16 +19,17 @@
                 to verify and confirm your account.
             </p>
         </RadzenRow>
-        <RadzenRow>
-            <RadzenCard>
-                <RadzenText Text="SecurityCode" TextStyle="TextStyle.Subtitle2"
+        <RadzenRow class="w-100 rz-justify-content-center">
+            <RadzenStack>
+                <RadzenCard>
+                <RadzenText Text="Security Code" TextStyle="TextStyle.Subtitle2"
                             TagName="TagName.H3"/>
                 <RadzenSecurityCode Count="6" Type="SecurityCodeType.Numeric" @bind-Value="code"></RadzenSecurityCode>
-            </RadzenCard>
-            <RadzenButton Size="ButtonSize.Medium" Click="@(args => CheckCode())" Text="Check Confirmation Code"
-                          Style="height: 30px; top: 50px">
-            </RadzenButton>
-            <p>@($"{code}")</p>
+                </RadzenCard>
+                <RadzenButton Size="ButtonSize.Medium" Click="@(args => CheckCode())" Text="Check Confirmation Code">
+                </RadzenButton>
+                <p>@($"{code}")</p>
+            </RadzenStack>
         </RadzenRow>
     </RadzenRow>
 
