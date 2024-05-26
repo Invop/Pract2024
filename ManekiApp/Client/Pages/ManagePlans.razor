@@ -1,0 +1,168 @@
+@page "/manage-plans"
+@attribute [Authorize]
+
+<PageTitle>Manage Plans</PageTitle>
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenText Text="Manage Your Plans" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+    </RadzenColumn>
+
+    <RadzenColumn Size="12">
+        <RadzenCard class="w-100">
+
+            <RadzenRow>
+                <RadzenColumn Size="12" class="justify-content-between" Style="display: flex">
+                    <RadzenRow>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"></RadzenButton>
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check"></RadzenButton>
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="clear"></RadzenButton>
+                    </RadzenRow>
+                    <RadzenRow>
+                        <RadzenText Style="text-align: center; display: flex; align-items:center;">Subscription Level</RadzenText>
+                        <RadzenBadge Style="text-align: center; display: flex; align-items: center; font-family: Verdana; font-weight: 500; font-size: 16px; background-color: #3994ff" class="rz-px-3">I</RadzenBadge>
+                    </RadzenRow>
+                </RadzenColumn>
+            </RadzenRow>
+            
+            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+            
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                <RadzenImage Path="" Style="width: 100px; height: 100px; border-radius: 50%" AlternateText="" />
+                <RadzenRow class="w-100">
+                    <RadzenColumn class="flex-column justify-content-center" Style="display: flex">
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
+                            <RadzenText Style="font-weight: 400"><b>Cheap Supporter</b></RadzenText>
+                            <RadzenTextBox Placeholder="Subscription Title" Value="Cheap Supporter"></RadzenTextBox>
+                        </RadzenStack>
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Price</RadzenText>
+                            <RadzenText Style="font-weight: 400">56$</RadzenText>
+                            
+                            <RadzenStack Orientation="Orientation.Horizontal">
+                                <RadzenTextBox Placeholder="Subscription Price" Value="56" class="w-100"></RadzenTextBox>
+                                <RadzenColumn>
+                                    <RadzenText class="align-items-center h-100 rz-px-3" Style="display: flex; font-size: 20px; font-weight: 500">$</RadzenText>
+                                </RadzenColumn>
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn class="flex-column justify-content-center" Style="display: flex" SizeMD="6">
+                        <RadzenStack Gap="0" Style="height: 100%" >
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Description</RadzenText>
+                            <RadzenText Style="font-weight: 400; word-break:break-all;" class="h-100">Some text for a description</RadzenText>
+                            <RadzenTextArea Placeholder="Subscription Description" Value="Some description for a plan" Style="height: 100%" ></RadzenTextArea>
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12">
+        <RadzenCard class="w-100">
+
+            <RadzenRow>
+                <RadzenColumn Size="12" class="justify-content-between" Style="display: flex">
+                    <RadzenRow>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"></RadzenButton>
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check"></RadzenButton>
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="clear"></RadzenButton>
+                    </RadzenRow>
+                    <RadzenRow>
+                        <RadzenText Style="text-align: center; display: flex; align-items:center;">Subscription Level</RadzenText>
+                        <RadzenBadge Style="text-align: center; display: flex; align-items: center; font-family: Verdana; font-weight: 500; font-size: 16px; background-color: #ffce38" class="rz-px-3">II</RadzenBadge>
+                    </RadzenRow>
+                </RadzenColumn>
+            </RadzenRow>
+            
+            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+            
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                <RadzenImage Path="" Style="width: 100px; height: 100px; border-radius: 50%" AlternateText="" />
+                <RadzenRow class="w-100">
+                    <RadzenColumn class="flex-column justify-content-center" Style="display: flex">
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
+                            <RadzenText Style="font-weight: 400"><b>Cheap Supporter</b></RadzenText>
+                            <RadzenTextBox Placeholder="Subscription Title" Value="Cheap Supporter"></RadzenTextBox>
+                        </RadzenStack>
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Price</RadzenText>
+                            <RadzenText Style="font-weight: 400">56$</RadzenText>
+                            
+                            <RadzenStack Orientation="Orientation.Horizontal">
+                                <RadzenTextBox Placeholder="Subscription Price" Value="56" class="w-100"></RadzenTextBox>
+                                <RadzenColumn>
+                                    <RadzenText class="align-items-center h-100 rz-px-3" Style="display: flex; font-size: 20px; font-weight: 500">$</RadzenText>
+                                </RadzenColumn>
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn class="flex-column justify-content-center" Style="display: flex" SizeMD="6">
+                        <RadzenStack Gap="0" Style="height: 100%" >
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Description</RadzenText>
+                            <RadzenText Style="font-weight: 400; word-break:break-all;" class="h-100">Some text for a description</RadzenText>
+                            <RadzenTextArea Placeholder="Subscription Description" Value="Some description for a plan" Style="height: 100%" ></RadzenTextArea>
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12">
+        <RadzenCard class="w-100">
+
+            <RadzenRow>
+                <RadzenColumn Size="12" class="justify-content-between" Style="display: flex">
+                    <RadzenRow>
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit"></RadzenButton>
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="check"></RadzenButton>
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="clear"></RadzenButton>
+                    </RadzenRow>
+                    <RadzenRow>
+                        <RadzenText Style="text-align: center; display: flex; align-items:center;">Subscription Level</RadzenText>
+                        <RadzenBadge Style="text-align: center; display: flex; align-items: center; font-family: Verdana; font-weight: 500; font-size: 16px; background-color: #ff387a" class="rz-px-3">III</RadzenBadge>
+                    </RadzenRow>
+                </RadzenColumn>
+            </RadzenRow>
+            
+            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+            
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                <RadzenImage Path="" Style="width: 100px; height: 100px; border-radius: 50%" AlternateText="" />
+                <RadzenRow class="w-100">
+                    <RadzenColumn class="flex-column justify-content-center" Style="display: flex">
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
+                            <RadzenText Style="font-weight: 400"><b>Cheap Supporter</b></RadzenText>
+                            <RadzenTextBox Placeholder="Subscription Title" Value="Cheap Supporter"></RadzenTextBox>
+                        </RadzenStack>
+                        <RadzenStack Gap="0">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Price</RadzenText>
+                            <RadzenText Style="font-weight: 400">56$</RadzenText>
+                            
+                            <RadzenStack Orientation="Orientation.Horizontal">
+                                <RadzenTextBox Placeholder="Subscription Price" Value="56" class="w-100"></RadzenTextBox>
+                                <RadzenColumn>
+                                    <RadzenText class="align-items-center h-100 rz-px-3" Style="display: flex; font-size: 20px; font-weight: 500">$</RadzenText>
+                                </RadzenColumn>
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn class="flex-column justify-content-center" Style="display: flex" SizeMD="6">
+                        <RadzenStack Gap="0" Style="height: 100%" >
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Description</RadzenText>
+                            <RadzenText Style="font-weight: 400; word-break:break-all;" class="h-100">Some text for a description</RadzenText>
+                            <RadzenTextArea Placeholder="Subscription Description" Value="Some description for a plan" Style="height: 100%" ></RadzenTextArea>
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
