@@ -18,6 +18,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\ManekiAppDB\"/>
-    <Folder Include="Migrations\"/>
+    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 </Project>
