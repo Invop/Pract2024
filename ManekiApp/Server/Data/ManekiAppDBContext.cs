@@ -13,7 +13,8 @@ namespace ManekiApp.Server.Data
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
-        
+        public DbSet<UserChatNotification> UserChatNotifications { get; set; }
+        public DbSet<UserChatPayment> UserChatPayments { get; set; }
         
         
         public ManekiAppDBContext()

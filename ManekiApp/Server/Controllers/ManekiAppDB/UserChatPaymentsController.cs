@@ -16,12 +16,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ManekiApp.Server.Controllers.ManekiAppDB
 {
-    [Route("odata/ManekiAppDB/UserVerificationCodes")]
-    public partial class UserVerificationCodesController : ODataController
+    [Route("odata/ManekiAppDB/UserChatPayments")]
+    public partial class UserChatPaymentsController : ODataController
     {
         private ManekiApp.Server.Data.ManekiAppDBContext context;
 
-        public UserVerificationCodesController(ManekiApp.Server.Data.ManekiAppDBContext context)
+        public UserChatPaymentsController(ManekiApp.Server.Data.ManekiAppDBContext context)
         {
             this.context = context;
         }
@@ -29,34 +29,34 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
     
         [HttpGet]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCodes()
+        public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment> GetUserChatPayments()
         {
-            var items = this.context.UserVerificationCodes.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode>();
-            this.OnUserVerificationCodesRead(ref items);
+            var items = this.context.UserChatPayments.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment>();
+            this.OnUserChatPaymentsRead(ref items);
 
             return items;
         }
 
-        partial void OnUserVerificationCodesRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> items);
+        partial void OnUserChatPaymentsRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment> items);
 
-        partial void OnUserVerificationCodeGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> item);
+        partial void OnUserChatPaymentGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment> item);
 
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        [HttpGet("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> GetUserVerificationCode(Guid key)
+        [HttpGet("/odata/ManekiAppDB/UserChatPayments(UserId={UserId})")]
+        public SingleResult<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment> GetUserChatPayment(string key)
         {
-            var items = this.context.UserVerificationCodes.Where(i => i.Id == key);
+            var items = this.context.UserChatPayments.Where(i => i.UserId == Uri.UnescapeDataString(key));
             var result = SingleResult.Create(items);
 
-            OnUserVerificationCodeGet(ref result);
+            OnUserChatPaymentGet(ref result);
 
             return result;
         }
-        partial void OnUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeDeleted(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnUserChatPaymentDeleted(ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item);
+        partial void OnAfterUserChatPaymentDeleted(ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item);
 
-        [HttpDelete("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
-        public IActionResult DeleteUserVerificationCode(Guid key)
+        [HttpDelete("/odata/ManekiAppDB/UserChatPayments(UserId={UserId})")]
+        public IActionResult DeleteUserChatPayment(string key)
         {
             try
             {
@@ -66,18 +66,17 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
 
 
-                var item = this.context.UserVerificationCodes
-                    .Where(i => i.Id == key)
-                    .FirstOrDefault();
+                var item = this.context.UserChatPayments
+                    .FirstOrDefault(i => i.UserId == Uri.UnescapeDataString(key));
 
                 if (item == null)
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeDeleted(item);
-                this.context.UserVerificationCodes.Remove(item);
+                this.OnUserChatPaymentDeleted(item);
+                this.context.UserChatPayments.Remove(item);
                 this.context.SaveChanges();
-                this.OnAfterUserVerificationCodeDeleted(item);
+                this.OnAfterUserChatPaymentDeleted(item);
 
                 return new NoContentResult();
 
@@ -89,12 +88,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeUpdated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnUserChatPaymentUpdated(ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item);
+        partial void OnAfterUserChatPaymentUpdated(ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item);
 
-        [HttpPut("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPut("/odata/ManekiAppDB/UserChatPayments(UserId={UserId})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PutUserVerificationCode(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult PutUserChatPayment(string key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item)
         {
             try
             {
@@ -103,17 +102,17 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest(ModelState);
                 }
 
-                if (item == null || (item.Id != key))
+                if (item == null || (item.UserId != Uri.UnescapeDataString(key)))
                 {
                     return BadRequest();
                 }
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnUserChatPaymentUpdated(item);
+                this.context.UserChatPayments.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
+                var itemToReturn = this.context.UserChatPayments.Where(i => i.UserId == Uri.UnescapeDataString(key));
                 Request.QueryString = Request.QueryString.Add("$expand", "AspNetUser");
-                this.OnAfterUserVerificationCodeUpdated(item);
+                this.OnAfterUserChatPaymentUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -123,9 +122,9 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        [HttpPatch("/odata/ManekiAppDB/UserVerificationCodes(Id={Id})")]
+        [HttpPatch("/odata/ManekiAppDB/UserChatPayments(UserId={UserId})")]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PatchUserVerificationCode(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode> patch)
+        public IActionResult PatchUserChatPayment(string key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment> patch)
         {
             try
             {
@@ -134,7 +133,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest(ModelState);
                 }
 
-                var item = this.context.UserVerificationCodes.Where(i => i.Id == key).FirstOrDefault();
+                var item = this.context.UserChatPayments.FirstOrDefault(i => i.UserId == Uri.UnescapeDataString(key));
 
                 if (item == null)
                 {
@@ -142,13 +141,13 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 }
                 patch.Patch(item);
 
-                this.OnUserVerificationCodeUpdated(item);
-                this.context.UserVerificationCodes.Update(item);
+                this.OnUserChatPaymentUpdated(item);
+                this.context.UserChatPayments.Update(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == key);
+                var itemToReturn = this.context.UserChatPayments.Where(i => i.UserId == Uri.UnescapeDataString(key));
                 Request.QueryString = Request.QueryString.Add("$expand", "AspNetUser");
-                this.OnAfterUserVerificationCodeUpdated(item);
+                this.OnAfterUserChatPaymentUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
             catch(Exception ex)
@@ -158,12 +157,12 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             }
         }
 
-        partial void OnUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
-        partial void OnAfterUserVerificationCodeCreated(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item);
+        partial void OnUserChatPaymentCreated(ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item);
+        partial void OnAfterUserChatPaymentCreated(ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item);
 
         [HttpPost]
         [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode item)
+        public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.UserChatPayment item)
         {
             try
             {
@@ -177,15 +176,15 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     return BadRequest();
                 }
 
-                this.OnUserVerificationCodeCreated(item);
-                this.context.UserVerificationCodes.Add(item);
+                this.OnUserChatPaymentCreated(item);
+                this.context.UserChatPayments.Add(item);
                 this.context.SaveChanges();
 
-                var itemToReturn = this.context.UserVerificationCodes.Where(i => i.Id == item.Id);
+                var itemToReturn = this.context.UserChatPayments.Where(i => i.UserId == item.UserId);
 
                 Request.QueryString = Request.QueryString.Add("$expand", "AspNetUser");
 
-                this.OnAfterUserVerificationCodeCreated(item);
+                this.OnAfterUserChatPaymentCreated(item);
 
                 return new ObjectResult(SingleResult.Create(itemToReturn))
                 {
