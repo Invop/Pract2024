@@ -13,6 +13,15 @@
     <PackageReference Include="Radzen.Blazor" Version="*" />
     <Compile Include="../Server/Models/**/*.cs" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <Compile Update="..\Server\Models\ManekiAppDB\Subscription.cs">
+      <Link>ManekiAppDB\Subscription.cs</Link>
+    </Compile>
+    <Compile Update="..\Server\Models\ManekiAppDB\UserSubscription.cs">
+      <Link>ManekiAppDB\UserSubscription.cs</Link>
+    </Compile>
+    <Compile Update="..\Server\Models\ManekiAppDB\Image.cs">
+      <Link>ManekiAppDB\Image.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Identity">

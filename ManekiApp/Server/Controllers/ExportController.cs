@@ -1,19 +1,24 @@
-using System.Globalization;
+using System;
+using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Reflection;
+using System.Data;
+using System.Globalization;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace ManekiApp.Server.Controllers
 {
     public partial class ExportController : Controller
     {
-        public IQueryable ApplyQuery<T>(IQueryable<T> items, IQueryCollection query = null, bool keyless = false)
-            where T : class
+        public IQueryable ApplyQuery<T>(IQueryable<T> items, IQueryCollection query = null, bool keyless = false) where T : class
         {
             if (query != null)
             {
@@ -29,11 +34,10 @@ namespace ManekiApp.Server.Controllers
                 var filter = query.ContainsKey("$filter") ? query["$filter"].ToString() : null;
                 if (!string.IsNullOrEmpty(filter))
                 {
-                    if (keyless)
+                    if(keyless)
                     {
                         items = items.ToList().AsQueryable();
                     }
-
                     items = items.Where(filter);
                 }
 
@@ -80,11 +84,7 @@ namespace ManekiApp.Server.Controllers
             }
 
 
-            var result =
-                new FileStreamResult(
-                    new MemoryStream(Encoding.Default.GetBytes(
-                        $"{string.Join(",", columns.Select(c => c.Key))}{Environment.NewLine}{sb}")),
-                    "text/csv");
+            var result = new FileStreamResult(new MemoryStream(UTF8Encoding.Default.GetBytes($"{string.Join(",", columns.Select(c => c.Key))}{System.Environment.NewLine}{sb.ToString()}")), "text/csv");
             result.FileDownloadName = (!string.IsNullOrEmpty(fileName) ? fileName : "Export") + ".csv";
 
             return result;
@@ -139,9 +139,8 @@ namespace ManekiApp.Server.Controllers
                         var cell = new Cell();
 
                         var underlyingType = column.Value.IsGenericType &&
-                                             column.Value.GetGenericTypeDefinition() == typeof(Nullable<>)
-                            ? Nullable.GetUnderlyingType(column.Value)
-                            : column.Value;
+                            column.Value.GetGenericTypeDefinition() == typeof(Nullable<>) ?
+                            Nullable.GetUnderlyingType(column.Value) : column.Value;
 
                         var typeCode = Type.GetTypeCode(underlyingType);
 
@@ -149,11 +148,7 @@ namespace ManekiApp.Server.Controllers
                         {
                             if (!string.IsNullOrWhiteSpace(stringValue))
                             {
-                                cell.CellValue = new CellValue
-                                {
-                                    Text = ((DateTime)value).ToOADate()
-                                        .ToString(CultureInfo.InvariantCulture)
-                                };
+                                cell.CellValue = new CellValue() { Text = ((DateTime)value).ToOADate().ToString(System.Globalization.CultureInfo.InvariantCulture) };
                                 cell.DataType = new EnumValue<CellValues>(CellValues.Number);
                                 cell.StyleIndex = (UInt32Value)1U;
                             }
@@ -169,7 +164,6 @@ namespace ManekiApp.Server.Controllers
                             {
                                 stringValue = Convert.ToString(value, CultureInfo.InvariantCulture);
                             }
-
                             cell.CellValue = new CellValue(stringValue);
                             cell.DataType = new EnumValue<CellValues>(CellValues.Number);
                         }
@@ -194,8 +188,7 @@ namespace ManekiApp.Server.Controllers
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
-            var result = new FileStreamResult(stream,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            var result = new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             result.FileDownloadName = (!string.IsNullOrEmpty(fileName) ? fileName : "Export") + ".xlsx";
 
             return result;
@@ -210,22 +203,20 @@ namespace ManekiApp.Server.Controllers
         public static IEnumerable<KeyValuePair<string, Type>> GetProperties(Type type)
         {
             return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.CanRead && IsSimpleType(p.PropertyType))
-                .Select(p => new KeyValuePair<string, Type>(p.Name, p.PropertyType));
+                    .Where(p => p.CanRead && IsSimpleType(p.PropertyType)).Select(p => new KeyValuePair<string, Type>(p.Name, p.PropertyType));
         }
 
         public static bool IsSimpleType(Type type)
         {
             var underlyingType = type.IsGenericType &&
-                                 type.GetGenericTypeDefinition() == typeof(Nullable<>)
-                ? Nullable.GetUnderlyingType(type)
-                : type;
+                type.GetGenericTypeDefinition() == typeof(Nullable<>) ?
+                Nullable.GetUnderlyingType(type) : type;
 
-            if (underlyingType == typeof(Guid) || underlyingType == typeof(DateTimeOffset))
+            if(underlyingType == typeof(System.Guid) || underlyingType == typeof(System.DateTimeOffset))
                 return true;
 
 #if NET6_0_OR_GREATER
-            if (underlyingType == typeof(DateOnly) || underlyingType == typeof(TimeOnly))
+            if(underlyingType == typeof(System.DateOnly) || underlyingType == typeof(System.TimeOnly))
                 return true;
 #endif
             var typeCode = Type.GetTypeCode(underlyingType);
@@ -273,14 +264,11 @@ namespace ManekiApp.Server.Controllers
 
         private static void GenerateWorkbookStylesPartContent(WorkbookStylesPart workbookStylesPart1)
         {
-            var stylesheet1 = new Stylesheet
-                { MCAttributes = new MarkupCompatibilityAttributes { Ignorable = "x14ac x16r2 xr" } };
+            Stylesheet stylesheet1 = new Stylesheet() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "x14ac x16r2 xr" } };
             stylesheet1.AddNamespaceDeclaration("mc", "http://schemas.openxmlformats.org/markup-compatibility/2006");
             stylesheet1.AddNamespaceDeclaration("x14ac", "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
-            stylesheet1.AddNamespaceDeclaration("x16r2",
-                "http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
-            stylesheet1.AddNamespaceDeclaration("xr",
-                "http://schemas.microsoft.com/office/spreadsheetml/2014/revision");
+            stylesheet1.AddNamespaceDeclaration("x16r2", "http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
+            stylesheet1.AddNamespaceDeclaration("xr", "http://schemas.microsoft.com/office/spreadsheetml/2014/revision");
 
             Fonts fonts1 = new Fonts() { Count = (UInt32Value)1U, KnownFonts = true };
 
@@ -332,52 +320,33 @@ namespace ManekiApp.Server.Controllers
             borders1.Append(border1);
 
             CellStyleFormats cellStyleFormats1 = new CellStyleFormats() { Count = (UInt32Value)1U };
-            var cellFormat1 = new CellFormat
-            {
-                NumberFormatId = (UInt32Value)0U, FontId = (UInt32Value)0U, FillId = (UInt32Value)0U,
-                BorderId = (UInt32Value)0U
-            };
+            CellFormat cellFormat1 = new CellFormat() { NumberFormatId = (UInt32Value)0U, FontId = (UInt32Value)0U, FillId = (UInt32Value)0U, BorderId = (UInt32Value)0U };
 
             cellStyleFormats1.Append(cellFormat1);
 
             CellFormats cellFormats1 = new CellFormats() { Count = (UInt32Value)2U };
-            var cellFormat2 = new CellFormat
-            {
-                NumberFormatId = (UInt32Value)0U, FontId = (UInt32Value)0U, FillId = (UInt32Value)0U,
-                BorderId = (UInt32Value)0U, FormatId = (UInt32Value)0U
-            };
-            var cellFormat3 = new CellFormat
-            {
-                NumberFormatId = (UInt32Value)14U, FontId = (UInt32Value)0U, FillId = (UInt32Value)0U,
-                BorderId = (UInt32Value)0U, FormatId = (UInt32Value)0U, ApplyNumberFormat = true
-            };
+            CellFormat cellFormat2 = new CellFormat() { NumberFormatId = (UInt32Value)0U, FontId = (UInt32Value)0U, FillId = (UInt32Value)0U, BorderId = (UInt32Value)0U, FormatId = (UInt32Value)0U };
+            CellFormat cellFormat3 = new CellFormat() { NumberFormatId = (UInt32Value)14U, FontId = (UInt32Value)0U, FillId = (UInt32Value)0U, BorderId = (UInt32Value)0U, FormatId = (UInt32Value)0U, ApplyNumberFormat = true };
 
             cellFormats1.Append(cellFormat2);
             cellFormats1.Append(cellFormat3);
 
             CellStyles cellStyles1 = new CellStyles() { Count = (UInt32Value)1U };
-            var cellStyle1 = new CellStyle { Name = "Normal", FormatId = (UInt32Value)0U, BuiltinId = (UInt32Value)0U };
+            CellStyle cellStyle1 = new CellStyle() { Name = "Normal", FormatId = (UInt32Value)0U, BuiltinId = (UInt32Value)0U };
 
             cellStyles1.Append(cellStyle1);
             DifferentialFormats differentialFormats1 = new DifferentialFormats() { Count = (UInt32Value)0U };
-            var tableStyles1 = new TableStyles
-            {
-                Count = (UInt32Value)0U, DefaultTableStyle = "TableStyleMedium2",
-                DefaultPivotStyle = "PivotStyleLight16"
-            };
+            TableStyles tableStyles1 = new TableStyles() { Count = (UInt32Value)0U, DefaultTableStyle = "TableStyleMedium2", DefaultPivotStyle = "PivotStyleLight16" };
 
             StylesheetExtensionList stylesheetExtensionList1 = new StylesheetExtensionList();
 
-            var stylesheetExtension1 = new StylesheetExtension { Uri = "{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}" };
-            stylesheetExtension1.AddNamespaceDeclaration("x14",
-                "http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+            StylesheetExtension stylesheetExtension1 = new StylesheetExtension() { Uri = "{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}" };
+            stylesheetExtension1.AddNamespaceDeclaration("x14", "http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
-            var stylesheetExtension2 = new StylesheetExtension { Uri = "{9260A510-F301-46a8-8635-F512D64BE5F5}" };
-            stylesheetExtension2.AddNamespaceDeclaration("x15",
-                "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main");
+            StylesheetExtension stylesheetExtension2 = new StylesheetExtension() { Uri = "{9260A510-F301-46a8-8635-F512D64BE5F5}" };
+            stylesheetExtension2.AddNamespaceDeclaration("x15", "http://schemas.microsoft.com/office/spreadsheetml/2010/11/main");
 
-            var openXmlUnknownElement4 = workbookStylesPart1.CreateUnknownElement(
-                "<x15:timelineStyles defaultTimelineStyle=\"TimeSlicerStyleLight1\" xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\" />");
+            OpenXmlUnknownElement openXmlUnknownElement4 = workbookStylesPart1.CreateUnknownElement("<x15:timelineStyles defaultTimelineStyle=\"TimeSlicerStyleLight1\" xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\" />");
 
             stylesheetExtension2.Append(openXmlUnknownElement4);
 
