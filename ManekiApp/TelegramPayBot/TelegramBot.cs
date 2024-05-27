@@ -123,7 +123,7 @@ namespace ManekiApp.TelegramPayBot
         {
             if (update.Message.SuccessfulPayment != null)
             {
-                await HandleSuccessfulPaymentAsync(update);
+                await HandleSuccessfulPaymentAsync(update,update.Message.From.Id.ToString(),update.Message.Chat.Id,cancellationToken);
             }
             else if (update.Message?.Text != null)
             {
@@ -131,10 +131,66 @@ namespace ManekiApp.TelegramPayBot
             }
         }
 
-        private async Task HandleSuccessfulPaymentAsync(Update update)
+        private async Task HandleSuccessfulPaymentAsync(Update update, string telegramId,long chatId, CancellationToken cancellationToken)
         {
+
+            if (!await UserExistsAsync(telegramId))
+            {
+                await HandleNonExistingUser(chatId, cancellationToken);
+                return;
+            }
+
+            
+            
             SuccessfulPayment successfulPayment = update.Message.SuccessfulPayment;
-            Console.WriteLine($"Successful payment: {successfulPayment}");
+
+            // Extract subscription ID from the invoice payload
+            string invoicePayload = successfulPayment.InvoicePayload;
+            Guid subscriptionId;
+            if (invoicePayload.StartsWith("subscriptionId:"))
+            {
+                if (Guid.TryParse(invoicePayload.Substring("subscriptionId:".Length), out subscriptionId))
+                {
+                    using (var scope = _serviceScopeFactory.CreateScope())
+                    {
+                        var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+                        var subscription = await context.Subscriptions.FindAsync(subscriptionId);
+                        if (subscription != null)
+                        {
+                            if (currentUser != null)
+                            {
+                                var existingUserSubscription = await context.UserSubscriptions
+                                    .FirstOrDefaultAsync(us => us.UserId == currentUser.Id && us.SubscriptionId == subscriptionId);
+
+                                if (existingUserSubscription != null)
+                                {
+                                    // If user has an existing subscription, extend it by 1 month
+                                    existingUserSubscription.EndsAt = existingUserSubscription.EndsAt.AddMonths(1);
+                                    
+                                    Console.WriteLine("Updated");
+                                }
+                                else
+                                {
+                                    var newUserSubscription = new UserSubscription
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        SubscriptionId = subscriptionId,
+                                        UserId = currentUser.Id,
+                                        SubscribedAt = DateTime.UtcNow,
+                                        EndsAt = DateTime.UtcNow.AddMonths(1),
+                                        ReceiveNotifications = true // Adjust as needed
+                                    };
+
+                                    context.UserSubscriptions.Add(newUserSubscription);
+                                    Console.WriteLine("Created");
+                                }
+
+                                await context.SaveChangesAsync();
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private async Task HandleTextMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -290,13 +346,13 @@ namespace ManekiApp.TelegramPayBot
 
                 // Create labeled price array for the invoice
                 var prices = new[] { new LabeledPrice(title, (int)(price * 100)) };
-
+                string invoicePayload = $"subscriptionId:{subscriptionId}";
                 // Send the invoice
                 await botClient.SendInvoiceAsync(
                     chatId,
                     "Payment Example",
                     "Payment Example using C# Telegram Bot",
-                    "Custom-Payload",
+                    invoicePayload,
                     PaymentProviderToken,
                     "USD",
                     prices,
