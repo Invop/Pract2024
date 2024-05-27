@@ -1,0 +1,45 @@
+@page "/create-author-page"
+@attribute [Authorize]
+
+<PageTitle>CreateAuthorPage</PageTitle>
+<RadzenRow>
+    <RadzenColumn Size="12" style="margin-top: 3rem; margin-bottom: 2rem">
+        <RadzenText Text="Create your author page now!" TextStyle="TextStyle.DisplayH2" style="margin: 0; margin-bottom: 2rem" TextAlign="TextAlign.Center" />
+        <RadzenText TextStyle="TextStyle.H6" style="margin: 0" TextAlign="TextAlign.Center" TagName="Radzen.Blazor.TagName.P">
+            Unleash your literary potential and connect with readers worldwide by creating your personalized author page today! 
+            Showcase your works, share your story, and engage with a community. 
+        </RadzenText>
+        <RadzenText TextStyle="TextStyle.H6" class="rz-mt-4" TextAlign="TextAlign.Center" TagName="Radzen.Blazor.TagName.P">
+            Offer exclusive content to your subscribers through paid plans, allowing them to support you directly!
+        </RadzenText>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12">
+        <RadzenStack Style="background-color: #eee6e6; color: f2eeee Hex 242 R 238 G; padding: 20px; border-radius: 10px">
+            @*<RadzenTemplateForm>*@
+                <ChildContent>
+                    <RadzenRow>
+                        <RadzenColumn Size="12" SizeMD="3">
+                            <RadzenLabel Text="Title" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
+                        </RadzenColumn>
+
+                        <RadzenColumn class="w-100" Size="12" SizeMD="9">
+                            <RadzenTextBox Placeholder="Your page title" class="w-100"></RadzenTextBox>                    
+                        </RadzenColumn>
+
+                        <RadzenColumn Size="12" SizeMD="3">
+                            <RadzenLabel Text="Description" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
+                        </RadzenColumn>
+
+                        <RadzenColumn class="w-100" Size="12" SizeMD="9">
+                            <RadzenHtmlEditor Style="min-height: 300px"></RadzenHtmlEditor>
+                        </RadzenColumn>   
+                    </RadzenRow>
+                </ChildContent>
+            @*</RadzenTemplateForm>*@
+        </RadzenStack>
+        
+        <RadzenButton class="w-100 rz-mt-3" ButtonStyle="ButtonStyle.Info" Style="height: 50px">Create</RadzenButton>
+
+    </RadzenColumn>
+</RadzenRow>
