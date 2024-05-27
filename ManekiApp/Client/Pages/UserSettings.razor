@@ -17,8 +17,8 @@
                     <RadzenColumn SizeMD="12">
                         <RadzenTemplateForm Method="post" Submit="@FormSubmit" TItem="ApplicationUser" Data="@user"
                                             Visible="@(user != null)">
-                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
-                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">
+                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible" Style="border-radius: 10px">@error</RadzenAlert>
+                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible" Style="border-radius: 10px">
                                 Your password has been changed.
                             </RadzenAlert>
 
@@ -27,7 +27,7 @@
                                     <RadzenLabel Component="OldPassword" style="width: 100%" Text="Old Password"/>
                                 </RadzenColumn>
                                 <RadzenColumn SizeMD="9">
-                                    <RadzenPassword @bind-Value="@oldPassword" style="display: block; width: 100%"
+                                    <RadzenPassword @bind-Value="@oldPassword" style="display: block; width: 100%; border-radius: 10px"
                                                     Name="OldPassword"/>
                                     <RadzenRequiredValidator Component="OldPassword" Text="Enter your current password"/>
                                 </RadzenColumn>
@@ -37,7 +37,7 @@
                                     <RadzenLabel Component="NewPassword" style="width: 100%" Text="New Password"/>
                                 </RadzenColumn>
                                 <RadzenColumn SizeMD="9">
-                                    <RadzenPassword @bind-Value="@newPassword" style="display: block; width: 100%"
+                                    <RadzenPassword @bind-Value="@newPassword" style="display: block; width: 100%; border-radius: 10px"
                                                     Name="NewPassword"/>
                                     <RadzenRequiredValidator Component="NewPassword" Text="Enter your new password"/>
                                 </RadzenColumn>
@@ -47,14 +47,16 @@
                                     <RadzenLabel Component="ConfirmPassword" style="width: 100%" Text="Confirm password"/>
                                 </RadzenColumn>
                                 <RadzenColumn SizeMD="9">
-                                    <RadzenPassword @bind-Value="@confirmPassword" style="display: block; width: 100%"
+                                    <RadzenPassword @bind-Value="@confirmPassword" style="display: block; width: 100%; border-radius: 10px"
                                                     Name="ConfirmPassword"/>
                                     <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm your new password"/>
                                     <RadzenCompareValidator Component="ConfirmPassword" Text="Passwords should be the same" Value="@newPassword"/>
                                 </RadzenColumn>
                             </RadzenRow>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
-                                <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat"/>
+                                <RadzenButton Text="Cancel" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" />
+
+                                <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat" Style="background-color: #58a45b; border: 1px solid #356d37; border-radius: 10px"/>
                             </RadzenStack>
                         </RadzenTemplateForm>
                     </RadzenColumn>
@@ -89,5 +91,5 @@
 </RadzenStack>
 
 @code {
-    int selectedIndex = 1;
+    int selectedIndex = 0;
 }

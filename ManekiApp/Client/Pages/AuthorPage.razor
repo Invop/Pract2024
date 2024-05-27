@@ -8,32 +8,36 @@
 
         <RadzenStack Orientation="Orientation.Horizontal">
         
-            <RadzenImage class="profile-image" Path="https://img.freepik.com/free-photo/handsome-bearded-guy-posing-against-white-wall_273609-20597.jpg?t=st=1716472097~exp=1716475697~hmac=f23aa707818b77aad241567ecf19ebb18d9a964315e01f92210ffb8c630133b9&w=996" Style="width: 220px; border-radius: 50%; height: 220px; margin-left: 30px; margin-right: 30px"></RadzenImage>
+            <RadzenImage class="profile-image" Path="https://img.freepik.com/free-photo/handsome-bearded-guy-posing-against-white-wall_273609-20597.jpg?t=st=1716472097~exp=1716475697~hmac=f23aa707818b77aad241567ecf19ebb18d9a964315e01f92210ffb8c630133b9&w=996" Style="width: 250px; border-radius: 50%; height: 250px; margin-left: 30px; margin-right: 30px"></RadzenImage>
             
             <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
             
                 <RadzenRow Orientation="Orientation.Vertical" Gap="">
                     <RadzenStack Gap=5 >
                         
-                        <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 30px"><b>username</b></RadzenText>
-                        <RadzenText TextStyle="TextStyle.Overline" Style="font-size: 15px; font-weight: 500">name Surname</RadzenText>
-                        <RadzenText Style="font-weight: 400" >Creating awesome content for you</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 30px; color: #000000"><b>username</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" Style="font-size: 15px; font-weight: 500; color: #605f5f">Name Surname</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" Style="font-size: 12px; color: #605f5f; font-weight: 400">30 years</RadzenText>
+
+                        <RadzenText Style="font-weight: 400; color: #000000" >Creating awesome content for you</RadzenText>
                     </RadzenStack>
                 </RadzenRow>
 
 
                 <RadzenRow>
                     <RadzenColumn>
-                        <RadzenText Style="font-weight: 500" >3 publications</RadzenText>
+                        <RadzenText Style="font-weight: 500; color: #000000" >3 publications</RadzenText>
                     </RadzenColumn>
 
                     <RadzenColumn>
-                        <RadzenText Style="font-weight: 500" >30 subscribers</RadzenText>
+                        <RadzenText Style="font-weight: 500; color: #000000" >30 subscribers</RadzenText>
                     </RadzenColumn>
                 </RadzenRow>
 
                 <RadzenRow>
                     <RadzenButton Text="Subscribe for free" Style="background-color: #58a45b; border-radius: 10px; border: 1px solid #3e633f"></RadzenButton>
+                    <RadzenButton Text="Edit page" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" />
+
                 </RadzenRow>
 
             </RadzenStack>
@@ -160,6 +164,10 @@
                             <RadzenCard Style="position: relative; margin-top: 25px">
                                 <RadzenBadge Text="Blocked" Style="font-size: 16px; padding: 6px; position: absolute; right: 8px; top: 8px; background-color: #000000" BadgeStyle="BadgeStyle.Secondary"></RadzenBadge>
                                 <RadzenText Text="Very interesting post title" TextStyle="TextStyle.H4" TagName="TagName.H1" />
+                                <RadzenText Text="Created at 13:50 27.05.2024" TextStyle="TextStyle.Overline" TagName="TagName.P" Style="font-size: 13px; font-weight: 500; margin-top: 10px; margin-bottom: 10px; color: #605f5f"/>
+                                <RadzenText Text="Edited at 13:50 27.05.2024" TextStyle="TextStyle.Overline" TagName="TagName.P" Style="font-size: 13px; font-weight: 500; margin-top: 10px; margin-bottom: 10px; color: #605f5f"/>
+
+
                                 <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
                                 <RadzenHtml>
                                     <h1>Placeholder Title</h1>
@@ -183,8 +191,8 @@
 
                                 <RadzenRow>
                                     <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center" Style="margin-top: 20px">
-                                        <RadzenButton class="w-50" Text="Get subscription access" Style="background-color: #58a45b; border: 1px solid #456c47; border-radius: 10px; color: #ffffff; font-weight: 600" Icon="lock_open"></RadzenButton>
-
+                                        <RadzenButton class="w-50" Text="Edit post" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" />
+                                        <RadzenButton class="w-50" Text="Get subscription access" Style="background-color: #58a45b; border: 1px solid #456c47; border-radius: 10px; color: #ffffff; font-weight: 600" Icon="lock_open"/>
                                     </RadzenStack>
                                 </RadzenRow>
 
@@ -199,6 +207,49 @@
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="About the author">
+
+            <RadzenCard class="w-100" Style="margin-bottom: 20px">
+
+                    <RadzenStack Orientation="Orientation.Horizontal">
+                                            
+                        <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
+                            <RadzenRow>
+                                <RadzenColumn class="text-center"> 
+                                    <RadzenImage Path="/images/youtube.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+
+                                <RadzenColumn class="text-center" >
+                                    <RadzenImage Path="/images/instagram.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+
+                                <RadzenColumn class="text-center" >
+                                    <RadzenImage Path="/images/telegram.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+
+                                <RadzenColumn class="text-center" >
+                                    <RadzenImage Path="/images/tiktok.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+
+                                <RadzenColumn class="text-center">
+                                    <RadzenImage Path="/images/facebook.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+
+                                <RadzenColumn class="text-center">
+                                    <RadzenImage Path="/images/twitter.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+
+                                <RadzenColumn class="text-center">
+                                    <RadzenImage Path="/images/twitch.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+
+                                <RadzenColumn class="text-center">
+                                    <RadzenImage Path="/images/pinterest.png" Style="width: 50px"></RadzenImage>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            
+                        </RadzenStack>
+                    </RadzenStack>
+                </RadzenCard>
 
                 <RadzenCard class="w-100" Style="margin-bottom: 20px" >
 
@@ -249,13 +300,13 @@
 
 
 @code {
-    int selectedIndex = 0;
+    int selectedIndex = 1;
 
-        private List<string> tiers = new List<string> { "Bronze Tier", "Silver Tier", "Gold Tier" };
+    private List<string> tiers = new List<string> { "Bronze Tier", "Silver Tier", "Gold Tier" };
 
-        private List<int> years = new List<int> { 2022, 2023, 2024 };
+    private List<int> years = new List<int> { 2022, 2023, 2024 };
 
-        private List<string> sortBy = new List<string> { "From the newest", "From the oldest" };
+    private List<string> sortBy = new List<string> { "From the newest", "From the oldest" };
 
 
 
