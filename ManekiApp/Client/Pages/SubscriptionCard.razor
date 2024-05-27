@@ -1,10 +1,6 @@
-﻿@code {
-    [Parameter] public string TierName { get; set; }
-    [Parameter] public string Price { get; set; }
-    [Parameter] public Guid SubscriptionId { get; set; }
-    [Parameter] public string UserId { get; set; }
-    [Parameter] public string Description  { get; set; }
-}
+﻿
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
 
 <RadzenCard>
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px"><b>@TierName</b></RadzenText>
@@ -16,6 +12,22 @@
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 17px">
         @Description
     </RadzenText>
-    
-    <RadzenButton Text="Subscribe" Style="border-radius: 10px; border: 1px solid #3e633f" class="w-100"></RadzenButton>
+<RadzenButton Text="Subscribe" Click="@(() => OpenLink())" Style="border-radius: 10px; border: 1px solid #3e633f;" class="w-100" />
+
 </RadzenCard>
+@code {
+    
+    [Inject] protected ManekiAppDBService ManekiAppDB { get; set; }
+    
+    [Parameter] public string TierName { get; set; }
+    [Parameter] public string Price { get; set; }
+    [Parameter] public Guid SubscriptionId { get; set; }
+    [Parameter] public string UserId { get; set; }
+    [Parameter] public string Description  { get; set; }
+
+    void OpenLink()
+    {
+        var url = "https://t.me/maneki_pay_bot?start=userId:id";
+        JSRuntime.InvokeVoidAsync("open", url, "_blank");
+    }
+}
