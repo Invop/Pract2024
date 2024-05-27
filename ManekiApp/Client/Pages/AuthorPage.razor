@@ -1,4 +1,5 @@
-@page "/author-page"
+@page "/author-page/{AuthorPageId:guid}"
+
 
 @attribute [Authorize]
 
@@ -57,95 +58,47 @@
                 <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
                 
                     <RadzenRow Gap="1rem">
-                        <RadzenColumn class="rz-pt-5">
-                            <RadzenCard>
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px"><b>Bronze Tier</b></RadzenText>
-
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 16px; font-weight: 500">
-                                    Support us with <b style="font-size: 22px">$5</b>/month
-                                </RadzenText>
-
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 14px">
-                                    <ul>
-                                        <li>Access to comunity posts</li>
-                                        <li>Early access to new content</li>
-                                    </ul>
-                                </RadzenText>
-
-                                <RadzenButton Text="Subscribe" Style="border-radius: 10px; border: 1px solid #3e633f" class="w-100"></RadzenButton>
-                            </RadzenCard>
-
-
-                        </RadzenColumn>
                         
-                        <RadzenColumn class="rz-pt-5">
-                            <RadzenCard>
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px"><b>Silver Tier</b></RadzenText>
+                        @foreach (var sub in subscriptions)
+                        {
+                            <RadzenColumn class="rz-pt-5">
+                                <SubscriptionCard TierName=@($"{sub.Title}")  Price=@($"{sub.Price}$")
+                                                  SubscriptionId="sub.Id" UserId="@Security.User.Id"
+                                                  Description="@sub.Description">
+                                </SubscriptionCard>
+                            </RadzenColumn>
+                        }
 
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-weight: 500">
-                                    Support us with <b style="font-size: 22px">$10</b>/month
-                                </RadzenText>
-
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 14px">
-                                    <ul>
-                                        <li>All Bronze benefits</li>
-                                        <li>Early access to new content</li>
-                                    </ul>
-                                </RadzenText>
-
-                                <RadzenButton Text="Subscribe" Style="border-radius: 10px; border: 1px solid #3e633f" class="w-100"></RadzenButton>
-                            </RadzenCard>
-                        </RadzenColumn>
-
-                        <RadzenColumn class="rz-pt-5">
-                            <RadzenCard>
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px"><b>Gold Tier</b></RadzenText>
-
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-weight: 500">
-                                    Support us with <b style="font-size: 22px">$20</b>/month
-                                </RadzenText>
-                                
-                                <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 14px">
-                                    <ul>
-                                        <li>All Silver benefits</li>
-                                        <li>Early access to new content</li>
-                                    </ul>
-                                </RadzenText>
-
-                                <RadzenButton Text="Subscribe" Style="border-radius: 10px; border: 1px solid #3e633f" class="w-100"></RadzenButton>
-                            </RadzenCard>
-                        </RadzenColumn>
-                        
                         <RadzenStack class="w-100">
                             <hr>
-                            <RadzenRow class="rz-justify-content-center" >
+                            <RadzenRow class="rz-justify-content-center">
                                 <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 24px"><b>Latest posts from username</b></RadzenText>
-                                
+
 
                             </RadzenRow>
 
-                            <RadzenRow class="rz-justify-content-center" >                                
+                            <RadzenRow class="rz-justify-content-center">
                                 <RadzenStack Gap=5>
-                                    <RadzenLabel Text="Subscription tier" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold" />
-                                    <RadzenDropDown TValue="string" Data="@tiers" Placeholder="Select a tier" Multiple="true" />
+                                    <RadzenLabel Text="Subscription tier" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
+                                    <RadzenDropDown TValue="string" Data="@tiers" Placeholder="Select a tier" Multiple="true"/>
                                 </RadzenStack>
 
                                 <RadzenStack Gap=5>
-                                    <RadzenLabel Text="Date" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold" />
-                                    <RadzenDropDown TValue="int" Data="@years" Placeholder="Select publication date" Multiple="true" />
+                                    <RadzenLabel Text="Date" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
+                                    <RadzenDropDown TValue="int" Data="@years" Placeholder="Select publication date" Multiple="true"/>
                                 </RadzenStack>
 
                                 <RadzenStack Gap=5>
-                                    <RadzenLabel Text="Sort by" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold" />
-                                    <RadzenDropDown TValue="string" Data="@sortBy" Placeholder="Sort by" Multiple="true" />
+                                    <RadzenLabel Text="Sort by" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
+                                    <RadzenDropDown TValue="string" Data="@sortBy" Placeholder="Sort by" Multiple="true"/>
                                 </RadzenStack>
-                    
+
 
                             </RadzenRow>
 
-                           <RadzenRow>
+                            <RadzenRow>
                                 <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center">
-                                    <RadzenTextBox class="w-75" Placeholder="Search for posts" aria-label="TextBox with placeholder" Style="max-width: 300px; margin-right: 10px;" />
+                                    <RadzenTextBox class="w-75" Placeholder="Search for posts" aria-label="TextBox with placeholder" Style="max-width: 300px; margin-right: 10px;"/>
                                     <RadzenButton class="w-25" Style="border-radius: 10px">Search</RadzenButton>
 
                                 </RadzenStack>
@@ -157,18 +110,18 @@
 
                                 </RadzenStack>
                             </RadzenRow>
-                            
+
                         </RadzenStack>
 
                         <RadzenStack class="w-100">
                             <RadzenCard Style="position: relative; margin-top: 25px">
                                 <RadzenBadge Text="Blocked" Style="font-size: 16px; padding: 6px; position: absolute; right: 8px; top: 8px; background-color: #000000" BadgeStyle="BadgeStyle.Secondary"></RadzenBadge>
-                                <RadzenText Text="Very interesting post title" TextStyle="TextStyle.H4" TagName="TagName.H1" />
+                                <RadzenText Text="Very interesting post title" TextStyle="TextStyle.H4" TagName="TagName.H1"/>
                                 <RadzenText Text="Created at 13:50 27.05.2024" TextStyle="TextStyle.Overline" TagName="TagName.P" Style="font-size: 13px; font-weight: 500; margin-top: 10px; margin-bottom: 10px; color: #605f5f"/>
                                 <RadzenText Text="Edited at 13:50 27.05.2024" TextStyle="TextStyle.Overline" TagName="TagName.P" Style="font-size: 13px; font-weight: 500; margin-top: 10px; margin-bottom: 10px; color: #605f5f"/>
 
 
-                                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+                                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
                                 <RadzenHtml>
                                     <h1>Placeholder Title</h1>
                                     <p>This is a placeholder paragraph. Replace this text with your content.</p>
@@ -177,21 +130,21 @@
                                         <p>More placeholder content goes here.</p>
                                     </div>
                                 </RadzenHtml>
-                                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+                                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
                                 <RadzenRow>
                                     <RadzenStack Orientation="Orientation.Horizontal" Class="image-grid" Wrap="FlexWrap.Wrap" Gap="0">
-                                        <RadzenImage Class="post-image" />
-                                        <RadzenImage class="post-image" />
-                                        <RadzenImage class="post-image" />
-                                        <RadzenImage class="post-image" />
-                                        <RadzenImage class="post-image" />
-                                        <RadzenImage class="post-image" />
+                                        <RadzenImage Class="post-image"/>
+                                        <RadzenImage class="post-image"/>
+                                        <RadzenImage class="post-image"/>
+                                        <RadzenImage class="post-image"/>
+                                        <RadzenImage class="post-image"/>
+                                        <RadzenImage class="post-image"/>
                                     </RadzenStack>
                                 </RadzenRow>
 
                                 <RadzenRow>
                                     <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center" Style="margin-top: 20px">
-                                        <RadzenButton class="w-50" Text="Edit post" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" />
+                                        <RadzenButton class="w-50" Text="Edit post" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000"/>
                                         <RadzenButton class="w-50" Text="Get subscription access" Style="background-color: #58a45b; border: 1px solid #456c47; border-radius: 10px; color: #ffffff; font-weight: 600" Icon="lock_open"/>
                                     </RadzenStack>
                                 </RadzenRow>
@@ -199,7 +152,7 @@
                             </RadzenCard>
 
                         </RadzenStack>
-                        
+
                     </RadzenRow>
                 </RadzenStack>
 
@@ -300,7 +253,7 @@
 
 
 @code {
-    int selectedIndex = 1;
+    int selectedIndex = 0;
 
     private List<string> tiers = new List<string> { "Bronze Tier", "Silver Tier", "Gold Tier" };
 

@@ -1,0 +1,21 @@
+﻿@code {
+    [Parameter] public string TierName { get; set; }
+    [Parameter] public string Price { get; set; }
+    [Parameter] public Guid SubscriptionId { get; set; }
+    [Parameter] public string UserId { get; set; }
+    [Parameter] public string Description  { get; set; }
+}
+
+<RadzenCard>
+    <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px"><b>@TierName</b></RadzenText>
+    
+    <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 16px; font-weight: 500">
+        Support us with <b style="font-size: 22px">@Price</b>/month
+    </RadzenText>
+    
+    <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 17px">
+        @Description
+    </RadzenText>
+    
+    <RadzenButton Text="Subscribe" Style="border-radius: 10px; border: 1px solid #3e633f" class="w-100"></RadzenButton>
+</RadzenCard>
