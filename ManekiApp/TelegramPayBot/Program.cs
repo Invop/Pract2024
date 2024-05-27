@@ -2,19 +2,24 @@
 
 using Microsoft.EntityFrameworkCore;
 using ManekiApp.TelegramPayBot;
+using ManekiApp.TelegramPayBot.Keyboard;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-builder.Services.AddDbContext<TgBotDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
-
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
 
+
+builder.Services.AddSingleton<KeyboardService>();
+
+
 builder.Services.AddSingleton<TelegramBot>(sp =>
-    new TelegramBot(sp.GetRequiredService<IServiceScopeFactory>(), builder.Configuration["BotToken"]));
+    new TelegramBot(
+        sp.GetRequiredService<IServiceScopeFactory>(),
+        sp.GetRequiredService<KeyboardService>(),
+        builder.Configuration["BotToken"])
+);
 
 
 var app = builder.Build();
