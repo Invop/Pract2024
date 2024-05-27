@@ -38,19 +38,25 @@
             <RadzenImage Path="images/paw.png" Style="width: 40px; float: none"></RadzenImage>
             <RadzenText Text="Maneki" Style="font-weight: bold; color: #000000; font-family: Georgia; font-size: 27px; margin-bottom: 0px; width: 107px; height: 33px" />
         </RadzenStack>
-        <RadzenPanelMenu Style="font-size: 16px">
-            <RadzenPanelMenuItem Text="Profile" Path="profile" Icon="person" IconColor="black" />
-
+        <RadzenPanelMenu Style="font-size: 16px" Multiple="false">
+            
             <RadzenPanelMenuItem Text="Feed" Path="feed" Icon="home" IconColor="black" />
+            
+            <RadzenPanelMenuItem Text="You" Icon="person" IconColor="black">
+                <RadzenPanelMenuItem Text="Subscriptions" Path="my-subscriptions" Icon="card_membership" IconColor="black" />
+                <RadzenPanelMenuItem Text="Settings" Path="settings" Icon="settings" IconColor="black" />
+            </RadzenPanelMenuItem>
 
-            <RadzenPanelMenuItem Text="Subscriptions" Path="my-subscriptions" Icon="card_membership" IconColor="black" />
+            <RadzenPanelMenuItem Text="Author" Icon="gesture" Selected="false" IconColor="black" >
+                <RadzenPanelMenuItem Text="My Page" Path="author-page" Icon="account_box" IconColor="black" />
+                <RadzenPanelMenuItem Text="Manage Plans" Path="manage-plans" Icon="local_atm" IconColor="black" />
+                <RadzenPanelMenuItem Text="Analytics" Path="analytics" Icon="bar_chart" IconColor="black" />
+            </RadzenPanelMenuItem>
 
             <RadzenPanelMenuItem Text="Search" Path="search" Icon="search" IconColor="black" />
-
-            <RadzenPanelMenuItem Text="Analytics" Path="analytics" Icon="bar_chart" IconColor="black" />
-
-            <RadzenPanelMenuItem Text="Settings" Path="settings" Icon="settings" IconColor="black" />
         </RadzenPanelMenu>
 
     </RadzenSidebar>
+
+    <RadzenButton Icon="add" Style="position: absolute; bottom: 10px; right: 10px; width: 50px; height: 50px; background-color: #bdaba6; border-radius: 50%" />
 </RadzenLayout>

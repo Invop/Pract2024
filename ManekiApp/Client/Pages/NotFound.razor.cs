@@ -10,7 +10,7 @@ using Radzen.Blazor;
 
 namespace ManekiApp.Client.Pages
 {
-    public partial class Settings
+    public partial class NotFound
     {
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
