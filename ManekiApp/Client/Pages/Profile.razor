@@ -1,0 +1,36 @@
+@page "/profile"
+
+@attribute [Authorize]
+
+<PageTitle>Profile</PageTitle>
+<RadzenRow>
+    
+    <RadzenCard Class="rz-my-12 rz-mx-auto">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start">
+            <RadzenImage class="profile-image" Path="https://img.freepik.com/free-photo/handsome-bearded-guy-posing-against-white-wall_273609-20597.jpg?t=st=1716472097~exp=1716475697~hmac=f23aa707818b77aad241567ecf19ebb18d9a964315e01f92210ffb8c630133b9&w=996" Style="width: 170px; border-radius: 50%; height: 170px"></RadzenImage>
+            <RadzenStack JustifyContent="JustifyContent.SpaceEvenly">
+                <RadzenStack Gap=5>
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Username</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>Anton_pt</b></RadzenText>
+                </RadzenStack>
+                <RadzenStack Gap=5>
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mb-0">Full Name</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>Anton Ptushkin</b></RadzenText>
+                </RadzenStack>
+                <RadzenStack Gap=5>
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mb-0">Age</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>30</b></RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenStack>
+        <RadzenCard Style="width: 480px; height: 181px; margin-top: 15px; background-color: #EED8C9; margin: 1rem calc(-1 * var(--rz-card-padding)); border-radius: 0px">
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0" Style="font-size: 12px; font-weight: 600">About</RadzenText>
+            <RadzenText Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." Style="font-size: 12px" />
+        </RadzenCard>
+
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
+        <RadzenButton Variant="Variant.Text" Text="Edit" Style="width: 148px; background-color: #d3d2d1; border: 1px solid #000000; border-radius: 10px; color: #000000" />
+    </RadzenStack>
+    </RadzenCard>
+    
+</RadzenRow>
