@@ -29,4 +29,9 @@ public partial class AuthorPage
     public ICollection<Post> Posts { get; set; }
 
     public ICollection<Subscription> Subscriptions { get; set; }
+
+    public AuthorPage()
+    {
+        this.Id = Guid.NewGuid();
+    }
 }

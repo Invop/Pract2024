@@ -27,4 +27,9 @@ public partial class Post
     public string Title { get; set; }
 
     public ICollection<Image> Images { get; set; }
+
+    public Post()
+    {
+        Id = Guid.NewGuid();
+    }
 }
