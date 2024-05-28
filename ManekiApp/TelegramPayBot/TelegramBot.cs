@@ -200,28 +200,6 @@ namespace ManekiApp.TelegramPayBot
             {
                 await HandleStartSubscriptionCommandAsync(botClient, update, cancellationToken);
             }
-            else
-            {
-                switch (update.Message.Text)
-                {
-                    case "/start":
-                        await HandleStartCommandAsync(botClient, update, cancellationToken);
-                        break;
-
-                    case "Buy Subscription":
-                        await SendAuthorsKeyboardAsync(update.Message.Chat.Id, cancellationToken);
-                        break;
-
-                    case "Back":
-                        await ShowMainMenu(update.Message.Chat.Id, cancellationToken);
-                        break;
-
-                    default:
-                        Console.WriteLine($"Unhandled message text: {update.Message.Text}");
-                        break;
-                }
-            }
-
         }
 
         private async Task HandleStartSubscriptionCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
