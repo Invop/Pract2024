@@ -27,7 +27,7 @@
 
     void OpenLink()
     {
-        var url = "https://t.me/maneki_pay_bot?start=userId:id";
+        var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
         JSRuntime.InvokeVoidAsync("open", url, "_blank");
     }
 }
