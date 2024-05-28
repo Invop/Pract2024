@@ -8,23 +8,26 @@
     </RadzenColumn>
 
     <RadzenRow>
-        
         @foreach (var subscription in userSubscriptions)
         {   
             var subscriptionType = GetSubscriptionTitle(subscription.SubscriptionId);
             var subscriptionPrice = GetSubscriptionPrice(subscription.SubscriptionId);
+            var subscriptionAuthor = GetSubscriptionAuthor(subscription.SubscriptionId);
+            var authorPageUrl = GetAuthorPage(subscription.SubscriptionId);
             <RadzenCard class="w-100">
-                <UserSubscriptionCard
-                    ImagePath=""
-                    ImageAltText=""
-                    AuthorName="Arthur"
-                    Status=@($"{(subscription.IsCanceled ? "Canceled" : "Active")}")
-                    StartDate=@($"{subscription.SubscribedAt}")
-                    EndDate=@($"{subscription.EndsAt}")
-                    SubscriptionType=@(subscriptionType)
-                    SubscriptionPrice=@(subscriptionPrice)
-                    RadzenBadgeStyle="background: linear-gradient(90deg, rgba(58,172,180,1) 0%, rgba(29,137,253,1) 50%, rgba(119,69,252,1) 100%); height: 40px; display: flex; font-size: 25px; font-weight: 400"
-                    CancelSubscription="@(() => CancelSubscription(subscription))"/>
+                <div style="cursor: pointer;" onclick="@(() => NavigateToAuthorPage($"/author-page/{authorPageUrl}"))">
+                    <UserSubscriptionCard
+                        ImagePath=""
+                        ImageAltText=""
+                        AuthorName=@(subscriptionAuthor)
+                        Status=@($"{(subscription.IsCanceled ? "Canceled" : "Active")}")
+                        StartDate=@($"{subscription.SubscribedAt}")
+                        EndDate=@($"{subscription.EndsAt}")
+                        SubscriptionType=@(subscriptionType)
+                        SubscriptionPrice=@(subscriptionPrice)
+                        RadzenBadgeStyle="background: linear-gradient(90deg, rgba(58,172,180,1) 0%, rgba(29,137,253,1) 50%, rgba(119,69,252,1) 100%); height: 40px; display: flex; font-size: 25px; font-weight: 400"
+                        CancelSubscription="@(() => CancelSubscription(subscription))"/>
+                </div>
             </RadzenCard>
         }
     </RadzenRow>

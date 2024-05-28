@@ -1,6 +1,5 @@
 ﻿@using Radzen
 
-
 <RadzenCard class="w-100">
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
         <RadzenImage Path="@ImagePath" Style="width: 100px; height: 100px; border-radius: 50%" AlternateText="@ImageAltText" />
@@ -38,11 +37,11 @@
         <RadzenColumn Size="12" class="justify-content-between" Style="display: flex">
             @if(Status != "Canceled")
             {
-                <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="@CancelSubscription">Cancel Subscription</RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="@CancelSubscription" @onclick:stopPropagation="true">Cancel Subscription</RadzenButton>
             }
             <RadzenRow>
-                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_active" ImageAlternateText="Notifications enabled"></RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_off" ImageAlternateText="Notifications disabled"></RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_active" ImageAlternateText="Notifications enabled" @onclick:stopPropagation="true"></RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_off" ImageAlternateText="Notifications disabled" @onclick:stopPropagation="true"></RadzenButton>
             </RadzenRow>
         </RadzenColumn>
     </RadzenRow>
