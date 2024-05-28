@@ -16,7 +16,7 @@ public partial class AuthorPage
     [Required]
     public string Description { get; set; }
 
-    public byte[] ProfileImage { get; set; }
+    public string ProfileImage { get; set; }
 
     public string SocialLinks { get; set; }
 

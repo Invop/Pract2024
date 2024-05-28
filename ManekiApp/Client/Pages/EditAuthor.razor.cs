@@ -86,7 +86,7 @@ namespace ManekiApp.Client.Pages
             var file = e.File;
             var buffer = new byte[file.Size];
             await file.OpenReadStream().ReadAsync(buffer);
-            authorPage.ProfileImage = buffer;
+            authorPage.ProfileImage = Convert.ToBase64String(buffer);
         }
     }
 }
