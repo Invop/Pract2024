@@ -14,10 +14,10 @@ public partial class UserSubscription
     public string UserId { get; set; }
 
     [Required]
-    public DateTime SubscribedAt { get; set; }
+    public DateTimeOffset  SubscribedAt { get; set; }
 
     [Required]
-    public DateTime EndsAt { get; set; }
+    public DateTimeOffset  EndsAt { get; set; }
 
     public bool IsCanceled { get; set; }
 
