@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
 using ManekiApp.Server.Models.ManekiAppDB;
+
 
 namespace ManekiApp.Client.Pages
 {
@@ -51,6 +53,7 @@ namespace ManekiApp.Client.Pages
         {
             try
             {
+                authorPage.SocialLinks = JsonSerializer.Serialize(new SocialLinks());
                 await ManekiService.CreateAuthorPage(authorPage);
                 
                 var subscriptions = new List<Subscription>
@@ -97,12 +100,26 @@ namespace ManekiApp.Client.Pages
                 {
                     await ManekiService.CreateSubscription(subscription);
                 }
+                
+                NavigationManager.NavigateTo("author-page");
             }
             catch (Exception ex)
             {
                 errorVisible = true;
                 error = ex.Message;
             }
+        }
+        
+        public class SocialLinks
+        {
+            public string Youtube { get; set; } = null;
+            public string Instagram { get; set; } = null;
+            public string Telegram { get; set; } = null;
+            public string TikTok { get; set; } = null;
+            public string Facebook { get; set; } = null;
+            public string Twitter { get; set; } = null;
+            public string Twitch { get; set; } = null;
+            public string Pinterest { get; set; } = null;
         }
     }
 }
