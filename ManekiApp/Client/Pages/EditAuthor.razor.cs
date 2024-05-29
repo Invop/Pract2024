@@ -61,6 +61,13 @@ namespace ManekiApp.Client.Pages
             if (authorPagesOData.Value.Any())
             {
                 authorPage = authorPagesOData.Value.First();
+                
+                //Should replace it with try/catch?
+                if (String.IsNullOrEmpty(authorPage.SocialLinks))
+                {
+                    authorPage.SocialLinks = JsonSerializer.Serialize(new SocialLinks());
+                }
+                
                 socialLinks = JsonSerializer.Deserialize<SocialLinks>(authorPage.SocialLinks);
             }
             else

@@ -54,7 +54,7 @@
                 <RadzenRow Style="margin-bottom: 1rem">
                     <RadzenColumn Size="12" SizeMD="3"></RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="3">
-                        <RadzenImage class="profile-image" style="width: 5.4rem; height: 5.4rem;" Path="@($"data:image/jpeg;base64,{authorPage.ProfileImage}")" />
+                        <RadzenImage class="profile-image" Visible="@(authorPage.ProfileImage != null)" style="width: 5.4rem; height: 5.4rem;" Path="@($"data:image/jpeg;base64,{authorPage.ProfileImage}")" />
                     </RadzenColumn>
                 </RadzenRow>
 
