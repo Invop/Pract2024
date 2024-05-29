@@ -5,7 +5,7 @@
 <PageTitle>Analytics</PageTitle>
 <RadzenRow>
     <RadzenColumn Size="12">
-        <RadzenText Text="Analytics" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+        <RadzenText Text="Analytics" TextStyle="TextStyle.H3" TagName="TagName.H1"/>
     </RadzenColumn>
 </RadzenRow>
 
@@ -13,30 +13,43 @@
     <RadzenRow >
         <RadzenColumn Style=" max-width: 350px;">
             <RadzenCard Style=" max-width: 350px;">
-                <RadzenChart Style=" max-width: 350px;"> 
+                <RadzenChart Style=" max-width: 350px;">
 
                     <RadzenPieSeries Data="@chartItems" Title="SubscriptionName"
                                      CategoryProperty="SubscriptionName" ValueProperty="SubscriptionUserCount">
-                                    <RadzenSeriesDataLabels Visible="@showDataLabels" />
-                                </RadzenPieSeries>
+                        <RadzenSeriesDataLabels Visible="@showDataLabels"/>
+                    </RadzenPieSeries>
                 </RadzenChart>
             </RadzenCard>
         </RadzenColumn>
 
         <RadzenColumn>
-            <RadzenDataGrid TItem="SubscriberDetails"
-                            AllowRowSelectOnRowClick="false" AllowPickAllColumns="false"
-                            AllowPaging="true" Data="@subscribersData">
+            <RadzenRow>
+                <RadzenCard class="w-100">
+                    <RadzenRow>
+                            <RadzenText TextStyle="TextStyle.H6" Text="Profit"/>
+                            <RadzenText TextStyle="TextStyle.Body1" Text=@($"All Time {subscriptions.Sum(x=>x.Price)}$")/>
+                    </RadzenRow>
+                </RadzenCard>
                 
-                <Columns>
-                    <RadzenDataGridColumn TItem="SubscriberDetails" Property="SubscriberId" Title="SubscriberId"/>
-                    <RadzenDataGridColumn TItem="SubscriberDetails" Property="SubscriptionType" Title="SubscriptionType"/>
-                    <RadzenDataGridColumn TItem="SubscriberDetails" Property="Amount" Title="Amount"/>
-                    <RadzenDataGridColumn TItem="SubscriberDetails" Property="StartDate" Title="StartDate"/>
-                </Columns>
 
 
-            </RadzenDataGrid>
+            </RadzenRow>
+            <RadzenRow>
+                <RadzenDataGrid TItem="SubscriberDetails"
+                                AllowRowSelectOnRowClick="false" AllowPickAllColumns="false"
+                                AllowPaging="true" Data="@subscribersData">
+
+                    <Columns>
+                        <RadzenDataGridColumn TItem="SubscriberDetails" Property="SubscriberId" Title="SubscriberId"/>
+                        <RadzenDataGridColumn TItem="SubscriberDetails" Property="SubscriptionType" Title="SubscriptionType"/>
+                        <RadzenDataGridColumn TItem="SubscriberDetails" Property="Amount" Title="Amount"/>
+                        <RadzenDataGridColumn TItem="SubscriberDetails" Property="StartDate" Title="StartDate"/>
+                    </Columns>
+
+
+                </RadzenDataGrid>
+            </RadzenRow>
 
         </RadzenColumn>
     </RadzenRow>
