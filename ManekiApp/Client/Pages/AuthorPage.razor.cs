@@ -32,5 +32,10 @@ namespace ManekiApp.Client.Pages
 
         [Inject]
         protected SecurityService Security { get; set; }
+
+        private void NavigateToEditPage()
+        {
+            NavigationManager.NavigateTo("/edit-author-page");
+        }
     }
 }
