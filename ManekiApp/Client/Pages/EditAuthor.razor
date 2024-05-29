@@ -6,6 +6,8 @@
 <RadzenRow>
     <RadzenAlert Title="Cannot update author page" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small"
                  AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
+    <RadzenAlert Title="Success!" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small"
+                     AlertStyle="AlertStyle.Success" Visible="@isSuccess" Style="border-radius: 10px; border: 1px solid #4caf50">@success</RadzenAlert>
     
     <RadzenStack class="w-100" Style="background-color: #eee6e6; padding: 20px; border-radius: 10px">
         <RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.AuthorPage"  Data="@authorPage" 
@@ -48,6 +50,13 @@
                         <InputFile OnChange="@(e => UploadProfileImage(e))" />                
                     </RadzenColumn>
                 </RadzenRow>
+                
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3"></RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenImage class="profile-image" style="width: 5.4rem; height: 5.4rem;" Path="@($"data:image/jpeg;base64,{authorPage.ProfileImage}")" />
+                    </RadzenColumn>
+                </RadzenRow>
 
                 <RadzenRow Style="margin-bottom: 1rem">
                     <RadzenColumn Size="12" SizeMD="12">
@@ -61,7 +70,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.youtube.com/channel/" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.youtube.com/channel/" Trim="false" @bind-Value="socialLinks.Youtube"></RadzenTextBox>
                     </RadzenColumn> 
                 </RadzenRow>
 
@@ -71,7 +80,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Instagram"></RadzenTextBox>
                     </RadzenColumn> 
                 </RadzenRow>
 
@@ -81,7 +90,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Telegram"></RadzenTextBox>
                     </RadzenColumn> 
                 </RadzenRow>
 
@@ -91,7 +100,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.TikTok"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -101,7 +110,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Facebook"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -111,7 +120,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Twitter"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -121,7 +130,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Twitch"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -131,7 +140,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Pinterest"></RadzenTextBox>
                     </RadzenColumn>  
                 </RadzenRow>
 

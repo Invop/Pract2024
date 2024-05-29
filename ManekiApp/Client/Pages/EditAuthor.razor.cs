@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
@@ -36,11 +37,16 @@ namespace ManekiApp.Client.Pages
         
         [Inject]
         protected ManekiAppDBService ManekiAppDBService { get; set; }
-        
+
+        protected SocialLinks socialLinks;
         protected ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage;
         protected string error;
         protected bool errorVisible;
-        
+
+        protected bool isSuccess;
+        protected string success;
+        protected string lastActionTime;
+            
         private async Task<ODataServiceResult<Server.Models.ManekiAppDB.AuthorPage>> GetAuthorPagesOData(string userId)
         {
             var filter = $"UserId eq '{userId}'";
@@ -55,6 +61,7 @@ namespace ManekiApp.Client.Pages
             if (authorPagesOData.Value.Any())
             {
                 authorPage = authorPagesOData.Value.First();
+                socialLinks = JsonSerializer.Deserialize<SocialLinks>(authorPage.SocialLinks);
             }
             else
             {
@@ -65,14 +72,19 @@ namespace ManekiApp.Client.Pages
 
         protected async Task FormSubmit(ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage)
         {
+            isSuccess = false;
+            lastActionTime = DateTime.Now.ToString("HH:mm:ss");
             try
             {
+                authorPage.SocialLinks = JsonSerializer.Serialize(socialLinks);
                 await ManekiAppDBService.UpdateAuthorPage(authorPage.Id, authorPage);
+                isSuccess = true;
+                success = $"{lastActionTime} – Your author page has been updated!";
             }
             catch (Exception ex)
             {
                 errorVisible = true;
-                error = ex.Message;
+                error = $"{lastActionTime} – {ex.Message}";
             }
         }
 
@@ -87,6 +99,18 @@ namespace ManekiApp.Client.Pages
             var buffer = new byte[file.Size];
             await file.OpenReadStream().ReadAsync(buffer);
             authorPage.ProfileImage = Convert.ToBase64String(buffer);
+        }
+        
+        public class SocialLinks
+        {
+            public string Youtube { get; set; } = null;
+            public string Instagram { get; set; } = null;
+            public string Telegram { get; set; } = null;
+            public string TikTok { get; set; } = null;
+            public string Facebook { get; set; } = null;
+            public string Twitter { get; set; } = null;
+            public string Twitch { get; set; } = null;
+            public string Pinterest { get; set; } = null;
         }
     }
 }
