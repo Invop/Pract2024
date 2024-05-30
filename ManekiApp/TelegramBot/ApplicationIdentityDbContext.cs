@@ -1,3 +1,4 @@
+using ManekiApp.Server.Models.ManekiAppDB;
 using ManekiApp.TelegramBot.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -30,4 +31,6 @@ public partial class ApplicationIdentityDbContext : IdentityDbContext<Applicatio
     }
 
     public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
+    
+    public DbSet<UserChatNotification> UserChatNotification { get; set; }
 }

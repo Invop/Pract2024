@@ -1,0 +1,2 @@
+﻿### Notify users
+POST http://localhost:5113/notify?authorId=89b10fc2-b2a8-432e-bbb6-69ebe91119bc&postId=89b10fc2-b2a8-432e-bbb6-69ebe91119bc
