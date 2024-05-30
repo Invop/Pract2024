@@ -1,5 +1,5 @@
+using ManekiApp.Server.Models;
 using ManekiApp.Server.Models.ManekiAppDB;
-using ManekiApp.TelegramBot.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +31,9 @@ public partial class ApplicationIdentityDbContext : IdentityDbContext<Applicatio
     }
 
     public DbSet<UserVerificationCode> UserVerificationCodes { get; set; }
-    
+    public DbSet<AuthorPage> AuthorPages { get; set; }
+    public DbSet<Post> Posts { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<UserSubscription> UserSubscriptions { get; set; }
     public DbSet<UserChatNotification> UserChatNotification { get; set; }
 }

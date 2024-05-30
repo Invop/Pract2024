@@ -15,9 +15,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Models\UserChatNotification.cs">
-        <Link>ManekiAppDB\UserChatNotification.cs</Link>
-      </Compile>
+        <Compile Include="../Server/Models/**/*.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models\" />
     </ItemGroup>
 
 </Project>
