@@ -1,5 +1,5 @@
+using ManekiApp.Server.Models;
 using ManekiApp.Server.Models.ManekiAppDB;
-using ManekiApp.TelegramBot.Models;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -50,9 +50,38 @@ public class TelegramBot
         cts.Cancel();
     }
 
-    public async Task NotifyUsersAsync(Guid authorId, Guid postId)
-    {
-        Console.WriteLine($"{authorId},{postId}");
+    public async Task NotifyUsersAsync(IServiceProvider services,Guid authorPageId)
+    {   
+        using var scope = services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+        var author = await dbContext.AuthorPages.FirstOrDefaultAsync(u => u.Id == authorPageId);
+        if (author == null)
+        {
+            return;
+        }
+
+        var authorName = author.Title;
+
+        var subscriptionsIds = dbContext.Subscriptions
+            .Where(x => x.AuthorPageId == authorPageId)
+            .Select(x=>x.Id)
+            .ToList();
+        var subscribersIds = dbContext.UserSubscriptions
+            .Where(x => subscriptionsIds.Contains(x.SubscriptionId))
+            .Select(x => x.UserId)
+            .Distinct()
+            .ToList();
+        var chatIds = dbContext.UserChatNotification
+            .Where(x => subscribersIds.Contains(x.UserId) && !string.IsNullOrEmpty(x.TelegramChatId))
+            .Select(x => long.Parse(x.TelegramChatId))
+            .ToList();
+
+        await Task.WhenAll(chatIds.Select(async chatId =>
+        {
+            await _client.SendTextMessageAsync(new ChatId(chatId), $"{authorName} Create new post");
+        }));
+
+
     }
     
     private async Task HandleUpdateAsync(IServiceProvider services, ITelegramBotClient botClient,
