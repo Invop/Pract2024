@@ -14,10 +14,10 @@ public partial class Post
     public string Content { get; set; }
 
     [Required]
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
     [Required]
-    public DateTime EditedAt { get; set; }
+    public DateTimeOffset EditedAt { get; set; }
 
     [Required]
     public Guid AuthorPageId { get; set; }
