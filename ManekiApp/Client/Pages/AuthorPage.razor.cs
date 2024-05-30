@@ -49,6 +49,9 @@ namespace ManekiApp.Client.Pages
             var subscriptionsOData = await ManekiAppDB.GetSubscriptions(filter:filter);
             subscriptions = subscriptionsOData.Value;
         }
-
+        private void NavigateToEditPage()
+        {
+            NavigationManager.NavigateTo("/edit-author-page");
+        }
     }
 }

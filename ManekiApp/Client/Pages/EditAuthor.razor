@@ -1,0 +1,154 @@
+@page "/edit-author-page"
+
+@attribute [Authorize]
+
+<PageTitle>EditProfile</PageTitle>
+<RadzenRow>
+    <RadzenAlert Title="Cannot update author page" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small"
+                 AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
+    <RadzenAlert Title="Success!" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small"
+                     AlertStyle="AlertStyle.Success" Visible="@isSuccess" Style="border-radius: 10px; border: 1px solid #4caf50">@success</RadzenAlert>
+    
+    <RadzenStack class="w-100" Style="background-color: #eee6e6; padding: 20px; border-radius: 10px">
+        <RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.AuthorPage"  Data="@authorPage" 
+                            Visible="@(authorPage != null)" Submit="@FormSubmit">
+            <ChildContent>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                        <RadzenColumn Size="12" SizeMD="12">
+                            <RadzenText Text="You can edit your author page" Style="font-weight: bold; font-size: 25px" />
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                    <RadzenRow Style="margin-bottom: 1rem">
+                        <RadzenColumn Size="12" SizeMD="3">
+                            <RadzenLabel Component="Title" Text="Title" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
+                        </RadzenColumn>
+
+                        <RadzenColumn class="w-100" Size="12" SizeMD="9">
+                            <RadzenTextArea Placeholder="Your page title" Rows="3" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Title" Name="Title"></RadzenTextArea>                    
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Description" Text="Description" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn class="w-100" Size="12" SizeMD="9">
+                        <RadzenTextArea Placeholder="Your page description" Rows="6" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Description" Name="Description" ></RadzenTextArea>
+                    </RadzenColumn>   
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="ProfileImage" Text="Your avatar" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        @*https://blazor.radzen.com/fileinput*@
+                        <InputFile OnChange="@(e => UploadProfileImage(e))" />                
+                    </RadzenColumn>
+                </RadzenRow>
+                
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3"></RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenImage class="profile-image" Visible="@(authorPage.ProfileImage != null)" style="width: 5.4rem; height: 5.4rem;" Path="@($"data:image/jpeg;base64,{authorPage.ProfileImage}")" />
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenLabel Component="SocialLinks" style="width: 100%; margin-top: 8px; font-style: normal; font-weight: bold; font-size: 20px" Text="Social links"></RadzenLabel>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Youtube" style="width: 100%; margin-top: 8px" Text="Youtube"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.youtube.com/channel/" Trim="false" @bind-Value="socialLinks.Youtube"></RadzenTextBox>
+                    </RadzenColumn> 
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Instagram" style="width: 100%; margin-top: 8px" Text="Instagram"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Instagram"></RadzenTextBox>
+                    </RadzenColumn> 
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Telegram" style="width: 100%; margin-top: 8px" Text="Telegram"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Telegram"></RadzenTextBox>
+                    </RadzenColumn> 
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="TikTok" style="width: 100%; margin-top: 8px" Text="TikTok"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.TikTok"></RadzenTextBox>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Facebook" style="width: 100%; margin-top: 8px" Text="Facebook"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Facebook"></RadzenTextBox>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Twitter" style="width: 100%; margin-top: 8px" Text="Twitter"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Twitter"></RadzenTextBox>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">    
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Twitch" style="width: 100%; margin-top: 8px" Text="Twitch"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Twitch"></RadzenTextBox>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Pinterest" style="width: 100%; margin-top: 8px" Text="Pinterest"></RadzenLabel>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Pinterest"></RadzenTextBox>
+                    </RadzenColumn>  
+                </RadzenRow>
+
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+                    <RadzenButton Text="Cancel" Variant="Variant.Flat" Shade="Shade.Light" Click="@CancelClick" Style="background-color: #d1d8e1; width: 144px; margin-top: 20px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" />
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #58a45b; width: 144px; margin-top: 20px; border-radius: 10px; border: 1px solid #356d37" />
+                </RadzenStack>
+            </ChildContent>
+        </RadzenTemplateForm>
+    </RadzenStack>
+</RadzenRow>

@@ -19,4 +19,9 @@ public partial class Image
     public Guid PostId { get; set; }
 
     public Post Post { get; set; }
+
+    public Image()
+    {
+        Id = Guid.NewGuid();
+    }
 }

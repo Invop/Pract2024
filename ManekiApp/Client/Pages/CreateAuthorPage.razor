@@ -15,8 +15,11 @@
     </RadzenColumn>
 
     <RadzenColumn Size="12">
-        <RadzenStack Style="background-color: #eee6e6; color: f2eeee Hex 242 R 238 G; padding: 20px; border-radius: 10px">
-            @*<RadzenTemplateForm>*@
+        <RadzenAlert Title="Cannot create author page" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
+
+        <RadzenStack Style="background-color: #eee6e6; padding: 20px; border-radius: 10px">
+            <RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.AuthorPage" Data="@authorPage"
+                                Submit="@FormSubmit">
                 <ChildContent>
                     <RadzenRow>
                         <RadzenColumn Size="12" SizeMD="3">
@@ -24,7 +27,7 @@
                         </RadzenColumn>
 
                         <RadzenColumn class="w-100" Size="12" SizeMD="9">
-                            <RadzenTextBox Placeholder="Your page title" class="w-100"></RadzenTextBox>                    
+                            <RadzenTextBox Name="Title" @bind-Value="@authorPage.Title" Placeholder="Your page title" class="w-100"></RadzenTextBox>
                         </RadzenColumn>
 
                         <RadzenColumn Size="12" SizeMD="3">
@@ -32,14 +35,13 @@
                         </RadzenColumn>
 
                         <RadzenColumn class="w-100" Size="12" SizeMD="9">
-                            <RadzenHtmlEditor Style="min-height: 300px"></RadzenHtmlEditor>
-                        </RadzenColumn>   
+                            <RadzenTextArea Name="Description" @bind-Value="@authorPage.Description" Style="min-height: 300px" class="w-100"></RadzenTextArea>
+                        </RadzenColumn>
                     </RadzenRow>
-                </ChildContent>
-            @*</RadzenTemplateForm>*@
-        </RadzenStack>
-        
-        <RadzenButton class="w-100 rz-mt-3" ButtonStyle="ButtonStyle.Info" Style="height: 50px">Create</RadzenButton>
 
+                    <RadzenButton ButtonType="ButtonType.Submit" class="w-100 rz-mt-3" ButtonStyle="ButtonStyle.Info" Style="height: 50px">Create</RadzenButton>
+                </ChildContent>
+            </RadzenTemplateForm>
+        </RadzenStack>
     </RadzenColumn>
 </RadzenRow>

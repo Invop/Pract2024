@@ -28,4 +28,9 @@ public partial class Subscription
     public AuthorPage AuthorPage { get; set; }
 
     public ICollection<UserSubscription> UserSubscriptions { get; set; }
+
+    public Subscription()
+    {
+        this.Id = Guid.NewGuid();
+    }
 }
