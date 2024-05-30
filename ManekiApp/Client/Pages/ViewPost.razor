@@ -1,50 +1,42 @@
 @page "/post/{Id}"
 @attribute [Authorize]
 
-<PageTitle>ViewPost</PageTitle>
+<PageTitle>Post</PageTitle>
 <RadzenRow>
-    <RadzenColumn Size="12">
-        <RadzenStack Style="background-color: #eee6e6; color: f2eeee Hex 242 R 238 G; padding: 20px; border-radius: 10px">
+    <RadzenColumn Size="12" Visible="@(PostExists)">
+        <RadzenStack Style="background-color: #eee6e6; padding: 20px; border-radius: 10px">
             <RadzenCard Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="padding: 6px">
                 
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Style="background-color: rgba(225, 225, 225, 0)">
                     
-                    <RadzenImage class="profile-image" Path="https://img.freepik.com/free-photo/handsome-bearded-guy-posing-against-white-wall_273609-20597.jpg?t=st=1716472097~exp=1716475697~hmac=f23aa707818b77aad241567ecf19ebb18d9a964315e01f92210ffb8c630133b9&w=996" Style="width: 3.2rem; border-radius: 50%; height: 3.2rem"></RadzenImage>
+                    <RadzenImage class="profile-image" Path="@( 
+                                                                Author.ProfileImage != null ? 
+                                                                $"data:image/jpeg;base64,{Author.ProfileImage}" :
+                                                                $"https://ui-avatars.com/api/?name={Author.Title}"
+                                                             )"  Style="width: 3.2rem; border-radius: 50%; height: 3.2rem"></RadzenImage>
                    
                     <RadzenStack Gap=5 Style="margin-right: 15px" JustifyContent="JustifyContent.SpaceEvenly">
-                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex  rz-my-0" Style="font-size: 14px">ANTON PTUSHKIN</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex  rz-my-0" Style="font-size: 14px">@Author.Title</RadzenText>
                     </RadzenStack>
                 </RadzenStack>
 
             </RadzenCard>
 
             <RadzenCard Style="position: relative">
-                <RadzenText Text="Posted at 15:53 February 15" TextStyle="TextStyle.Overline" TagName="TagName.Pre" />
-                <RadzenText Text="I found a cat!" TextStyle="TextStyle.H4" TagName="TagName.H1" />
+                <RadzenText Text="@Post.CreatedAt.ToString("'Posted at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" />
+                <RadzenText Text="@Post.Title" TextStyle="TextStyle.H4" TagName="TagName.H1" />
                 <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
                 <RadzenHtml>
-                    <h1>Placeholder Title</h1>
-                    <p>This is a placeholder paragraph. Replace this text with your content.</p>
-                    <div>
-                        <h2>Section Title</h2>
-                        <p>More placeholder content goes here.</p>
-                    </div>
+                    @((MarkupString)Post.Content)
                 </RadzenHtml>
-                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-                <RadzenRow>
-                    <RadzenStack Orientation="Orientation.Horizontal" Class="image-grid" Wrap="FlexWrap.Wrap" Gap="0">
-                        <RadzenImage Class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                    </RadzenStack>
-                </RadzenRow>
             </RadzenCard>
 
 
 
         </RadzenStack>
+    </RadzenColumn>
+    
+    <RadzenColumn Visible="@(!PostExists)">
+        <NotFound></NotFound>
     </RadzenColumn>
 </RadzenRow>
