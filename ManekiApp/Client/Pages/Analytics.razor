@@ -37,8 +37,9 @@
             </RadzenRow>
             <RadzenRow>
                 <RadzenDataGrid TItem="SubscriberDetails"
-                                AllowRowSelectOnRowClick="false" AllowPickAllColumns="false"
-                                AllowPaging="true" Data="@subscribersData">
+                                PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" 
+                                ShowPagingSummary="true"
+                                Data="@subscribersData">
 
                     <Columns>
                         <RadzenDataGridColumn TItem="SubscriberDetails" Property="SubscriberId" Title="SubscriberId"/>
