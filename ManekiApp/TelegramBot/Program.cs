@@ -1,33 +1,27 @@
-using Hangfire;
-using Hangfire.PostgreSql;
+
 using ManekiApp.TelegramBot;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHangfire(x =>
-    x.UseSimpleAssemblyNameTypeSerializer()
-        .UseRecommendedSerializerSettings()
-        .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireDBConnection"))
+builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"))
 );
 
-
-builder.Services.AddDbContext<TgBotDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
-
-builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
-
-builder.Services.AddSingleton<TelegramBot>(sp =>
-    new TelegramBot(sp.GetRequiredService<IServiceScopeFactory>(), builder.Configuration["BotToken"]));
-
-builder.Services.AddHangfireServer(x => x.SchedulePollingInterval = TimeSpan.FromSeconds(1));
+builder.Services.AddSingleton<TelegramBotRunner>();
 
 var app = builder.Build();
-app.UseHangfireDashboard();
+
 
 app.UseHttpsRedirection();
-var bot = app.Services.GetRequiredService<TelegramBot>();
-await bot.Start();
+var botRunner = app.Services.GetRequiredService<TelegramBotRunner>();
+Task.Run(async () => await botRunner.StartBotAsync());
+// Map the /notify endpoint
+app.MapPost("/notify", async (Guid authorId) =>
+{
+    var notificationService = app.Services.GetRequiredService<TelegramBotRunner>();
+    await notificationService.NotifyUsersAsync(authorId);
+    return Results.Accepted();
+});
 
 app.Run();
