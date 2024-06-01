@@ -28,8 +28,11 @@ public partial class Post
 
     public ICollection<Image> Images { get; set; }
 
+    public int MinLevel { get; set; }
+
     public Post()
     {
         Id = Guid.NewGuid();
+        MinLevel = 0;
     }
 }
