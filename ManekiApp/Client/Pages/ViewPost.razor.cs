@@ -40,6 +40,9 @@ namespace ManekiApp.Client.Pages
         [Parameter]
         public string Id { get; set; }
 
+        protected bool errorVisible;
+        protected string error;
+
         protected bool PostExists = true;
         protected Server.Models.ManekiAppDB.Post Post = new Post();
         protected Server.Models.ManekiAppDB.AuthorPage Author = new Server.Models.ManekiAppDB.AuthorPage();
@@ -66,19 +69,26 @@ namespace ManekiApp.Client.Pages
                 PostExists = false;
                 return;
             }
-            
-            var postOData = await GetPostById(postId);
-            if (postOData.Value.Any())
+
+            try
             {
-                Post = postOData.Value.First();
-                var authorOData = await GetAuthorById(Post.AuthorPageId);
-                Author = authorOData.Value.FirstOrDefault();
+                var postOData = await GetPostById(postId);
+                if (postOData.Value.Any())
+                {
+                    Post = postOData.Value.First();
+                    var authorOData = await GetAuthorById(Post.AuthorPageId);
+                    Author = authorOData.Value.FirstOrDefault();
+                }
+                else
+                {
+                    PostExists = false;
+                }
             }
-            else
+            catch (Exception e)
             {
-                PostExists = false;
+                errorVisible = true;
+                error = e.Message;
             }
-            
         }
     }
 }
