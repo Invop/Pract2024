@@ -24,6 +24,20 @@
                 </RadzenCard>
             </RadzenColumn>
 
+            <RadzenColumn Size="12" Visible="@(!isPreview)">
+                <RadzenCard>
+                    <RadzenRow RowGap="8">
+                        <RadzenColumn Size="12" SizeMD="6">
+                            <RadzenText>Minimum subscription level</RadzenText>
+                        </RadzenColumn> 
+
+                        <RadzenColumn Size="12" SizeMD="6">
+                            <RadzenDropDown @bind-Value="@minLevelValue" Data="@subscriptions" TextProperty="Title" ValueProperty="PermissionLevel" Style="width: 100%"></RadzenDropDown>
+                        </RadzenColumn> 
+                    </RadzenRow>
+                </RadzenCard>
+            </RadzenColumn>
+
             <RadzenColumn Size="12" Visible="@(isPreview)">
                 <RadzenCard Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="padding: 6px" class="rz-mb-4">
                     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Style="background-color: rgba(225, 225, 225, 0)">

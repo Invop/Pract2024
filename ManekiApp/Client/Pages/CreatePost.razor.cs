@@ -45,6 +45,9 @@ namespace ManekiApp.Client.Pages
         
         protected Server.Models.ManekiAppDB.AuthorPage currentAuthor;
         protected Server.Models.ManekiAppDB.Post Post = new Post();
+        
+        protected int minLevelValue = 0;
+        protected IEnumerable<Subscription> subscriptions;
 
         private async Task<ODataServiceResult<Server.Models.ManekiAppDB.AuthorPage>> GetAuthorPagesOData(string userId)
         {
@@ -53,6 +56,12 @@ namespace ManekiApp.Client.Pages
             return authorPagesOData;
         }
 
+        private async Task<ODataServiceResult<Server.Models.ManekiAppDB.Subscription>> GetSubscriptionsByAuthorPageOData(Guid authorPageId)
+        {
+            var filter = $"AuthorPageId eq {authorPageId}";
+            var subscriptionsOData = await ManekiAppDBService.GetSubscriptions(filter: filter);
+            return subscriptionsOData;
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -60,6 +69,8 @@ namespace ManekiApp.Client.Pages
             if (authorPagesOData.Value.Any())
             {
                 currentAuthor = authorPagesOData.Value.First();
+                var subscriptionsOData = await GetSubscriptionsByAuthorPageOData(currentAuthor.Id);
+                subscriptions = subscriptionsOData.Value.ToList();
             }
             else
             {
@@ -74,6 +85,7 @@ namespace ManekiApp.Client.Pages
             {
                 Post.CreatedAt = DateTimeOffset.UtcNow;
                 Post.AuthorPageId = currentAuthor.Id;
+                Post.MinLevel = minLevelValue;
 
                 await ManekiAppDBService.CreatePost(post);
                 
