@@ -129,6 +129,7 @@ namespace ManekiApp.TelegramPayBot
             {
                 await HandleTextMessageAsync(botClient, update, cancellationToken);
             }
+
         }
 
         private async Task HandleSuccessfulPaymentAsync(Update update, string telegramId,long chatId, CancellationToken cancellationToken)
@@ -195,21 +196,32 @@ namespace ManekiApp.TelegramPayBot
 
         private async Task HandleTextMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            switch (update.Message.Text)
+            if (update.Message.Text.StartsWith("/start subscription"))
             {
-                case "/start":
-                    await HandleStartCommandAsync(botClient, update, cancellationToken);
-                    break;
-                case "Buy Subscription":
-                    await SendAuthorsKeyboardAsync(update.Message.Chat.Id, cancellationToken);
-                    break;
-                case "Back":
-                    await ShowMainMenu(update.Message.Chat.Id, cancellationToken);
-                    break;
-                default:
-                    Console.WriteLine($"Unhandled message text: {update.Message.Text}");
-                    break;
+                await HandleStartSubscriptionCommandAsync(botClient, update, cancellationToken);
             }
+        }
+
+        private async Task HandleStartSubscriptionCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        {
+            var message = update.Message;
+            var command = "/start subscription";
+            var subscriptionId = Guid.Parse(message.Text.Substring(command.Length).Trim());
+            string telegramId = message.Chat.Id.ToString();
+
+            if (!await UserExistsAsync(telegramId))
+            {
+                await HandleNonExistingUser(message.Chat.Id, cancellationToken);
+                return;
+            }
+            await _client.SendTextMessageAsync(
+                message.Chat.Id,
+                "USE SAMPLE CARD ONLY 4242 4242 4242 4242",
+                cancellationToken: cancellationToken);
+            await SendInvoiceAsync(botClient ,message.Chat.Id, subscriptionId,
+                    cancellationToken);
+            
+            
         }
 
         private async Task HandleStartCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)

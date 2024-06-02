@@ -1,0 +1,62 @@
+﻿@using Radzen
+
+<RadzenCard class="w-100">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+        <RadzenImage Path="@ImagePath" Style="width: 100px; height: 100px; border-radius: 50%" AlternateText="@ImageAltText" />
+        <RadzenRow class="w-100">
+            <RadzenColumn class="flex-column justify-content-center" Style="display: flex">
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Author Name</RadzenText>
+                    <RadzenText Style="font-weight: 400"><b>@AuthorName</b></RadzenText>
+                </RadzenStack>
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Status</RadzenText>
+                    <RadzenText>@Status</RadzenText>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn class="flex-column justify-content-center" Style="display: flex">
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Started</RadzenText>
+                    <RadzenText>@StartDate</RadzenText>
+                </RadzenStack>
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Ends</RadzenText>
+                    <RadzenText>@EndDate</RadzenText>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn class="align-self-center" Size="5">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenText class="rz-mb-3" Style="text-align: center; font-size: 19px; font-weight: normal">@SubscriptionType</RadzenText>
+                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Text="@SubscriptionPrice" Style="@RadzenBadgeStyle" class="justify-content-center align-items-center" />
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+    <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+    <RadzenRow>
+        <RadzenColumn Size="12" class="justify-content-between" Style="display: flex">
+            @if(Status != "Canceled")
+            {
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="@CancelSubscription" @onclick:stopPropagation="true">Cancel Subscription</RadzenButton>
+            }
+            <RadzenRow>
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_active" ImageAlternateText="Notifications enabled" @onclick:stopPropagation="true"></RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_off" ImageAlternateText="Notifications disabled" @onclick:stopPropagation="true"></RadzenButton>
+            </RadzenRow>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenCard>
+
+@code
+{
+    [Parameter] public string ImagePath { get; set; }
+    [Parameter] public string ImageAltText { get; set; }
+    [Parameter] public string AuthorName { get; set; }
+    [Parameter] public string Status { get; set; }
+    [Parameter] public string StartDate { get; set; }
+    [Parameter] public string EndDate { get; set; }
+    [Parameter] public string SubscriptionType { get; set; }
+    [Parameter] public string SubscriptionPrice { get; set; }
+    [Parameter] public string RadzenBadgeStyle { get; set; }
+    [Parameter] public EventCallback CancelSubscription { get; set; }
+}

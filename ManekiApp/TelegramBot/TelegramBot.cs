@@ -1,4 +1,5 @@
-using ManekiApp.TelegramBot.Models;
+using ManekiApp.Server.Models;
+using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -17,6 +18,7 @@ public class TelegramBot
     {
         _serviceScopeFactory = serviceScopeFactory;
         _client = new TelegramBotClient(botToken);
+        
     }
 
     public async Task Start()
@@ -48,7 +50,41 @@ public class TelegramBot
         cts.Cancel();
     }
 
-    private static async Task HandleUpdateAsync(IServiceProvider services, ITelegramBotClient botClient,
+    public async Task NotifyUsersAsync(IServiceProvider services,Guid authorPageId)
+    {   
+        using var scope = services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+        var author = await dbContext.AuthorPages.FirstOrDefaultAsync(u => u.Id == authorPageId);
+        if (author == null)
+        {
+            return;
+        }
+
+        var authorName = author.Title;
+
+        var subscriptionsIds = dbContext.Subscriptions
+            .Where(x => x.AuthorPageId == authorPageId)
+            .Select(x=>x.Id)
+            .ToList();
+        var subscribersIds = dbContext.UserSubscriptions
+            .Where(x => subscriptionsIds.Contains(x.SubscriptionId))
+            .Select(x => x.UserId)
+            .Distinct()
+            .ToList();
+        var chatIds = dbContext.UserChatNotification
+            .Where(x => subscribersIds.Contains(x.UserId) && !string.IsNullOrEmpty(x.TelegramChatId))
+            .Select(x => long.Parse(x.TelegramChatId))
+            .ToList();
+
+        await Task.WhenAll(chatIds.Select(async chatId =>
+        {
+            await _client.SendTextMessageAsync(new ChatId(chatId), $"{authorName} Create new post");
+        }));
+
+
+    }
+    
+    private async Task HandleUpdateAsync(IServiceProvider services, ITelegramBotClient botClient,
         Update update, CancellationToken cancellationToken)
     {
         if (update.Message is not { } message)
@@ -57,71 +93,99 @@ public class TelegramBot
             return;
 
         var chatId = message.Chat.Id;
-
         Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
         // Get relevant services
         var context = services.GetRequiredService<ApplicationIdentityDbContext>();
-        var scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
 
-        var user = await context.Users.FirstOrDefaultAsync(u => u.TelegramId == chatId.ToString(), cancellationToken);
-
+        var user = await GetUserAsync(context, chatId.ToString(), cancellationToken);
         if (user == null)
         {
             await botClient.SendTextMessageAsync(chatId, "User does not exist.", cancellationToken: cancellationToken);
             return;
         }
 
-        using (var scope = scopeFactory.CreateScope())
+        using var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+
+        await HandleUserChatNotificationAsync(dbContext, user, chatId.ToString(), cancellationToken);
+
+        if (await IsUserVerifiedAsync(dbContext, user, cancellationToken))
         {
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+            await botClient.SendTextMessageAsync(chatId, "Your account has already been successfully verified.", cancellationToken: cancellationToken);
+            return;
+        }
 
-            // Get existing code or generate a new one
+        await HandleUserVerificationCodeAsync(dbContext, botClient, chatId, user, cancellationToken);
+    }
 
-            if (await dbContext.Users.FirstOrDefaultAsync(c => c.TelegramConfirmed && c.Id == user.Id, cancellationToken: cancellationToken) != null)
+    private async Task<ApplicationUser?> GetUserAsync(ApplicationIdentityDbContext context, string chatId, CancellationToken cancellationToken)
+    {
+        return await context.Users.FirstOrDefaultAsync(u => u.TelegramId == chatId, cancellationToken);
+    }
+
+    private async Task HandleUserChatNotificationAsync(ApplicationIdentityDbContext dbContext, ApplicationUser user, string chatId, CancellationToken cancellationToken)
+    {
+        var userChatNotification = await dbContext.UserChatNotification.FirstOrDefaultAsync(n => n.UserId == user.Id, cancellationToken);
+
+        if (userChatNotification == null)
+        {
+            userChatNotification = new UserChatNotification
             {
-                await botClient.SendTextMessageAsync(chatId, $"Your account has already been successfully verified.",
-                    cancellationToken: cancellationToken);
-                return;
-            }
-            
-            var existingCode =
-                await dbContext.UserVerificationCodes.FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken);
-            if (existingCode != null)
+                UserId = user.Id,
+                TelegramChatId = chatId
+            };
+            await dbContext.UserChatNotification.AddAsync(userChatNotification, cancellationToken);
+        }
+        else if (userChatNotification.TelegramChatId != chatId)
+        {
+            userChatNotification.TelegramChatId = chatId;
+            dbContext.UserChatNotification.Update(userChatNotification);
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<bool> IsUserVerifiedAsync(ApplicationIdentityDbContext dbContext, ApplicationUser user, CancellationToken cancellationToken)
+    {
+        return await dbContext.Users.AnyAsync(c => c.TelegramConfirmed && c.Id == user.Id, cancellationToken);
+    }
+
+    private async Task HandleUserVerificationCodeAsync(ApplicationIdentityDbContext dbContext, ITelegramBotClient botClient, long chatId, ApplicationUser user, CancellationToken cancellationToken)
+    {
+        var existingCode = await dbContext.UserVerificationCodes.FirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken);
+        if (existingCode != null)
+        {
+            if (existingCode.ExpiryTime <= DateTime.UtcNow)
             {
-                if (existingCode.ExpiryTime <= DateTime.UtcNow)
-                {
-                    // Generate a new code and update expiry time
-                    existingCode.Code = CodeGenerator.GenerateCode();
-                    existingCode.ExpiryTime = DateTime.UtcNow.AddMinutes(15);
+                existingCode.Code = CodeGenerator.GenerateCode();
+                existingCode.ExpiryTime = DateTime.UtcNow.AddMinutes(15);
 
-                    dbContext.UserVerificationCodes.Update(existingCode);
-                    await dbContext.SaveChangesAsync(cancellationToken);
-                }
-
-                await botClient.SendTextMessageAsync(chatId, $"We've generated a new code for you: {existingCode.Code}",
-                    cancellationToken: cancellationToken);
-            }
-            else
-            {
-                // Create a new UserVerificationCode
-                var newCode = CodeGenerator.GenerateCode();
-                var verificationCode = new UserVerificationCode
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = user.Id,
-                    Code = newCode,
-                    ExpiryTime = DateTime.UtcNow.AddMinutes(15)
-                };
-
-                await dbContext.UserVerificationCodes.AddAsync(verificationCode, cancellationToken);
+                dbContext.UserVerificationCodes.Update(existingCode);
                 await dbContext.SaveChangesAsync(cancellationToken);
-
-                await botClient.SendTextMessageAsync(chatId, $"We've generated a new code for you: {newCode}",
-                    cancellationToken: cancellationToken);
             }
+
+            await botClient.SendTextMessageAsync(chatId, $"We've generated a new code for you: {existingCode.Code}", cancellationToken: cancellationToken);
+        }
+        else
+        {
+            var newCode = CodeGenerator.GenerateCode();
+            var verificationCode = new UserVerificationCode
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Code = newCode,
+                ExpiryTime = DateTime.UtcNow.AddMinutes(15)
+            };
+
+            await dbContext.UserVerificationCodes.AddAsync(verificationCode, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            await botClient.SendTextMessageAsync(chatId, $"We've generated a new code for you: {newCode}", cancellationToken: cancellationToken);
         }
     }
+
+
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
         CancellationToken cancellationToken)
