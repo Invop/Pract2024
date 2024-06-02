@@ -46,6 +46,9 @@ namespace ManekiApp.Client.Pages
         protected bool PostExists = true;
         protected Server.Models.ManekiAppDB.Post Post = new Post();
         protected Server.Models.ManekiAppDB.AuthorPage Author = new Server.Models.ManekiAppDB.AuthorPage();
+
+        protected bool isUserAuthor = false;
+        protected bool isContentVisible = true;
         
         private async Task<ODataServiceResult<Server.Models.ManekiAppDB.Post>> GetPostById(Guid postId)
         {
@@ -61,15 +64,17 @@ namespace ManekiApp.Client.Pages
             return authorOData;
         }
         
+        private async Task<ODataServiceResult<UserSubscription>> GetUserSubscriptionsByUserAndAuthor(string userId, Guid authorPageId)
+        {
+            var filter = $"UserId eq '{userId}' and Subscription/AuthorPageId eq {authorPageId}";
+            var userSubscriptionsOData = await ManekiAppDbService.GetUserSubscriptions(filter: filter, expand: "Subscription");
+            return userSubscriptionsOData;
+        }
+        
         protected override async Task OnInitializedAsync()
         {
-            Guid postId;
-            if (!Guid.TryParse(Id, out postId))
-            {
-                PostExists = false;
-                return;
-            }
-
+            if (checkPostExistance(out var postId)) return;
+            
             try
             {
                 var postOData = await GetPostById(postId);
@@ -78,6 +83,17 @@ namespace ManekiApp.Client.Pages
                     Post = postOData.Value.First();
                     var authorOData = await GetAuthorById(Post.AuthorPageId);
                     Author = authorOData.Value.FirstOrDefault();
+
+                    isUserAuthor = Author.UserId.Equals(Security.User.Id);
+                    
+                    if (Post.MinLevel != 0 && !isUserAuthor)
+                    {
+                        isContentVisible = await checkUserSubscriptions();
+                    }
+                    else
+                    {
+                        isContentVisible = true;
+                    }
                 }
                 else
                 {
@@ -89,6 +105,36 @@ namespace ManekiApp.Client.Pages
                 errorVisible = true;
                 error = e.Message;
             }
+        }
+
+        private async Task<bool> checkUserSubscriptions()
+        {
+            var userSubscriptionsOData = await GetUserSubscriptionsByUserAndAuthor(Security.User.Id, Author.Id);
+            var userSubscriptions = userSubscriptionsOData.Value.ToList();
+
+            foreach (var subscription in userSubscriptions)
+            {
+                if (subscription.Subscription.PermissionLevel >= Post.MinLevel &&
+                    subscription.EndsAt >= DateTimeOffset.UtcNow) return true;
+            }
+
+            return false;
+        }
+
+        private bool checkPostExistance(out Guid postId)
+        {
+            if (!Guid.TryParse(Id, out postId))
+            {
+                PostExists = false;
+                return true;
+            }
+
+            return false;
+        }
+
+        protected void redirectToAuthorPage()
+        {
+            NavigationManager.NavigateTo($"/author/{Author.Id.ToString()}");
         }
     }
 }
