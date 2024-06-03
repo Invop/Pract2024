@@ -37,14 +37,17 @@ namespace ManekiApp.Client.Pages
         [Inject]
         protected ManekiAppDBService ManekiAppDBService { get; set; }
 
-        private List<Post> userFeedPosts = new List<Post>();
-        private IEnumerable<UserSubscription> userSubscriptions = new List<UserSubscription>();
-        private IEnumerable<Subscription> subscriptions = new List<Subscription>();
-        private IEnumerable<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> authorsUserFollows = new List<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>();        
+        protected List<Post> userFeedPosts = new List<Post>();
+        protected IEnumerable<UserSubscription> userSubscriptions = new List<UserSubscription>();
+        protected IEnumerable<Subscription> subscriptions = new List<Subscription>();
+        protected IEnumerable<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> authorsUserFollows = new List<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>();        
         protected override async Task OnInitializedAsync()
         {
-            var userId = Security.User.Id;
-            await LoadFeedData(userId);
+            if (Security.User != null && !string.IsNullOrEmpty(Security.User.Id))
+            {
+                var userId = Security.User.Id;
+                await LoadFeedData(userId);
+            }
         }
 
         private async Task LoadFeedData(string userId)
@@ -89,7 +92,7 @@ namespace ManekiApp.Client.Pages
             if (authorIds.Any())
             {
                 var postsFilter = string.Join(" or ", authorIds.Select(id => $"AuthorPageId eq {id}"));
-                var postsOData = await ManekiAppDBService.GetPosts(filter: postsFilter, top: 10);
+                var postsOData = await ManekiAppDBService.GetPosts(filter: postsFilter, top: 10, expand: "AuthorPage");
                 userFeedPosts = postsOData.Value.OrderByDescending(post => post.CreatedAt).ToList();
             }
         }
