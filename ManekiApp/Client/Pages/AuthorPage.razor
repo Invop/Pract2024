@@ -8,42 +8,47 @@
 <RadzenRow>
     <RadzenCard class="w-100">
 
-        <RadzenStack Orientation="Orientation.Horizontal">
-        
-            <RadzenImage class="profile-image" Path="https://img.freepik.com/free-photo/handsome-bearded-guy-posing-against-white-wall_273609-20597.jpg?t=st=1716472097~exp=1716475697~hmac=f23aa707818b77aad241567ecf19ebb18d9a964315e01f92210ffb8c630133b9&w=996" Style="width: 250px; border-radius: 50%; height: 250px; margin-left: 30px; margin-right: 30px"></RadzenImage>
+        @if (author != null && author.User != null)
+        {
+            <RadzenStack Orientation="Orientation.Horizontal">
+
+                <RadzenImage class="profile-image" Path="@(
+                                                         author.ProfileImage != null ?
+                                                             $"data:image/jpeg;base64,{author.ProfileImage}" :
+                                                             $"https://ui-avatars.com/api/?name={author.Title}"
+                                                         )" Style="width: 250px; border-radius: 50%; height: 250px; margin-left: 30px; margin-right: 30px"></RadzenImage>            
+                <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
             
-            <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
-            
-                <RadzenRow Orientation="Orientation.Vertical" Gap="">
-                    <RadzenStack Gap=5 >
+                    <RadzenRow Orientation="Orientation.Vertical" Gap="">
+                        <RadzenStack Gap=5 >
                         
-                        <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 30px; color: #000000"><b>username</b></RadzenText>
-                        <RadzenText TextStyle="TextStyle.Overline" Style="font-size: 15px; font-weight: 500; color: #605f5f">Name Surname</RadzenText>
-                        <RadzenText TextStyle="TextStyle.Overline" Style="font-size: 12px; color: #605f5f; font-weight: 400">30 years</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 30px; color: #000000"><b>@author.User.UserName</b></RadzenText>
+                        
 
-                        <RadzenText Style="font-weight: 400; color: #000000" >Creating awesome content for you</RadzenText>
-                    </RadzenStack>
-                </RadzenRow>
+                            <RadzenText Style="font-weight: 400; color: #000000" >@author.Title</RadzenText>
+                        </RadzenStack>
+                    </RadzenRow>
 
 
-                <RadzenRow>
-                    <RadzenColumn>
-                        <RadzenText Style="font-weight: 500; color: #000000" >3 publications</RadzenText>
-                    </RadzenColumn>
+                    <RadzenRow>
+                        <RadzenColumn>
+                            <RadzenText Style="font-weight: 500; color: #000000" >@($"{author.Posts.Count} publications")</RadzenText>
+                        </RadzenColumn>
 
-                    <RadzenColumn>
-                        <RadzenText Style="font-weight: 500; color: #000000" >30 subscribers</RadzenText>
-                    </RadzenColumn>
-                </RadzenRow>
+                        <RadzenColumn>
+                            <RadzenText Style="font-weight: 500; color: #000000" >@($"{author.Subscriptions.Count} subscribers")</RadzenText>
+                        </RadzenColumn>
+                    </RadzenRow>
 
-                <RadzenRow>
-                    <RadzenButton Text="Subscribe for free" Style="background-color: #58a45b; border-radius: 10px; border: 1px solid #3e633f"></RadzenButton>
-                    <RadzenButton Text="Edit page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" />
+                    <RadzenRow>
+                        <RadzenButton Text="Subscribe for free" Style="background-color: #58a45b; border-radius: 10px; border: 1px solid #3e633f"></RadzenButton>
+                        <RadzenButton Text="Edit page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" />
 
-                </RadzenRow>
+                    </RadzenRow>
 
+                </RadzenStack>
             </RadzenStack>
-        </RadzenStack>
+        }
     </RadzenCard>
 </RadzenRow>
 

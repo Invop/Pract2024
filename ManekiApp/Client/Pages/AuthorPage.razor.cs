@@ -41,17 +41,43 @@ namespace ManekiApp.Client.Pages
 
         private Guid authorId;
         private IEnumerable<Subscription> subscriptions = new List<Subscription>();
+
+        private Server.Models.ManekiAppDB.AuthorPage author = new Server.Models.ManekiAppDB.AuthorPage();
         
         protected override async Task OnInitializedAsync()
         {
-            var authorPage = await ManekiAppDB.GetAuthorPageById(id:AuthorPageId);
-            var filter = $"AuthorPageId eq {AuthorPageId}";
-            var subscriptionsOData = await ManekiAppDB.GetSubscriptions(filter:filter);
-            subscriptions = subscriptionsOData.Value;
+            try
+            {
+                await LoadAuthorData();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading author data: {ex.Message}");
+            }
+            
         }
+
+        private async Task LoadAuthorData()
+        {
+            author = await ManekiAppDB.GetAuthorPageById(id: AuthorPageId);
+            if (author != null)
+            {
+                Console.WriteLine($"Loaded Author: {author.Title}");
+                var filter = $"AuthorPageId eq {AuthorPageId}";
+                var subscriptionsOData = await ManekiAppDB.GetSubscriptions(filter: filter);
+                subscriptions = subscriptionsOData.Value;
+                author.Subscriptions = subscriptions.ToList();
+                author.Posts = (await ManekiAppDB.GetPosts(filter: filter)).Value.ToList();
+            }
+            else
+            {
+                Console.WriteLine("Author is null");
+            }
+        }
+
         private void NavigateToEditPage()
         {
-            NavigationManager.NavigateTo("/edit-author-page");
+            NavigationManager.NavigateTo($"/edit-author-page/{AuthorPageId}");        
         }
     }
 }
