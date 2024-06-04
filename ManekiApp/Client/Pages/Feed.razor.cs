@@ -58,7 +58,7 @@ namespace ManekiApp.Client.Pages
         }
 
         private async Task LoadUserSubscriptions(string userId)
-            // завантажує підписки користувача з бд
+            // loads user subscriptions from the database
         {
             var filter = $"UserId eq '{userId}'";
             var userSubscriptionsOData = await ManekiAppDBService.GetUserSubscriptions(filter: filter);
@@ -66,7 +66,7 @@ namespace ManekiApp.Client.Pages
         }
 
         private async Task LoadAuthorsAndSubscriptions()
-        // завантажує авторів та їх підписки з бд
+        // loads authors and their subscriptions from the database
         {
             var subscriptionIds = userSubscriptions.Select(sub => sub.SubscriptionId).ToList();
             if (subscriptionIds.Any())
@@ -86,14 +86,31 @@ namespace ManekiApp.Client.Pages
         }
 
         private async Task LoadPostsFromFollowedAuthors()
-            // завантажує пости від авторів, на яких підписаний користувач
+            // loads posts from authors on which the user is subscribed
         {
             var authorIds = authorsUserFollows.Select(author => author.Id).ToList();
             if (authorIds.Any())
             {
                 var postsFilter = string.Join(" or ", authorIds.Select(id => $"AuthorPageId eq {id}"));
                 var postsOData = await ManekiAppDBService.GetPosts(filter: postsFilter, top: 10, expand: "AuthorPage");
-                userFeedPosts = postsOData.Value.OrderByDescending(post => post.CreatedAt).ToList();
+                var allPosts = postsOData.Value;
+
+                // apply filtering based on subscription level
+                userFeedPosts = allPosts.Where(post => 
+                    {
+                        var subscription = subscriptions.FirstOrDefault(sub => sub.AuthorPageId == post.AuthorPageId);
+                        if (subscription != null)
+                        {
+                            var userSubscription = userSubscriptions.FirstOrDefault(us => us.SubscriptionId == subscription.Id);
+                            if (userSubscription != null)
+                            {
+                                return subscription.PermissionLevel >= post.MinLevel;
+                            }
+                        }
+                        return false;
+                    })
+                    .OrderByDescending(post => post.CreatedAt)
+                    .ToList();
             }
         }
     }
