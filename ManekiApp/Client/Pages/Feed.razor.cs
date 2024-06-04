@@ -61,7 +61,7 @@ namespace ManekiApp.Client.Pages
             // loads user subscriptions from the database
         {
             var filter = $"UserId eq '{userId}'";
-            var userSubscriptionsOData = await ManekiAppDBService.GetUserSubscriptions(filter: filter);
+            var userSubscriptionsOData = await ManekiAppDBService.GetUserSubscriptions(filter: filter, expand: "Subscription");
             userSubscriptions = userSubscriptionsOData.Value;
         }
 
@@ -98,14 +98,15 @@ namespace ManekiApp.Client.Pages
                 // apply filtering based on subscription level
                 userFeedPosts = allPosts.Where(post =>
                     {
-                        var subscription = subscriptions.FirstOrDefault(sub => sub.AuthorPageId == post.AuthorPageId);
-                        if (subscription != null)
+                        var userSubscriptionsToCurrentAuthor = userSubscriptions
+                            .Where(sub => sub.Subscription.AuthorPageId == post.AuthorPageId);
+                        
+                        foreach(var subscription in userSubscriptionsToCurrentAuthor)
                         {
-                            var userSubscription =
-                                userSubscriptions.FirstOrDefault(us => us.SubscriptionId == subscription.Id);
-                            if (userSubscription != null)
+                            if (subscription.Subscription.PermissionLevel >= post.MinLevel &&
+                                subscription.EndsAt >= DateTimeOffset.UtcNow)
                             {
-                                return subscription.PermissionLevel >= post.MinLevel;
+                                return true;
                             }
                         }
 
