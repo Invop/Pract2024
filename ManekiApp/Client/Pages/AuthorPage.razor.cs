@@ -68,6 +68,14 @@ namespace ManekiApp.Client.Pages
                 subscriptions = subscriptionsOData.Value;
                 author.Subscriptions = subscriptions.ToList();
                 author.Posts = (await ManekiAppDB.GetPosts(filter: filter)).Value.ToList();
+                if (!string.IsNullOrEmpty(author.SocialLinks))
+                {
+                    Console.WriteLine($"Social Links: {author.SocialLinks}");
+                }
+                else
+                {
+                    Console.WriteLine("No social links provided");
+                }
             }
             else
             {
@@ -79,5 +87,36 @@ namespace ManekiApp.Client.Pages
         {
             NavigationManager.NavigateTo($"/edit-author-page/{AuthorPageId}");        
         }
+        
+        private IEnumerable<string> GetSocialLinks()
+        {
+            var links = new List<string>();
+            if (!string.IsNullOrEmpty(author.SocialLinks))
+            {
+                var socialLinks = author.SocialLinks.Split(',');
+                var icons = new Dictionary<string, string>
+                {
+                    { "youtube", "/images/youtube.png" },
+                    { "instagram", "/images/instagram.png" },
+                    { "telegram", "/images/telegram.png" },
+                    { "tiktok", "/images/tiktok.png" },
+                    { "facebook", "/images/facebook.png" },
+                    { "twitter", "/images/twitter.png" },
+                    { "twitch", "/images/twitch.png" },
+                    { "pinterest", "/images/pinterest.png" }
+                };
+
+                foreach (var social in socialLinks)
+                {
+                    var key = social.Split(':')[0];
+                    if (icons.ContainsKey(key))
+                    {
+                        links.Add(icons[key]);
+                    }
+                }
+            }
+            return links;
+        }
+        
     }
 }
