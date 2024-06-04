@@ -40,9 +40,16 @@
                                                                     )" Style="width: 2rem; border-radius: 50%; height: 2rem"></RadzenImage>
 
                             <RadzenStack Gap=5 Style="margin-right: 15px" JustifyContent="JustifyContent.SpaceEvenly">
-                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex  rz-my-0" Style="font-size: 12px">@post.AuthorPage.Title</RadzenText>                            </RadzenStack>
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex  rz-my-0" Style="font-size: 12px">@post.AuthorPage.Title</RadzenText>                            
+                            </RadzenStack>
+                            
                         </RadzenStack>
-                        <RadzenText Text="@post.CreatedAt.ToString("'Posted at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" Style="margin-bottom: 0px"/>
+                        <RadzenText Text="@post.CreatedAt.ToString("'Posted at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" Style="margin-bottom:0px"/>
+                        
+                        @if (post.CreatedAt != post.EditedAt)
+                        {
+                            <RadzenText Text="@post.EditedAt.ToString("'Edited at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" Style="margin-bottom: 0px; margin-top: 10px;"/>
+                        }
                     </RadzenCard>
                 </RadzenStack>
                 
