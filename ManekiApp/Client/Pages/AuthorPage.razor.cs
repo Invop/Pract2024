@@ -109,14 +109,13 @@ namespace ManekiApp.Client.Pages
                 foreach (var social in socialLinks)
                 {
                     var key = social.Split(':')[0];
-                    if (icons.ContainsKey(key))
+                    if (icons.TryGetValue(key, out var image))
                     {
-                        links.Add(icons[key]);
+                        links.Add(image);
                     }
                 }
             }
             return links;
         }
-        
     }
 }

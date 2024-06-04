@@ -119,46 +119,63 @@
 
                         </RadzenStack>
 
-                        <RadzenStack class="w-100">
-                            <RadzenCard Style="position: relative; margin-top: 25px">
-                                <RadzenBadge Text="Blocked" Style="font-size: 16px; padding: 6px; position: absolute; right: 8px; top: 8px; background-color: #000000" BadgeStyle="BadgeStyle.Secondary"></RadzenBadge>
-                                <RadzenText Text="Very interesting post title" TextStyle="TextStyle.H4" TagName="TagName.H1"/>
-                                <RadzenText Text="Created at 13:50 27.05.2024" TextStyle="TextStyle.Overline" TagName="TagName.P" Style="font-size: 13px; font-weight: 500; margin-top: 10px; margin-bottom: 10px; color: #605f5f"/>
-                                <RadzenText Text="Edited at 13:50 27.05.2024" TextStyle="TextStyle.Overline" TagName="TagName.P" Style="font-size: 13px; font-weight: 500; margin-top: 10px; margin-bottom: 10px; color: #605f5f"/>
+                        <RadzenColumn Size="12">
+                            @if (author.Posts.Any())
+                            {
+                                @foreach (var post in author.Posts)
+                                {
+                                    <RadzenStack class="w-100">
+                                        <RadzenCard Style="position: relative; margin-top: 25px">
+                                            <RadzenBadge Text="Blocked" Style="font-size: 16px; padding: 6px; position: absolute; right: 8px; top: 8px; background-color: #000000" BadgeStyle="BadgeStyle.Secondary"></RadzenBadge>
+                                            <RadzenText Text="@post.Title" TextStyle="TextStyle.H4" TagName="TagName.H1"/>
+                                            
+                                            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
+                                            
+                                            <RadzenHtml>
+                                                @((MarkupString)post.Content)
+                                            </RadzenHtml>
+                                            
+                                            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
+                                            
+                                            @if (post.Images != null && post.Images.Any())
+                                            {
+                                                <RadzenRow>
+                                                    <RadzenStack Orientation="Orientation.Horizontal" Class="image-grid" Wrap="FlexWrap.Wrap" Gap="0">
+                                                        @foreach (var image in post.Images)
+                                                        {
+                                                            <RadzenImage Class="post-image" Path="@($"data:image/jpeg;base64,{image.Data}")" />
+                                                        }
+                                                    </RadzenStack>
+                                                </RadzenRow>
+                                            }
+                                            
+                                            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
+                                            
+                                            <RadzenText Text="@post.CreatedAt.ToString("'Posted at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" Style="margin-bottom:0px"/>
+                                            @if (post.CreatedAt != post.EditedAt)
+                                            {
+                                                <RadzenText Text="@post.EditedAt.ToString("'Edited at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" Style="margin-bottom: 0px; margin-top: 10px;"/>
+                                            }
 
+                                            <RadzenRow>
+                                                <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center" Style="margin-top: 20px">
+                                                    <RadzenButton class="w-50" Text="Edit post" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000"/>
+                                                    <RadzenButton class="w-50" Text="Get subscription access" Style="background-color: #58a45b; border: 1px solid #456c47; border-radius: 10px; color: #ffffff; font-weight: 600" Icon="lock_open"/>
+                                                </RadzenStack>
+                                            </RadzenRow>
 
-                                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
-                                <RadzenHtml>
-                                    <h1>Placeholder Title</h1>
-                                    <p>This is a placeholder paragraph. Replace this text with your content.</p>
-                                    <div>
-                                        <h2>Section Title</h2>
-                                        <p>More placeholder content goes here.</p>
-                                    </div>
-                                </RadzenHtml>
-                                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
-                                <RadzenRow>
-                                    <RadzenStack Orientation="Orientation.Horizontal" Class="image-grid" Wrap="FlexWrap.Wrap" Gap="0">
-                                        <RadzenImage Class="post-image"/>
-                                        <RadzenImage class="post-image"/>
-                                        <RadzenImage class="post-image"/>
-                                        <RadzenImage class="post-image"/>
-                                        <RadzenImage class="post-image"/>
-                                        <RadzenImage class="post-image"/>
+                                        </RadzenCard>
                                     </RadzenStack>
-                                </RadzenRow>
-
-                                <RadzenRow>
-                                    <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center" Style="margin-top: 20px">
-                                        <RadzenButton class="w-50" Text="Edit post" Variant="Variant.Flat" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000"/>
-                                        <RadzenButton class="w-50" Text="Get subscription access" Style="background-color: #58a45b; border: 1px solid #456c47; border-radius: 10px; color: #ffffff; font-weight: 600" Icon="lock_open"/>
-                                    </RadzenStack>
-                                </RadzenRow>
-
-                            </RadzenCard>
-                        </RadzenStack>
+                                }
+                            }
+                            else
+                            {
+                                <RadzenText Text="No posts available." TextStyle="TextStyle.H4" TagName="TagName.H1" />
+                            }
+                        </RadzenColumn>
                     </RadzenRow>
                 </RadzenStack>
+
             </RadzenTabsItem>
 
             <RadzenTabsItem Text="About the author">
