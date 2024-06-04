@@ -6,7 +6,7 @@
 <RadzenRow>
 
     <RadzenColumn Size="12" class="text-center">
-        <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H3" Style="">
+        <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H3" Style="font-size: 40px;">
              <b>The last 10 posts available to you</b>
         </RadzenText>
     </RadzenColumn>
@@ -18,7 +18,9 @@
             {
                 <RadzenStack Style="background-color: #eee6e6; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <RadzenCard Style="position: relative">
-                        <RadzenText Text="@post.Title" TextStyle="TextStyle.H4" TagName="TagName.H1"/>
+                        <a href="@($"/post/{post.Id}")" style="text-decoration: none;" target="_blank">
+                            <RadzenText Text="@post.Title" TextStyle="TextStyle.H4" TagName="TagName.H1" Style="color:#1c0abe;"/>
+                        </a>
                         <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
                         <RadzenHtml>
                             @((MarkupString)post.Content)
