@@ -4,6 +4,12 @@
 
 <PageTitle>Feed</PageTitle>
 <RadzenRow>
+
+    <RadzenColumn Size="12" class="text-center">
+        <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H3" Style="">
+             <b>The last 10 posts available to you</b>
+        </RadzenText>
+    </RadzenColumn>
     <RadzenColumn Size="12">
 
         @if (userFeedPosts.Any() && userFeedPosts != null )
