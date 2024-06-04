@@ -92,24 +92,27 @@ namespace ManekiApp.Client.Pages
             if (authorIds.Any())
             {
                 var postsFilter = string.Join(" or ", authorIds.Select(id => $"AuthorPageId eq {id}"));
-                var postsOData = await ManekiAppDBService.GetPosts(filter: postsFilter, top: 10, expand: "AuthorPage");
+                var postsOData = await ManekiAppDBService.GetPosts(filter: postsFilter, expand: "AuthorPage");
                 var allPosts = postsOData.Value;
 
                 // apply filtering based on subscription level
-                userFeedPosts = allPosts.Where(post => 
+                userFeedPosts = allPosts.Where(post =>
                     {
                         var subscription = subscriptions.FirstOrDefault(sub => sub.AuthorPageId == post.AuthorPageId);
                         if (subscription != null)
                         {
-                            var userSubscription = userSubscriptions.FirstOrDefault(us => us.SubscriptionId == subscription.Id);
+                            var userSubscription =
+                                userSubscriptions.FirstOrDefault(us => us.SubscriptionId == subscription.Id);
                             if (userSubscription != null)
                             {
                                 return subscription.PermissionLevel >= post.MinLevel;
                             }
                         }
+
                         return false;
                     })
                     .OrderByDescending(post => post.CreatedAt)
+                    .Take(10)
                     .ToList();
             }
         }
