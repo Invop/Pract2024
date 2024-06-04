@@ -136,5 +136,10 @@ namespace ManekiApp.Client.Pages
         {
             NavigationManager.NavigateTo($"/author/{Author.Id.ToString()}");
         }
+
+        private void RedirectEditPost()
+        {
+            NavigationManager.NavigateTo($"/edit-post/{Id}");
+        }
     }
 }
