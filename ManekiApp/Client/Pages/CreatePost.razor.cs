@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.JSInterop;
@@ -89,6 +90,8 @@ namespace ManekiApp.Client.Pages
                 Post.MinLevel = minLevelValue;
 
                 await ManekiAppDBService.CreatePost(post);
+
+                await sendNotificationRequest(currentAuthor.Id);
                 
                 NavigationManager.NavigateTo($"/post/{Post.Id}");
             }
@@ -97,6 +100,41 @@ namespace ManekiApp.Client.Pages
                 errorVisible = true;
                 error = ex.Message;
             }
+        }
+
+        private async Task sendNotificationRequest(Guid authorId)
+        {
+            string baseAddress = "http://localhost:7033/notify/";
+
+            // Combine the base address with the authorId
+            string requestUri = $"{baseAddress}{authorId}";
+
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    // Prepare the request content if necessary
+                    HttpContent content = new StringContent("");
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                    // Send the POST request
+                    HttpResponseMessage response = await client.PostAsync(requestUri, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Notification sent successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to send notification. Status code: {response.StatusCode}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                }
+            }
+            
         }
 
         private void EnablePreview()
