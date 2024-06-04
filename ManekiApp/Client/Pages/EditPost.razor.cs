@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.JSInterop;
@@ -12,7 +11,7 @@ using Radzen.Blazor;
 
 namespace ManekiApp.Client.Pages
 {
-    public partial class CreatePost
+    public partial class EditPost
     {
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
@@ -34,10 +33,16 @@ namespace ManekiApp.Client.Pages
 
         [Inject]
         protected SecurityService Security { get; set; }
-
+        
         [Inject] 
         protected ManekiAppDBService ManekiAppDBService { get; set; }
+        
+        [Parameter]
+        public string Id { get; set; }
 
+        protected bool PostExists = true;
+        protected bool isAuthor = true;
+        
         protected bool isPreview = false;
         protected string PostTime;
 
@@ -50,11 +55,11 @@ namespace ManekiApp.Client.Pages
         protected int minLevelValue = 0;
         protected IEnumerable<Subscription> subscriptions;
 
-        private async Task<ODataServiceResult<Server.Models.ManekiAppDB.AuthorPage>> GetAuthorPagesOData(string userId)
+        private async Task<ODataServiceResult<Server.Models.ManekiAppDB.Post>> GetPostById(Guid postId)
         {
-            var filter = $"UserId eq '{userId}'";
-            var authorPagesOData = await ManekiAppDBService.GetAuthorPages(filter: filter);
-            return authorPagesOData;
+            var filter = $"Id eq {postId}";
+            var postOData = await ManekiAppDBService.GetPosts(filter: filter, expand: "AuthorPage");
+            return postOData;
         }
 
         private async Task<ODataServiceResult<Server.Models.ManekiAppDB.Subscription>> GetSubscriptionsByAuthorPageOData(Guid authorPageId)
@@ -63,35 +68,66 @@ namespace ManekiApp.Client.Pages
             var subscriptionsOData = await ManekiAppDBService.GetSubscriptions(filter: filter);
             return subscriptionsOData;
         }
-
+        
         protected override async Task OnInitializedAsync()
         {
-            var authorPagesOData = await GetAuthorPagesOData(Security.User.Id);
-            if (authorPagesOData.Value.Any())
+            if (validateGuid(out var postId)) return;
+            
+            try
             {
-                currentAuthor = authorPagesOData.Value.First();
-                var subscriptionsOData = await GetSubscriptionsByAuthorPageOData(currentAuthor.Id);
-                subscriptions = subscriptionsOData.Value.ToList();
+                var postOData = await GetPostById(postId);
+                if (postOData.Value.Any())
+                {
+                    if (!checkIsAuthor(postOData.Value.First()))
+                    {
+                        isAuthor = false;
+                        return;
+                    }
+                    
+                    Post = postOData.Value.First();
+                    var subscriptionsOData = await GetSubscriptionsByAuthorPageOData(Post.AuthorPageId);
+                    subscriptions = subscriptionsOData.Value.ToList();
+                    
+                    minLevelValue = Post.MinLevel;
+                    currentAuthor = Post.AuthorPage;
+                }
+                else
+                {
+                    PostExists = false;
+                }
             }
-            else
+            catch (Exception e)
             {
-                NavigationManager.NavigateTo("/create-author-page");
+                errorVisible = true;
+                error = e.Message;
             }
             
+        }
+
+        private bool checkIsAuthor(Post post)
+        {
+            return post.AuthorPage.UserId.Equals(Security.User.Id);
+        }
+
+        private bool validateGuid(out Guid postId)
+        {
+            if (!Guid.TryParse(Id, out postId))
+            {
+                PostExists = false;
+                return true;
+            }
+
+            return false;
         }
         
         protected async Task FormSubmit(ManekiApp.Server.Models.ManekiAppDB.Post post)
         {
             try
             {
-                Post.CreatedAt = DateTimeOffset.UtcNow;
-                Post.EditedAt = Post.CreatedAt;
-                Post.AuthorPageId = currentAuthor.Id;
+                Post.EditedAt = DateTimeOffset.UtcNow;
                 Post.MinLevel = minLevelValue;
 
-                await ManekiAppDBService.CreatePost(post);
-
-                await sendNotificationRequest(currentAuthor.Id);
+                await ManekiAppDBService.UpdatePost(Post.Id, Post);
                 
                 NavigationManager.NavigateTo($"/post/{Post.Id}");
             }
@@ -100,41 +136,6 @@ namespace ManekiApp.Client.Pages
                 errorVisible = true;
                 error = ex.Message;
             }
-        }
-
-        private async Task sendNotificationRequest(Guid authorId)
-        {
-            string baseAddress = "http://localhost:7033/notify/";
-
-            // Combine the base address with the authorId
-            string requestUri = $"{baseAddress}{authorId}";
-
-            using (HttpClient client = new HttpClient())
-            {
-                try
-                {
-                    // Prepare the request content if necessary
-                    HttpContent content = new StringContent("");
-                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                    // Send the POST request
-                    HttpResponseMessage response = await client.PostAsync(requestUri, content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Console.WriteLine("Notification sent successfully.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Failed to send notification. Status code: {response.StatusCode}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                }
-            }
-            
         }
 
         private void EnablePreview()
@@ -146,6 +147,25 @@ namespace ManekiApp.Client.Pages
         private void DisablePreview()
         {
             isPreview = false;
+        }
+
+        private void CancelEdit()
+        {
+            NavigationManager.NavigateTo($"/post/{Id}");
+        }
+
+        private async void DeletePost()
+        {
+            try
+            {
+                await ManekiAppDBService.DeletePost(Post.Id);
+                NavigationManager.NavigateTo($"/");
+            }
+            catch (Exception ex)
+            {
+                errorVisible = true;
+                error = ex.Message;
+            }
         }
     }
 }

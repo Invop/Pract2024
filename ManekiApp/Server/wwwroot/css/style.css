@@ -11,3 +11,15 @@
         width: calc(25% - 15px); 
         padding-bottom: calc(25% - 15px)
 }
+
+.blur-filter {
+    backdrop-filter: blur(6px);
+}
+
+.centered-element {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
