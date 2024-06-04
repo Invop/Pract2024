@@ -1,50 +1,67 @@
 @page "/post/{Id}"
 @attribute [Authorize]
 
-<PageTitle>ViewPost</PageTitle>
+<PageTitle>Post</PageTitle>
 <RadzenRow>
     <RadzenColumn Size="12">
-        <RadzenStack Style="background-color: #eee6e6; color: f2eeee Hex 242 R 238 G; padding: 20px; border-radius: 10px">
-            <RadzenCard Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="padding: 6px">
-                
+            <RadzenAlert Title="Cannot load a post" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
+    </RadzenColumn>
+
+    <RadzenColumn Size="12" Visible="@(PostExists)">
+        <RadzenStack Style="background-color: #eee6e6; padding: 20px; border-radius: 10px">
+            <RadzenCard Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="padding: 6px;">
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Style="background-color: rgba(225, 225, 225, 0)">
                     
-                    <RadzenImage class="profile-image" Path="https://img.freepik.com/free-photo/handsome-bearded-guy-posing-against-white-wall_273609-20597.jpg?t=st=1716472097~exp=1716475697~hmac=f23aa707818b77aad241567ecf19ebb18d9a964315e01f92210ffb8c630133b9&w=996" Style="width: 3.2rem; border-radius: 50%; height: 3.2rem"></RadzenImage>
+                    <RadzenImage class="profile-image" Path="@( 
+                                                                Author.ProfileImage != null ? 
+                                                                $"data:image/jpeg;base64,{Author.ProfileImage}" :
+                                                                $"https://ui-avatars.com/api/?name={Author.Title}"
+                                                             )"  Style="width: 3.2rem; border-radius: 50%; height: 3.2rem"></RadzenImage>
                    
                     <RadzenStack Gap=5 Style="margin-right: 15px" JustifyContent="JustifyContent.SpaceEvenly">
-                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex  rz-my-0" Style="font-size: 14px">ANTON PTUSHKIN</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex  rz-my-0" Style="font-size: 14px">@Author.Title</RadzenText>
                     </RadzenStack>
                 </RadzenStack>
 
             </RadzenCard>
 
-            <RadzenCard Style="position: relative">
-                <RadzenText Text="Posted at 15:53 February 15" TextStyle="TextStyle.Overline" TagName="TagName.Pre" />
-                <RadzenText Text="I found a cat!" TextStyle="TextStyle.H4" TagName="TagName.H1" />
+            <RadzenCard Style="position: relative; min-height: 150px">
+                <RadzenButton Style="position: absolute; right: 5px; background-color: rgba(67, 64, 210, 0); top: 5px" Icon="create" Variant="Radzen.Variant.Flat" IconColor="gray" Visible="@isUserAuthor"></RadzenButton>
+
+                <RadzenColumn Size="12" class="blur-filter flex-column" Style="position: absolute; width: calc(100% - 10px); right: 5px; height: calc(100% - 35px); bottom: 5px; display: flex; margin: 0px" Visible="@(!isContentVisible)">
+                    
+                    <RadzenColumn class="centered-element w-100">
+                        <RadzenColumn Size="12">
+                            <RadzenText class="rz-my-4 text-center" TextStyle="TextStyle.DisplayH5">To view this post you need to be a subscriber of at least level @Post.MinLevel</RadzenText>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" Style="display: flex" class="justify-content-center">
+                            <RadzenButton Click="@redirectToAuthorPage">Subscribe</RadzenButton>
+                        </RadzenColumn>
+                    </RadzenColumn>
+                    
+                </RadzenColumn>
+
+                <RadzenText Text="@Post.CreatedAt.ToString("'Posted at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" />
+                <RadzenText Text="@Post.Title" TextStyle="TextStyle.H4" TagName="TagName.H1" />
                 <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-                <RadzenHtml>
-                    <h1>Placeholder Title</h1>
-                    <p>This is a placeholder paragraph. Replace this text with your content.</p>
-                    <div>
-                        <h2>Section Title</h2>
-                        <p>More placeholder content goes here.</p>
-                    </div>
+                <RadzenHtml Visible="@isContentVisible">
+                    @((MarkupString)Post.Content)
                 </RadzenHtml>
-                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-                <RadzenRow>
-                    <RadzenStack Orientation="Orientation.Horizontal" Class="image-grid" Wrap="FlexWrap.Wrap" Gap="0">
-                        <RadzenImage Class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                        <RadzenImage class="post-image" />
-                    </RadzenStack>
-                </RadzenRow>
+                <RadzenText Visible="@(!isContentVisible)">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur pharetra eget est eu posuere. Proin id pharetra dui. Curabitur sollicitudin viverra sem, id congue elit porttitor convallis. Vivamus non sapien sollicitudin, varius felis sit amet, lacinia orci. Praesent in odio vel felis fermentum scelerisque. Ut mauris ligula, lacinia ac quam in, condimentum cursus libero. In sagittis augue nec felis imperdiet pharetra ac nec quam.
+                    Cras fermentum tincidunt orci quis suscipit. Cras consectetur consequat mollis. Morbi consectetur eu velit quis viverra. Vestibulum condimentum velit vitae augue congue auctor. Cras et porta augue. Cras ut elit urna. Quisque quis iaculis purus. In in placerat turpis, vel ultricies sapien. Mauris eu ullamcorper tortor. Sed sodales nunc sem, non dapibus mauris aliquet hendrerit. Morbi id ligula luctus, congue augue eu, efficitur arcu. Nunc ut volutpat dolor. Quisque ac aliquam arcu, et dictum justo.
+                    Aliquam ac tempor dui. Fusce maximus at ligula et condimentum. Nunc interdum, dui id scelerisque euismod, erat nunc placerat leo, ut viverra tellus est et nisi. In mollis nisl eget ipsum blandit scelerisque. Nam imperdiet lectus mi, id euismod felis pulvinar eu. Donec sagittis enim eget eleifend tristique. Sed non ligula eu velit sollicitudin rhoncus et eu neque. Aliquam bibendum mauris sed diam volutpat, hendrerit auctor orci imperdiet. Duis elementum nisl et neque accumsan, maximus ullamcorper justo accumsan.
+                    Nullam id risus justo. Phasellus nisl nunc, porttitor a sem sed, varius dapibus purus. Nam tincidunt enim vitae aliquet sollicitudin. Donec laoreet augue enim, vel pulvinar nibh vulputate nec. Cras condimentum magna vitae odio efficitur, vitae tincidunt erat sodales. Fusce at luctus odio. Sed sed massa at nisi scelerisque aliquet. Nulla et purus fermentum, viverra neque nec, dapibus sem. Duis nec dui et neque suscipit consectetur. Nam id pretium arcu. Nullam iaculis vitae enim at tincidunt. Aliquam in luctus erat. Nullam ultricies dictum ultricies. Donec suscipit elementum justo.
+                    Integer mollis magna id efficitur tempor. Curabitur malesuada odio ut libero eleifend, quis mollis sapien pharetra. Praesent ante eros, pharetra nec ex et, ultrices facilisis ex. Suspendisse faucibus dolor ex, ac malesuada tellus elementum et. Maecenas vitae risus vitae metus imperdiet vehicula sed sit amet felis. Quisque luctus non ipsum a sodales. Cras ut risus sit amet ex iaculis fringilla quis quis purus.
+                </RadzenText>
             </RadzenCard>
 
 
 
         </RadzenStack>
+    </RadzenColumn>
+    
+    <RadzenColumn Visible="@(!PostExists)">
+        <NotFound></NotFound>
     </RadzenColumn>
 </RadzenRow>
