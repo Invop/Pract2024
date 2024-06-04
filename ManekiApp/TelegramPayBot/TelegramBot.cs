@@ -355,7 +355,10 @@ namespace ManekiApp.TelegramPayBot
             {
                 decimal price = subscription.Price;
                 string title = subscription.Title;
-
+                if (price<=0)
+                {
+                    return;
+                }
                 // Create labeled price array for the invoice
                 var prices = new[] { new LabeledPrice(title, (int)(price * 100)) };
                 string invoicePayload = $"subscriptionId:{subscriptionId}";

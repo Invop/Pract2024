@@ -1,36 +1,111 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using Radzen;
-using Radzen.Blazor;
 
-namespace ManekiApp.Client.Pages
+namespace ManekiApp.Client.Pages;
+
+public partial class Analytics
 {
-    public partial class Analytics
+    [Inject] protected IJSRuntime JSRuntime { get; set; }
+
+    [Inject] protected NavigationManager NavigationManager { get; set; }
+
+    [Inject] protected DialogService DialogService { get; set; }
+
+    [Inject] protected TooltipService TooltipService { get; set; }
+
+    [Inject] protected ContextMenuService ContextMenuService { get; set; }
+
+    [Inject] protected NotificationService NotificationService { get; set; }
+
+    [Inject] protected SecurityService Security { get; set; }
+
+    [Inject] protected ManekiAppDBService manekiAppDbService { get; set; }
+
+    private IEnumerable<UserSubscription> userSubscriptions = new List<UserSubscription>();
+    private IEnumerable<Subscription> subscriptions = new List<Subscription>();
+    private DataItem[] chartItems;
+    private IQueryable<SubscriberDetails> subscribersData;
+    private bool showDataLabels = false;
+    private bool isLoading;
+
+    protected override async Task OnInitializedAsync()
     {
-        [Inject]
-        protected IJSRuntime JSRuntime { get; set; }
+        var userId = Security.User.Id;
 
-        [Inject]
-        protected NavigationManager NavigationManager { get; set; }
+        //get author page
+        var filter = $"UserId eq '{userId}'";
+        var authorPageOdata = await manekiAppDbService.GetAuthorPages(filter, top: 1);
+        var authorPage = authorPageOdata.Value.FirstOrDefault();
 
-        [Inject]
-        protected DialogService DialogService { get; set; }
+        //get all author subscriptions
+        if (authorPage != null)
+        {
+            filter = $"AuthorPageId eq {authorPage.Id}";
+            var subscriptionsOData = await manekiAppDbService.GetSubscriptions(filter);
+            subscriptions = subscriptionsOData.Value;
+        }
 
-        [Inject]
-        protected TooltipService TooltipService { get; set; }
+        //get all author patrons
+        if (subscriptions != null && subscriptions.Any())
+        {
+            var subscriptionIds = subscriptions.Select(sub => sub.Id).ToList();
+            var idsFilter = string.Join(" or ", subscriptionIds.Select(id => $"SubscriptionId eq {id}"));
+            var userSubscriptionsOData = await manekiAppDbService.GetUserSubscriptions(idsFilter);
+            userSubscriptions = userSubscriptionsOData.Value.AsODataEnumerable();
+        }
 
-        [Inject]
-        protected ContextMenuService ContextMenuService { get; set; }
+        chartItems = new DataItem[subscriptions.Count()];
 
-        [Inject]
-        protected NotificationService NotificationService { get; set; }
+        var index = 0;
+        foreach (var subscription in subscriptions)
+        {
+            var subscriptionUserCount = userSubscriptions.Count(x => x.SubscriptionId == subscription.Id);
+            chartItems[index] = new DataItem
+            {
+                SubscriptionName = subscription.Title,
+                SubscriptionUserCount = subscriptionUserCount
+            };
+            index++;
+        }
 
-        [Inject]
-        protected SecurityService Security { get; set; }
+        await LoadTableData();
+    }
+
+    private async Task LoadTableData()
+    {
+        isLoading = true;
+        var subscriberDetails = new List<SubscriberDetails>();
+        foreach (var userSubscription in userSubscriptions)
+            subscriberDetails.Add(new SubscriberDetails()
+            {
+                SubscriberId = userSubscription.UserId,
+                SubscriptionType = subscriptions
+                    .FirstOrDefault(x => x.Id == userSubscription.SubscriptionId)?
+                    .Title,
+                Amount = subscriptions
+                    .FirstOrDefault(x => x.Id == userSubscription.SubscriptionId)?
+                    .Price,
+                StartDate = userSubscription.SubscribedAt.Date
+            });
+
+        subscribersData = subscriberDetails.AsQueryable();
+
+        isLoading = false;
+    }
+
+    private class DataItem
+    {
+        public string SubscriptionName { get; set; }
+        public int SubscriptionUserCount { get; set; }
+    }
+
+    private class SubscriberDetails
+    {
+        public string SubscriberId { get; set; }
+        public string SubscriptionType { get; set; }
+        public decimal? Amount { get; set; }
+        public DateTime StartDate { get; set; }
     }
 }
