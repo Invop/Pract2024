@@ -84,6 +84,7 @@ namespace ManekiApp.Client.Pages
             try
             {
                 Post.CreatedAt = DateTimeOffset.UtcNow;
+                Post.EditedAt = Post.CreatedAt;
                 Post.AuthorPageId = currentAuthor.Id;
                 Post.MinLevel = minLevelValue;
 
