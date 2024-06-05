@@ -108,5 +108,28 @@ namespace ManekiApp.Client.Pages
         {
             NavigationManager.NavigateTo(url);
         }
+
+        private string GetAuthorProfilePicture(Guid userSubscriptionId)
+        {
+            var placeholderUrl = "https://ui-avatars.com/api/?name=John+Doe";
+            
+            var subscription = subscriptions.FirstOrDefault(s => s.Id == userSubscriptionId);
+            if (subscription == null)
+            {
+                return placeholderUrl;
+            }
+
+            var author = authorsUserFollows.FirstOrDefault(a => a.Id == subscription.AuthorPageId);
+            if (author == null)
+            {
+                return placeholderUrl;
+            }
+
+            var pathString = !string.IsNullOrEmpty(author.ProfileImage) ?
+                $"data:image/jpeg;base64,{author.ProfileImage}" :
+                $"https://ui-avatars.com/api/?name={author.Title}";
+
+            return pathString;
+        }
     }
 }
