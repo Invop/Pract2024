@@ -1,0 +1,92 @@
+@using ManekiApp.Server.Models.ManekiAppDB
+<RadzenCard class="w-100">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+        <RadzenImage Path="@ProfilePicturePath" Style="width: 80px; height: 80px; border-radius: 50%" class="profile-image" AlternateText="" />
+        <RadzenRow class="w-100">
+            <RadzenColumn class="align-self-center">
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
+                    <RadzenText @onclick="NavigateToAuthorPage"><b>@(Author.Title)</b></RadzenText>
+                </RadzenStack>
+            </RadzenColumn>
+            <RadzenColumn>
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Posts</RadzenText>
+                    <RadzenText>@PostsAmount</RadzenText>
+                </RadzenStack>
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Subscribers</RadzenText>
+                    <RadzenText>@SubscribersAmount</RadzenText>
+                </RadzenStack>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+    <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+    <RadzenRow>
+        <RadzenColumn Size="4" Class="rz-text-truncate">
+            <b>Subscriptions</b>
+        </RadzenColumn>
+        <RadzenColumn Size="8" Class="rz-text-align-end">
+            @foreach (var subscription in Author.Subscriptions.Where(s => s.PermissionLevel > 0))
+            {
+                
+                <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="@($"{subscription.Price}$")"/>    
+            }
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenCard>
+
+@code {
+    [Inject] protected NavigationManager NavigationManager { get; set; }
+    [Inject] protected ManekiAppDBService ManekiAppDbService { get; set; }
+    
+    [Parameter] public Server.Models.ManekiAppDB.AuthorPage Author { get; set; }
+    protected int PostsAmount;
+    protected int SubscribersAmount;
+    protected string ProfilePicturePath;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        ProfilePicturePath = GetProfilePicturePath(Author);
+        PostsAmount = await GetPostsAmount(Author);
+        SubscribersAmount = await GetSubscribersAmount(Author);
+    }
+    
+    private void NavigateToAuthorPage()
+    {
+        NavigationManager.NavigateTo($"/author-page/{Author.Id}");
+    }
+    
+    private async Task<int> GetPostsAmount(Server.Models.ManekiAppDB.AuthorPage author)
+    {
+        return (await GetPostsAmountOData(author)).Count;
+    }
+
+    private async Task<int> GetSubscribersAmount(Server.Models.ManekiAppDB.AuthorPage author)
+    {
+        return (await GetSubscribersAmountOData(author)).Count;
+    }
+        
+    private async Task<ODataServiceResult<Post>> GetPostsAmountOData(Server.Models.ManekiAppDB.AuthorPage author)
+    {
+        var filter = $"AuthorPageId eq {author.Id}";
+        var result = await ManekiAppDbService.GetPosts(filter: filter, count: true, top: 0);
+        return result;
+    }
+    
+    private async Task<ODataServiceResult<UserSubscription>> GetSubscribersAmountOData(Server.Models.ManekiAppDB.AuthorPage author)
+    {
+        var subscriptionIds = string.Join(",", author.Subscriptions.Select(s => s.Id));
+        var filter = $"SubscriptionId in ({subscriptionIds})";
+        var result = await ManekiAppDbService.GetUserSubscriptions(filter: filter, count: true, top: 0);
+        return result;
+    }
+
+    private string GetProfilePicturePath(Server.Models.ManekiAppDB.AuthorPage author)
+    {
+        return !string.IsNullOrEmpty(author.ProfileImage) ?
+            $"data:image/jpeg;base64,{author.ProfileImage}" :
+            $"https://ui-avatars.com/api/?name={author.Title}";
+    }
+
+}
