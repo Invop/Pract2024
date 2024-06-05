@@ -158,8 +158,19 @@ namespace ManekiApp.Client.Pages
         {
             try
             {
-                await ManekiAppDBService.DeletePost(Post.Id);
-                NavigationManager.NavigateTo($"/");
+                var confirmOptions = new ConfirmOptions 
+                { 
+                    OkButtonText = "Yes", 
+                    CancelButtonText = "No" 
+                };
+
+                var dialogResult = await DialogService.Confirm("Are you sure?", "You are going to delete a post", confirmOptions);
+
+                if (dialogResult.HasValue && dialogResult.Value)
+                {
+                    await ManekiAppDBService.DeletePost(Post.Id);
+                    NavigationManager.NavigateTo("/");
+                }
             }
             catch (Exception ex)
             {
