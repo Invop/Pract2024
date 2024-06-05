@@ -1,31 +1,135 @@
-﻿
+﻿@using System.Runtime.InteropServices
+@using ManekiApp.Server.Models.ManekiAppDB
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
+@inject DialogService DialogService
 
 <RadzenCard>
-    <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px"><b>@TierName</b></RadzenText>
-    
-    <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 16px; font-weight: 500">
-        Support us with <b style="font-size: 22px">@Price</b>/month
+    <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px">
+        <b>@TierName</b>
     </RadzenText>
-    
+
+    <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 16px; font-weight: 500">
+        Support us with <b style="font-size: 22px">@(Price)$</b>/month
+    </RadzenText>
+
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 17px">
         @Description
     </RadzenText>
-<RadzenButton Text="Subscribe" Click="@(() => OpenLink())" Style="border-radius: 10px; border: 1px solid #3e633f;" class="w-100" />
+    <RadzenButton Text="Subscribe" Click="@(() => SubscribeClicked())" Style="border-radius: 10px; border: 1px solid #3e633f;"/>
 
 </RadzenCard>
-@code {
-    
-    [Parameter] public string TierName { get; set; }
-    [Parameter] public string Price { get; set; }
-    [Parameter] public Guid SubscriptionId { get; set; }
-    [Parameter] public string UserId { get; set; }
-    [Parameter] public string Description  { get; set; }
 
-    void OpenLink()
+@code {
+    [Parameter] public string TierName { get; set; }
+    [Parameter] public decimal Price { get; set; }
+    [Parameter] public Guid SubscriptionId { get; set; }
+    [Parameter] public IEnumerable<Subscription> Subscriptions { get; set; }
+    [Parameter] public string UserId { get; set; }
+    [Parameter] public string Description { get; set; }
+    [Inject] protected ManekiAppDBService ManekiAppDB { get; set; }
+    [Inject] public SecurityService SecurityService { get; set; }
+
+    private async Task SubscribeClicked()
     {
-        var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
-        JSRuntime.InvokeVoidAsync("open", url, "_blank");
+        var currentUser = SecurityService.User.Id;
+        var currentPlan = await GetCurrentPlan();
+
+        if (Price <= 0)
+        {
+            if (currentPlan != null && currentPlan.SubscriptionId != SubscriptionId)
+            {
+                var result = await ShowConfirmFreePlanDialog();
+                if (result)
+                {
+                    await ProcessFreeUser(currentUser);
+                }
+            }
+            else
+            {
+                await ProcessFreeUser(currentUser);
+            }
+        }
+        else
+        {
+            if (currentPlan == null || currentPlan.SubscriptionId != SubscriptionId)
+            {
+                var result = await ShowConfirmPlanChangeDialog();
+                if (result)
+                {
+                    var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
+                    await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+                }
+            }
+            else
+            {
+                var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
+                await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+            }
+        }
     }
+
+    private async Task<bool> ShowConfirmFreePlanDialog()
+    {
+        return await DialogService.OpenAsync("Confirm Free Plan Change",
+            ds =>
+                @<div>
+                    <p Style="margin-bottom: 1rem">Are you sure you want to switch to the free plan?</p>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <RadzenButton Text="Yes" Click="() => { ds.Close(true); }" Style="margin-bottom: 10px; width: 150px"/>
+                            <RadzenButton Text="No" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px"/>
+            </div>
+            </div>
+            </div>);
+    }
+
+    private async Task<bool> ShowConfirmPlanChangeDialog()
+    {
+        return await DialogService.OpenAsync("Confirm Plan Change",
+            ds =>
+                @<div>
+                    <p Style="margin-bottom: 1rem">Are you sure you want to change your subscription plan?</p>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <RadzenButton Text="Yes" Click="() => { ds.Close(true); }" Style="margin-bottom: 10px; width: 150px"/>
+                            <RadzenButton Text="No" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px"/>
+            </div>
+            </div>
+            </div>);
+    }
+
+    private async Task ProcessFreeUser(string currentUser)
+    {
+        var currentPlan = await GetCurrentPlan();
+        if (currentPlan != null)
+        {
+            currentPlan.SubscriptionId = SubscriptionId;
+            currentPlan.EndsAt = DateTime.UtcNow.AddMonths(1);
+            await ManekiAppDB.UpdateUserSubscription(currentPlan.Id, currentPlan);
+        }
+        else
+        {
+            var newUserSubscription = new UserSubscription
+            {
+                Id = Guid.NewGuid(),
+                SubscriptionId = SubscriptionId,
+                UserId = currentUser,
+                SubscribedAt = DateTime.UtcNow,
+                EndsAt = DateTime.UtcNow.AddMonths(1),
+                ReceiveNotifications = true,
+                IsCanceled = false
+            };
+            await ManekiAppDB.CreateUserSubscription(newUserSubscription);
+        }
+    }
+
+    private async Task<UserSubscription> GetCurrentPlan()
+    {
+        var userSubsFilter = string.Join(" or ", Subscriptions.Select(s => $"SubscriptionId eq {s.Id}"));
+        var userPlanOData = await ManekiAppDB.GetUserSubscriptions(userSubsFilter);
+        var userPlan = userPlanOData.Value.FirstOrDefault();
+        return userPlan;
+    }
+
 }
