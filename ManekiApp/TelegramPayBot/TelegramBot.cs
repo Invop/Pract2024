@@ -132,12 +132,24 @@ namespace ManekiApp.TelegramPayBot
 
                     if (existingUserSubscription != null)
                     {
-                        // If user has an existing subscription to the same author, extend it and update subscription level
-                        existingUserSubscription.SubscriptionId = subscriptionId;
-                        existingUserSubscription.EndsAt = DateTime.UtcNow.AddMonths(1);
-                        existingUserSubscription.SubscribedAt = DateTime.UtcNow;
-    
-                        Console.WriteLine("Updated");
+                        var currentSubscription = existingUserSubscription.SubscriptionId;
+
+                        bool isUpgradeOrDowngrade = currentSubscription != subscription.Id;
+
+                        if (!isUpgradeOrDowngrade)
+                        {
+                            // Extend the existing subscription by 1 month
+                            existingUserSubscription.EndsAt = existingUserSubscription.EndsAt.AddMonths(1);
+                            Console.WriteLine("Extended");
+                        }
+                        else
+                        {
+                            // Update the existing subscription
+                            existingUserSubscription.SubscriptionId = subscriptionId;
+                            existingUserSubscription.EndsAt = DateTime.UtcNow.AddMonths(1);
+                            existingUserSubscription.SubscribedAt = DateTime.UtcNow;
+                            Console.WriteLine("Updated");
+                        }
                     }
                     else
                     {
