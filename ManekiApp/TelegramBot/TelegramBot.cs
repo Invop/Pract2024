@@ -68,6 +68,7 @@ public class TelegramBot
             .ToList();
         var subscribersIds = dbContext.UserSubscriptions
             .Where(x => subscriptionsIds.Contains(x.SubscriptionId))
+            .Where(x=>x.EndsAt >= DateTimeOffset.Now)
             .Select(x => x.UserId)
             .Distinct()
             .ToList();

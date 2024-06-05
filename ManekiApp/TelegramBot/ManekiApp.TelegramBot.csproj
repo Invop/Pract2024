@@ -18,8 +18,4 @@
         <Compile Include="../Server/Models/**/*.cs" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\" />
-    </ItemGroup>
-
 </Project>
