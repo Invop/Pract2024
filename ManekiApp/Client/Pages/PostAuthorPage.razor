@@ -1,0 +1,77 @@
+@using ManekiApp.Server.Models.ManekiAppDB
+<RadzenCard Style="position: relative; min-height: 150px" Variant="Variant.Text">
+    <RadzenColumn Size="12" class="blur-filter flex-column" Style="position: absolute; width: calc(100% - 10px); right: 5px; height: calc(100% - 35px); bottom: 5px; display: flex; margin: 0px" Visible="@(!isContentVisible)">
+                            
+        <RadzenColumn class="centered-element w-100">
+            <RadzenColumn Size="12">
+                <RadzenText class="rz-my-4 text-center" TextStyle="TextStyle.DisplayH5">To view this post you need to be a subscriber of at least level @Post.MinLevel</RadzenText>
+            </RadzenColumn>
+        </RadzenColumn>
+                            
+    </RadzenColumn>
+        
+    <RadzenText Text="@Post.CreatedAt.ToString("'Posted at' HH:mm MMMM dd")" TextStyle="TextStyle.Overline" TagName="TagName.Pre" />
+    <RadzenText Text="@Post.Title" TextStyle="TextStyle.H4" TagName="TagName.H1" @onclick="NavigateToPostPage" />
+    <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+    <RadzenHtml Visible="@isContentVisible">
+        @if (isContentVisible)
+        {
+            @((MarkupString)Post.Content)
+        }
+    </RadzenHtml>
+    <RadzenText Visible="@(!isContentVisible)">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur pharetra eget est eu posuere. Proin id pharetra dui. Curabitur sollicitudin viverra sem, id congue elit porttitor convallis. Vivamus non sapien sollicitudin, varius felis sit amet, lacinia orci. Praesent in odio vel felis fermentum scelerisque. Ut mauris ligula, lacinia ac quam in, condimentum cursus libero. In sagittis augue nec felis imperdiet pharetra ac nec quam.
+        Cras fermentum tincidunt orci quis suscipit. Cras consectetur consequat mollis. Morbi consectetur eu velit quis viverra. Vestibulum condimentum velit vitae augue congue auctor. Cras et porta augue. Cras ut elit urna. Quisque quis iaculis purus. In in placerat turpis, vel ultricies sapien. Mauris eu ullamcorper tortor. Sed sodales nunc sem, non dapibus mauris aliquet hendrerit. Morbi id ligula luctus, congue augue eu, efficitur arcu. Nunc ut volutpat dolor. Quisque ac aliquam arcu, et dictum justo.
+    </RadzenText>
+</RadzenCard>
+
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; }
+    [Inject] SecurityService Security { get; set; }
+    [Inject] ManekiAppDBService ManekiAppDbService { get; set; }
+    
+    [Parameter] public Post Post { get; set; }
+    [Parameter] public ManekiApp.Server.Models.ManekiAppDB.AuthorPage AuthorPage { get; set; }
+
+    protected bool isContentVisible = false;
+    protected bool isUserAuthor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isUserAuthor = AuthorPage.UserId.Equals(Security.User.Id);
+        if (Post.MinLevel != 0 && !isUserAuthor)
+        {
+            isContentVisible = await checkUserSubscriptions();
+        }
+        else
+        {
+            isContentVisible = true;
+        }
+    }
+    
+    private async Task<bool> checkUserSubscriptions()
+    {
+        var userSubscriptionsOData = await GetUserSubscriptionsByUserAndAuthor(Security.User.Id, AuthorPage.Id);
+        var userSubscriptions = userSubscriptionsOData.Value.ToList();
+
+        foreach (var subscription in userSubscriptions)
+        {
+            if (subscription.Subscription.PermissionLevel >= Post.MinLevel &&
+                subscription.EndsAt >= DateTimeOffset.UtcNow) return true;
+        }
+
+        return false;
+    }
+    
+    private async Task<ODataServiceResult<UserSubscription>> GetUserSubscriptionsByUserAndAuthor(string userId, Guid authorPageId)
+    {
+        var filter = $"UserId eq '{userId}' and Subscription/AuthorPageId eq {authorPageId}";
+        var userSubscriptionsOData = await ManekiAppDbService.GetUserSubscriptions(filter: filter, expand: "Subscription");
+        return userSubscriptionsOData;
+    }
+
+    protected void NavigateToPostPage()
+    {
+        NavigationManager.NavigateTo($"/post/{Post.Id}");
+    }
+}
