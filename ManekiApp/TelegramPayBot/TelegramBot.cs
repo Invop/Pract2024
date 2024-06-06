@@ -16,14 +16,12 @@ namespace ManekiApp.TelegramPayBot
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly TelegramBotClient _client;
-        private readonly KeyboardService _keyboardService;
         private ApplicationUser? currentUser;
         private const string PaymentProviderToken = "284685063:TEST:NGJhYzcwNzZmODA3";
 
-        public TelegramBot(IServiceScopeFactory serviceScopeFactory, KeyboardService keyboardService, string? botToken)
+        public TelegramBot(IServiceScopeFactory serviceScopeFactory, string? botToken)
         {
             _serviceScopeFactory = serviceScopeFactory;
-            _keyboardService = keyboardService;
             _client = new TelegramBotClient(botToken);
         }
 

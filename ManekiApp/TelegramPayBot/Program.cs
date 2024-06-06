@@ -1,5 +1,7 @@
 
 
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using ManekiApp.TelegramPayBot;
 using ManekiApp.TelegramPayBot.Keyboard;
@@ -11,21 +13,22 @@ builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
 
 
-builder.Services.AddSingleton<KeyboardService>();
+builder.Services.AddEntityFrameworkNpgsql().AddDbContext<HangfireDbContext>(options => {
+    options.UseNpgsql(builder.Configuration.GetConnectionString("HangfireDBConnection"));
+});
+
+builder.Services.AddHangfire(x => 
+    x.UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("HangfireDBConnection")));
+
+builder.Services.AddHangfireServer();
 
 
-builder.Services.AddSingleton<TelegramBot>(sp =>
-    new TelegramBot(
-        sp.GetRequiredService<IServiceScopeFactory>(),
-        sp.GetRequiredService<KeyboardService>(),
-        builder.Configuration["BotToken"])
-);
-
-
+builder.Services.AddSingleton<TelegramBotRunner>();
 var app = builder.Build();
-
+app.UseHangfireDashboard("/dashboard");
 app.UseHttpsRedirection();
-var bot = app.Services.GetRequiredService<TelegramBot>();
-await bot.Start();
-
+var botRunner = app.Services.GetRequiredService<TelegramBotRunner>();
+Task.Run(async () => await botRunner.StartBotAsync());
 app.Run();
