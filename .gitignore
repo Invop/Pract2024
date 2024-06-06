@@ -1,1 +1,4 @@
 ﻿/ManekiApp/PaymentsTelegramBot/paymentsTelegramBot/.idea/
+/ManekiApp/.idea
+/ManekiApp/.vs
+/.gitignore

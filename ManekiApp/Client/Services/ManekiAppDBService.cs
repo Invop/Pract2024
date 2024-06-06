@@ -1,18 +1,8 @@
-
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Web;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+using ManekiApp.Server.Models.ManekiAppDB;
+using Microsoft.AspNetCore.Components;
+using Radzen;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Text.Json;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Components;
-using System.Threading.Tasks;
-using Radzen;
 
 namespace ManekiApp.Client
 {
@@ -45,13 +35,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>> GetAuthorPages(Query query)
         {
-            return await GetAuthorPages(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetAuthorPages(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>> GetAuthorPages(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"AuthorPages");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -98,7 +88,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"AuthorPages({id})");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -110,7 +100,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdateAuthorPage(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdateAuthorPage(Guid id = default(Guid), ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage = default(ManekiApp.Server.Models.ManekiAppDB.AuthorPage))
         {
             var uri = new Uri(baseUri, $"AuthorPages({id})");
@@ -139,13 +129,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.Image>> GetImages(Query query)
         {
-            return await GetImages(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetImages(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.Image>> GetImages(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"Images");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -192,7 +182,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"Images({id})");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -204,7 +194,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdateImage(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdateImage(Guid id = default(Guid), ManekiApp.Server.Models.ManekiAppDB.Image image = default(ManekiApp.Server.Models.ManekiAppDB.Image))
         {
             var uri = new Uri(baseUri, $"Images({id})");
@@ -233,13 +223,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.Post>> GetPosts(Query query)
         {
-            return await GetPosts(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetPosts(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.Post>> GetPosts(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"Posts");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -286,7 +276,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"Posts({id})");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -298,7 +288,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdatePost(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdatePost(Guid id = default(Guid), ManekiApp.Server.Models.ManekiAppDB.Post post = default(ManekiApp.Server.Models.ManekiAppDB.Post))
         {
             var uri = new Uri(baseUri, $"Posts({id})");
@@ -327,13 +317,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.Subscription>> GetSubscriptions(Query query)
         {
-            return await GetSubscriptions(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetSubscriptions(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.Subscription>> GetSubscriptions(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"Subscriptions");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -380,7 +370,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"Subscriptions({id})");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -392,7 +382,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdateSubscription(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdateSubscription(Guid id = default(Guid), ManekiApp.Server.Models.ManekiAppDB.Subscription subscription = default(ManekiApp.Server.Models.ManekiAppDB.Subscription))
         {
             var uri = new Uri(baseUri, $"Subscriptions({id})");
@@ -421,13 +411,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserSubscription>> GetUserSubscriptions(Query query)
         {
-            return await GetUserSubscriptions(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetUserSubscriptions(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserSubscription>> GetUserSubscriptions(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"UserSubscriptions");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -474,7 +464,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"UserSubscriptions({id})");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -486,7 +476,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdateUserSubscription(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdateUserSubscription(Guid id = default(Guid), ManekiApp.Server.Models.ManekiAppDB.UserSubscription userSubscription = default(ManekiApp.Server.Models.ManekiAppDB.UserSubscription))
         {
             var uri = new Uri(baseUri, $"UserSubscriptions({id})");
@@ -515,13 +505,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode>> GetUserVerificationCodes(Query query)
         {
-            return await GetUserVerificationCodes(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetUserVerificationCodes(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode>> GetUserVerificationCodes(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"UserVerificationCodes");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -568,7 +558,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"UserVerificationCodes({id})");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -580,7 +570,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdateUserVerificationCode(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdateUserVerificationCode(Guid id = default(Guid), ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode userVerificationCode = default(ManekiApp.Server.Models.ManekiAppDB.UserVerificationCode))
         {
             var uri = new Uri(baseUri, $"UserVerificationCodes({id})");
@@ -609,13 +599,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment>> GetUserChatPayments(Query query)
         {
-            return await GetUserChatPayments(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetUserChatPayments(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserChatPayment>> GetUserChatPayments(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"UserChatPayments");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -662,7 +652,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"UserChatPayments('{Uri.EscapeDataString(userId.Trim().Replace("'", "''"))}')");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -674,7 +664,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdateUserChatPayment(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdateUserChatPayment(string userId = default(string), ManekiApp.Server.Models.ManekiAppDB.UserChatPayment userChatPayment = default(ManekiApp.Server.Models.ManekiAppDB.UserChatPayment))
         {
             var uri = new Uri(baseUri, $"UserChatPayments('{Uri.EscapeDataString(userId.Trim().Replace("'", "''"))}')");
@@ -703,13 +693,13 @@ namespace ManekiApp.Client
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserChatNotification>> GetUserChatNotifications(Query query)
         {
-            return await GetUserChatNotifications(filter:$"{query.Filter}", orderby:$"{query.OrderBy}", top:query.Top, skip:query.Skip, count:query.Top != null && query.Skip != null);
+            return await GetUserChatNotifications(filter: $"{query.Filter}", orderby: $"{query.OrderBy}", top: query.Top, skip: query.Skip, count: query.Top != null && query.Skip != null);
         }
 
         public async Task<Radzen.ODataServiceResult<ManekiApp.Server.Models.ManekiAppDB.UserChatNotification>> GetUserChatNotifications(string filter = default(string), string orderby = default(string), string expand = default(string), int? top = default(int?), int? skip = default(int?), bool? count = default(bool?), string format = default(string), string select = default(string))
         {
             var uri = new Uri(baseUri, $"UserChatNotifications");
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:filter, top:top, skip:skip, orderby:orderby, expand:expand, select:select, count:count);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -756,7 +746,7 @@ namespace ManekiApp.Client
         {
             var uri = new Uri(baseUri, $"UserChatNotifications('{Uri.EscapeDataString(userId.Trim().Replace("'", "''"))}')");
 
-            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter:null, top:null, skip:null, orderby:null, expand:expand, select:null, count:null);
+            uri = Radzen.ODataExtensions.GetODataUri(uri: uri, filter: null, top: null, skip: null, orderby: null, expand: expand, select: null, count: null);
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -768,7 +758,7 @@ namespace ManekiApp.Client
         }
 
         partial void OnUpdateUserChatNotification(HttpRequestMessage requestMessage);
-        
+
         public async Task<HttpResponseMessage> UpdateUserChatNotification(string userId = default(string), ManekiApp.Server.Models.ManekiAppDB.UserChatNotification userChatNotification = default(ManekiApp.Server.Models.ManekiAppDB.UserChatNotification))
         {
             var uri = new Uri(baseUri, $"UserChatNotifications('{Uri.EscapeDataString(userId.Trim().Replace("'", "''"))}')");
@@ -781,6 +771,14 @@ namespace ManekiApp.Client
             OnUpdateUserChatNotification(httpRequestMessage);
 
             return await httpClient.SendAsync(httpRequestMessage);
+        }
+
+        public async Task<UserVerificationCode> GetUserVerificationCodeByUserId(
+            string userId)
+        {
+            var filterQuery = $"UserId eq '{userId}'";
+            var result = await GetUserVerificationCodes(filterQuery, count: true);
+            return result.Value.FirstOrDefault(item => item.ExpiryTime >= DateTime.UtcNow);
         }
     }
 }

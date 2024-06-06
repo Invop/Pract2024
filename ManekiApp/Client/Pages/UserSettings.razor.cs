@@ -39,24 +39,28 @@ namespace ManekiApp.Client.Pages
 
         private async Task CheckCode()
         {
-            // var verificationCode = await ManekiAppDB.GetUserVerificationCodeByUserId(Security.User.Id);
-            // if (verificationCode.Code == Convert.ToInt32(code))
-            // {
-            //     NotificationService.Notify(new NotificationMessage
-            //     {
-            //         Severity = NotificationSeverity.Success, Summary = "Success",
-            //         Detail = "Your telegram id has been confirmed", Duration = 4000
-            //     });
-            //     user.TelegramConfirmed = true;
-            //     await Security.UpdateUser($"{Security.User.Id}", user);
-            // }
-            //
-            // else
-            //     NotificationService.Notify(new NotificationMessage
-            //     {
-            //         Severity = NotificationSeverity.Error, Summary = "Error",
-            //         Detail = "You entered an invalid code", Duration = 4000
-            //     });
+            var verificationCode = await ManekiAppDB.GetUserVerificationCodeByUserId(Security.User.Id);
+            if (verificationCode.Code == Convert.ToInt32(code))
+            {
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = "Your telegram id has been confirmed",
+                    Duration = 4000
+                });
+                user.TelegramConfirmed = true;
+                await Security.UpdateUser($"{Security.User.Id}", user);
+            }
+
+            else
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = "You entered an invalid code",
+                    Duration = 4000
+                });
         }
 
 
