@@ -29,9 +29,9 @@
     [Parameter] public IEnumerable<Subscription> Subscriptions { get; set; }
     [Parameter] public string UserId { get; set; }
     [Parameter] public string Description { get; set; }
-    [Inject] protected ManekiAppDBService ManekiAppDB { get; set; }
+    [Inject] protected ManekiAppDBService ManekiAppDb { get; set; }
     [Inject] public SecurityService SecurityService { get; set; }
-    public string currentPlanName { get; set; }
+    private string CurrentPlanName { get; set; }
     private async Task SubscribeClicked()
     {
         if (!IsUserAuthenticated())
@@ -42,8 +42,8 @@
 
         var currentUser = GetCurrentUserId();
         var currentPlan = await GetCurrentPlan();
-        var currentSubscription = await ManekiAppDB.GetSubscriptionById(id:currentPlan.SubscriptionId);
-        currentPlanName = currentSubscription.Title;
+        var currentSubscription = await ManekiAppDb.GetSubscriptionById(id:currentPlan.SubscriptionId);
+        CurrentPlanName = currentSubscription.Title;
         if (IsFreePlan())
         {
             await HandleFreePlanSubscription(currentUser, currentPlan);
@@ -143,7 +143,7 @@
         return await DialogService.OpenAsync("Confirm Plan Change",
             ds =>
                 @<div>
-                    <p Style="margin-bottom: 1rem">Are you sure you want to change your subscription plan? (@currentPlanName to @TierName)</p>
+                    <p Style="margin-bottom: 1rem">Are you sure you want to change your subscription plan? (@CurrentPlanName to @TierName)</p>
                     <div class="row">
                         <div class="col-md-12">
                             <RadzenButton Text="Yes" Click="() => { ds.Close(true); }" Style="margin-bottom: 10px; width: 150px"/>
@@ -160,7 +160,7 @@
         {
             currentPlan.SubscriptionId = SubscriptionId;
             currentPlan.EndsAt = DateTime.UtcNow.AddMonths(1);
-            await ManekiAppDB.UpdateUserSubscription(currentPlan.Id, currentPlan);
+            await ManekiAppDb.UpdateUserSubscription(currentPlan.Id, currentPlan);
         }
         else
         {
@@ -174,14 +174,14 @@
                 ReceiveNotifications = true,
                 IsCanceled = false
             };
-            await ManekiAppDB.CreateUserSubscription(newUserSubscription);
+            await ManekiAppDb.CreateUserSubscription(newUserSubscription);
         }
     }
 
     private async Task<UserSubscription> GetCurrentPlan()
     {
         var userSubsFilter = string.Join(" or ", Subscriptions.Select(s => $"SubscriptionId eq {s.Id}"));
-        var userPlanOData = await ManekiAppDB.GetUserSubscriptions(userSubsFilter);
+        var userPlanOData = await ManekiAppDb.GetUserSubscriptions(userSubsFilter);
         var userPlan = userPlanOData.Value.FirstOrDefault();
         return userPlan;
     }
