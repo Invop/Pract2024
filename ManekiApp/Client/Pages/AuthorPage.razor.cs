@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using ManekiApp.Server.Models;
 using ManekiApp.Server.Models.ManekiAppDB;
-using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
+using System.Text;
+using System.Text.Json;
 
 namespace ManekiApp.Client.Pages
 {
@@ -36,9 +30,9 @@ namespace ManekiApp.Client.Pages
 
         [Inject]
         protected SecurityService Security { get; set; }
-        
+
         [Inject] protected ManekiAppDBService ManekiAppDB { get; set; }
-        
+
         [Parameter] public Guid AuthorPageId { get; set; }
 
         protected Server.Models.ManekiAppDB.AuthorPage author = new Server.Models.ManekiAppDB.AuthorPage();
@@ -51,9 +45,12 @@ namespace ManekiApp.Client.Pages
         protected int postsAmount;
         protected int subscribersAmount;
         protected int paidSubscribersAmount;
-        
+
         //PAGINATION ATTRIBUTES
         protected IEnumerable<Server.Models.ManekiAppDB.Post> posts =
+            new List<Server.Models.ManekiAppDB.Post>();
+
+        protected IEnumerable<Server.Models.ManekiAppDB.Post> filteredPosts =
             new List<Server.Models.ManekiAppDB.Post>();
 
         protected int paginationPostsAmount;
@@ -62,20 +59,26 @@ namespace ManekiApp.Client.Pages
         protected bool isLoading;
         protected string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
         protected RadzenDataList<ManekiApp.Server.Models.ManekiAppDB.Post> datalist;
-        
+
+        private IEnumerable<int> selectedTiers = new List<int>();
+        private IEnumerable<int> selectedYears = new List<int>();
+        private IEnumerable<string> selectedSortBy = new List<string>();
+        private string searchText = string.Empty;
+
         protected override async Task OnInitializedAsync()
         {
             try
             {
                 await LoadAuthorData();
+                await UpdateDataList();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading author data: {ex.Message}");
             }
-            
+
         }
-        
+
         private async Task LoadAuthorData()
         {
             author = await ManekiAppDB.GetAuthorPageById(id: AuthorPageId, expand: "Subscriptions");
@@ -89,10 +92,7 @@ namespace ManekiApp.Client.Pages
                 subscribersAmount = await GetSubscribersAmount(author);
                 paidSubscribersAmount = await GetPaidSubscribersAmount(author);
                 socLinks = GetSocialLinks();
-                
-                paginationPostsAmount = await GetPaginationPostsAmount("");
-                posts = await GetPosts(0, pageSize, "");
-                
+
                 if (!string.IsNullOrEmpty(author.SocialLinks))
                 {
                     Console.WriteLine($"Social Links: {author.SocialLinks}");
@@ -108,56 +108,94 @@ namespace ManekiApp.Client.Pages
                 Console.WriteLine("Author is null");
             }
         }
-        
+
+        private async Task ApplyFilter(object args)
+        {
+
+            await UpdateDataList();
+        }
+
+        private async Task UpdateDataList()
+        {
+            await datalist.FirstPage();
+            await datalist.Reload();
+        }
+
         async Task LoadData(LoadDataArgs args)
         {
             isLoading = true;
 
-            paginationPostsAmount = await GetPaginationPostsAmount("");
-            posts = await GetPosts(args.Skip, args.Top, "");
+            string filter = BuildFilter();
+            string orderby = BuildOrderBy();
+
+            var result = await ManekiAppDB.GetPosts(filter: filter, orderby: orderby);
+
+            paginationPostsAmount = result.Count;
+            posts = result.Value.AsODataEnumerable();
 
             isLoading = false;
         }
 
-        private async Task<IEnumerable<Server.Models.ManekiAppDB.Post>> GetPosts(int? skip, int? top, string title = "")
+        private string BuildFilter()
         {
-            return (await GetPostsOData(skip, top, title)).Value.ToList();
-        }
-        
-        private async Task<ODataServiceResult<Server.Models.ManekiAppDB.Post>> GetPostsOData(int? skip, int? top, string text)
-        {
-            var filterBuilder = new StringBuilder($"AuthorPageId eq {author.Id}");
+            var filterBuilder = new StringBuilder($"(AuthorPageId eq {author.Id})");
 
-            if (!string.IsNullOrEmpty(text))
+            if (selectedTiers.Any())
             {
-                string lowerText = text.ToLower();
-                filterBuilder.Append($" and (contains(ToLower(Title), '{lowerText}') or contains(ToLower(Content), '{lowerText}'))");
+                filterBuilder.Append(" and (")
+                    .Append(BuildTiersFilter())
+                    .Append(")");
             }
 
-            string filter = filterBuilder.ToString();
-            var result = await ManekiAppDB.GetPosts(filter: filter, skip: skip, top: top);
-            return result;
-        }
-        
-        private async Task<int> GetPaginationPostsAmount(string text)
-        {
-            return (await GetPaginationPostsAmountOData(text)).Count;
-        }
-        
-        private async Task<ODataServiceResult<Post>> GetPaginationPostsAmountOData(string text)
-        {
-            var filterBuilder = new StringBuilder($"AuthorPageId eq {author.Id}");
-
-            if (!string.IsNullOrEmpty(text))
+            if (selectedYears.Any())
             {
-                string lowerText = text.ToLower();
-                filterBuilder.Append($" and (contains(ToLower(Title), '{lowerText}') or contains(ToLower(Content), '{lowerText}'))");
+                filterBuilder.Append(" and (")
+                    .Append(BuildYearsFilter())
+                    .Append(")");
             }
 
-            string filter = filterBuilder.ToString();
-            var result = await ManekiAppDB.GetPosts(filter: filter, count: true, top: 0);
-            return result;
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                filterBuilder.Append(BuildSearchTextFilter());
+            }
+
+            return filterBuilder.ToString();
         }
+
+        private string BuildTiersFilter()
+        {
+            return string.Join(" and ", selectedTiers.Select(tier => $"MinLevel ge {tier}"));
+        }
+
+        private string BuildYearsFilter()
+        {
+            return string.Join(" or ", selectedYears.Select(year => $"year(CreatedAt) eq {year}"));
+        }
+
+        private string BuildSearchTextFilter()
+        {
+            var lowerCaseSearchText = searchText.ToLower();
+            return $" and (contains(tolower(Title), '{lowerCaseSearchText}') or contains(tolower(Content), '{lowerCaseSearchText}'))";
+        }
+
+        private string BuildOrderBy()
+        {
+            return selectedSortBy != null && selectedSortBy.Contains("From the oldest") ? "CreatedAt" : "CreatedAt desc";
+        }
+
+
+
+        private async Task ClearFilters()
+        {
+
+            selectedTiers = new List<int>();
+            selectedYears = new List<int>();
+            selectedSortBy = new List<string>();
+            searchText = string.Empty;
+
+            await UpdateDataList();
+        }
+
 
         private bool CheckUserAuthor(Server.Models.ManekiAppDB.AuthorPage authorPage)
         {
@@ -166,9 +204,9 @@ namespace ManekiApp.Client.Pages
 
         private void NavigateToEditPage()
         {
-            NavigationManager.NavigateTo($"/edit-author-page");        
+            NavigationManager.NavigateTo($"/edit-author-page");
         }
-        
+
         private Dictionary<string, string> GetSocialLinks()
         {
             var toReturn = new Dictionary<string, string>();
@@ -186,19 +224,19 @@ namespace ManekiApp.Client.Pages
                     { "/images/twitch.png", socialLinks.Twitch },
                     { "/images/pinterest.png", socialLinks.Pinterest }
                 };
-                
+
                 toReturn = icons.Where(link => !string.IsNullOrEmpty(link.Value))
                     .ToDictionary(link => link.Key, link => link.Value);
             }
             return toReturn;
         }
-        
+
         private async Task OpenLinkInNewTab(string url)
         {
             var fullUrl = NavigationManager.ToAbsoluteUri(url).ToString();
             await JSRuntime.InvokeVoidAsync("open", fullUrl, "_blank");
         }
-        
+
         private async Task<int> GetPostsAmount(Server.Models.ManekiAppDB.AuthorPage author)
         {
             return (await GetPostsAmountOData(author)).Count;
@@ -208,19 +246,19 @@ namespace ManekiApp.Client.Pages
         {
             return (await GetSubscribersAmountOData(author)).Count;
         }
-        
+
         private async Task<int> GetPaidSubscribersAmount(Server.Models.ManekiAppDB.AuthorPage author)
         {
             return (await GetPaidSubscribersAmountOData(author)).Count;
         }
-        
+
         private async Task<ODataServiceResult<Post>> GetPostsAmountOData(Server.Models.ManekiAppDB.AuthorPage author)
         {
             var filter = $"AuthorPageId eq {author.Id}";
             var result = await ManekiAppDB.GetPosts(filter: filter, count: true, top: 0);
             return result;
         }
-    
+
         private async Task<ODataServiceResult<UserSubscription>> GetSubscribersAmountOData(Server.Models.ManekiAppDB.AuthorPage author)
         {
             var subscriptionIds = string.Join(",", author.Subscriptions.Select(s => s.Id));
@@ -228,7 +266,7 @@ namespace ManekiApp.Client.Pages
             var result = await ManekiAppDB.GetUserSubscriptions(filter: filter, count: true, top: 0);
             return result;
         }
-        
+
         private async Task<ODataServiceResult<UserSubscription>> GetPaidSubscribersAmountOData(Server.Models.ManekiAppDB.AuthorPage author)
         {
             var subscriptionIds = string.Join(",", author.Subscriptions.Select(s => s.Id));
@@ -237,7 +275,9 @@ namespace ManekiApp.Client.Pages
             var result = await ManekiAppDB.GetUserSubscriptions(filter: filter, count: true, top: 0);
             return result;
         }
-        
+
+
+
         public class SocialLinks
         {
             public string Youtube { get; set; } = null;
@@ -249,5 +289,7 @@ namespace ManekiApp.Client.Pages
             public string Twitch { get; set; } = null;
             public string Pinterest { get; set; } = null;
         }
+
+
     }
 }
