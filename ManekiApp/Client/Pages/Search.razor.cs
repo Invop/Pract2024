@@ -47,21 +47,40 @@ namespace ManekiApp.Client.Pages
         
         protected string searchFieldValue;
         protected string titleToSearch = "";
+        
+        protected bool errorVisible;
+        protected string error;
 
         protected RadzenDataList<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> datalist;
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
-            authorsAmount = await GetAuthorsAmount(titleToSearch);
-            authors = await GetAuthors(0, pageSize, titleToSearch);
+            try
+            {
+                await base.OnInitializedAsync();
+                authorsAmount = await GetAuthorsAmount(titleToSearch);
+                authors = await GetAuthors(0, pageSize, titleToSearch);
+            }
+            catch (Exception e)
+            {
+                errorVisible = true;
+                error = e.Message;
+            }
         }
         
         async Task LoadData(LoadDataArgs args)
         {
             isLoading = true;
 
-            authorsAmount = await GetAuthorsAmount(titleToSearch);
-            authors = await GetAuthors(args.Skip, args.Top, titleToSearch);
+            try
+            {
+                authorsAmount = await GetAuthorsAmount(titleToSearch);
+                authors = await GetAuthors(args.Skip, args.Top, titleToSearch);
+            }
+            catch (Exception e)
+            {
+                errorVisible = true;
+                error = e.Message;
+            }
 
             isLoading = false;
         }

@@ -3,6 +3,10 @@
 
 <PageTitle>Search</PageTitle>
 <RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenAlert Title="Cannot load search results" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
+    </RadzenColumn>
+
     <RadzenCard class="w-100">
         <RadzenStack Orientation="Orientation.Horizontal">
                 <RadzenTextBox Placeholder="Search..." class="w-100" aria-label="TextBox with placeholder" @bind-Value="@searchFieldValue" />
@@ -21,4 +25,7 @@
         </Template>
     </RadzenDataList>
     
+    <RadzenColumn Size="12" Visible="@(!authors.Any())">
+        <RadzenText Text="No results found :(" TextStyle="TextStyle.H4" ></RadzenText>
+    </RadzenColumn>
 </RadzenRow>
