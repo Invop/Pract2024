@@ -1,4 +1,5 @@
 
+using Hangfire;
 using ManekiApp.Server.Models;
 using ManekiApp.Server.Models.ManekiAppDB;
 using ManekiApp.TelegramPayBot.Keyboard;
@@ -18,12 +19,15 @@ namespace ManekiApp.TelegramPayBot
         private readonly TelegramBotClient _client;
         private ApplicationUser? currentUser;
         private const string PaymentProviderToken = "284685063:TEST:NGJhYzcwNzZmODA3";
+        private readonly UserSubscriptionJobManager _userSubscriptionJobManager;
 
-        public TelegramBot(IServiceScopeFactory serviceScopeFactory, string? botToken)
+        public TelegramBot(IServiceScopeFactory serviceScopeFactory, string botToken, UserSubscriptionJobManager userSubscriptionJobManager)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _client = new TelegramBotClient(botToken);
+            _userSubscriptionJobManager = userSubscriptionJobManager;
         }
+
 
         public async Task Start()
         {
@@ -40,7 +44,6 @@ namespace ManekiApp.TelegramPayBot
                 receiverOptions,
                 cts.Token
             );
-
             var me = await _client.GetMeAsync();
 
             Console.WriteLine($"Start listening for @{me.Username}");
@@ -148,6 +151,8 @@ namespace ManekiApp.TelegramPayBot
                             existingUserSubscription.SubscribedAt = DateTime.UtcNow;
                             Console.WriteLine("Updated");
                         }
+                        
+                        _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(existingUserSubscription);
                     }
                     else
                     {
@@ -160,9 +165,10 @@ namespace ManekiApp.TelegramPayBot
                             SubscribedAt = DateTime.UtcNow,
                             EndsAt = DateTime.UtcNow.AddMonths(1),
                             ReceiveNotifications = true,
-                            IsCanceled = false
+                            IsCanceled = false,
+                            JobId = String.Empty
                         };
-
+                        _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(newUserSubscription);
                         context.UserSubscriptions.Add(newUserSubscription);
                         Console.WriteLine("Created");
                     }
@@ -172,7 +178,7 @@ namespace ManekiApp.TelegramPayBot
                 }
             }
         }
-
+        
         private async Task HandleTextMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message.Text.StartsWith("/start subscription"))
@@ -256,6 +262,19 @@ namespace ManekiApp.TelegramPayBot
                     "USD",
                     prices,
                     cancellationToken: cancellationToken);
+            }
+        }
+
+        public async Task DeleteUserSubscription(Guid id)
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
+            var userSubscription = await context.UserSubscriptions.FindAsync(id);
+
+            if (userSubscription != null)
+            {
+                context.UserSubscriptions.Remove(userSubscription);
+                await context.SaveChangesAsync();
             }
         }
     }

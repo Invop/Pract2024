@@ -22,6 +22,8 @@ public partial class UserSubscription
     public bool IsCanceled { get; set; }
 
     public bool ReceiveNotifications { get; set; }
+    
+    public string JobId { get; set; }
 
     [Key]
     [Required]

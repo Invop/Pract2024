@@ -8,7 +8,7 @@ using ManekiApp.TelegramPayBot.Keyboard;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+builder.Services.AddSingleton<UserSubscriptionJobManager>();
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection")));
 
