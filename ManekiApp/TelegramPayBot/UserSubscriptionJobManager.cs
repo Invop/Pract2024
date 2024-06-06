@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using ManekiApp.Server.Models.ManekiAppDB;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManekiApp.TelegramPayBot;
 
@@ -33,11 +34,10 @@ public class UserSubscriptionJobManager
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
-        var userSubscription = await context.UserSubscriptions.FindAsync(id);
-
+        var userSubscription = await context.UserSubscriptions.FirstOrDefaultAsync(x=>x.Id==id);
         if (userSubscription != null)
         {
-            context.UserSubscriptions.Remove(userSubscription);
+            userSubscription.IsCanceled = true;
             await context.SaveChangesAsync();
         }
     }
