@@ -12,13 +12,13 @@
         </RadzenStack>
     </RadzenCard>
 
-    <RadzenDataList @ref="datalist" Data="@authors" TItem="ManekiApp.Server.Models.ManekiAppDB.AuthorPage" class="w-100">
+    <RadzenDataList @ref="datalist" Data="@authors" TItem="ManekiApp.Server.Models.ManekiAppDB.AuthorPage" class="w-100"
+                    AllowVirtualization="false" AllowPaging="true" IsLoading="@isLoading" LoadData="@LoadData" Count="@authorsAmount" PageSize="@pageSize"
+                    ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" >
         <Template Context="author">
             <AuthorSearchCard
                 Author="@(author)"/>
         </Template>
     </RadzenDataList>
-    
-    <RadzenPager @ref="pager" ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right" Count="authorsAmount" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
     
 </RadzenRow>
