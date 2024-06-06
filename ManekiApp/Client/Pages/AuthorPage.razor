@@ -5,34 +5,34 @@
 
 <PageTitle>AuthorPage</PageTitle>
 <RadzenRow>
-    @if (isFound)
+    @if (IsFound)
     {
         <RadzenCard class="w-100">
             <RadzenStack Orientation="Orientation.Horizontal">
 
-                <RadzenImage class="profile-image" Path="@(author.ProfileImage != null ? $"data:image/jpeg;base64,{author.ProfileImage}" : $"https://ui-avatars.com/api/?name={author.Title}")" Style="width: 250px; border-radius: 50%; height: 250px; margin-left: 30px; margin-right: 30px"></RadzenImage>
+                <RadzenImage class="profile-image" Path="@(Author.ProfileImage != null ? $"data:image/jpeg;base64,{Author.ProfileImage}" : $"https://ui-avatars.com/api/?name={Author.Title}")" Style="width: 250px; border-radius: 50%; height: 250px; margin-left: 30px; margin-right: 30px"></RadzenImage>
                 <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
 
                     <RadzenRow Orientation="Orientation.Vertical" Gap="">
                         <RadzenStack Gap=5>
-                            <RadzenText TextStyle="TextStyle.DisplayH3" Style="font-weight: 400; color: #000000">@author.Title</RadzenText>
+                            <RadzenText TextStyle="TextStyle.DisplayH3" Style="font-weight: 400; color: #000000">@Author.Title</RadzenText>
                         </RadzenStack>
                     </RadzenRow>
 
 
                     <RadzenRow>
                         <RadzenColumn>
-                            <RadzenText Style="font-weight: 500; color: #000000">@($"{postsAmount} publications")</RadzenText>
+                            <RadzenText Style="font-weight: 500; color: #000000">@($"{PostsAmount} publications")</RadzenText>
                         </RadzenColumn>
 
                         <RadzenColumn>
-                            <RadzenText Style="font-weight: 500; color: #000000">@($"{subscribersAmount} subscribers")</RadzenText>
+                            <RadzenText Style="font-weight: 500; color: #000000">@($"{SubscribersAmount} subscribers")</RadzenText>
                         </RadzenColumn>
                     </RadzenRow>
 
                     <RadzenRow>
-                        <RadzenButton Text="Subscribe for free" Style="background-color: #58a45b; border-radius: 10px; border: 1px solid #3e633f" Visible="@(!isUserAuthor)"></RadzenButton>
-                        <RadzenButton Text="Edit page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" Visible="@isUserAuthor" />
+                        <RadzenButton Text="Subscribe for free" Style="background-color: #58a45b; border-radius: 10px; border: 1px solid #3e633f" Visible="@(!IsUserAuthor)"></RadzenButton>
+                        <RadzenButton Text="Edit page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" Visible="@IsUserAuthor" />
 
                     </RadzenRow>
 
@@ -43,7 +43,7 @@
 </RadzenRow>
 
 <RadzenRow>
-    @if (isFound)
+    @if (IsFound)
     {    
         <RadzenTabs @bind-SelectedIndex=@selectedIndex class="w-100">
             <Tabs>
@@ -57,7 +57,7 @@
 
                         <RadzenRow Gap="1rem">
 
-                            @foreach (var sub in authorSubscriptions)
+                            @foreach (var sub in AuthorSubscriptions)
                             {
                                 <RadzenColumn class="rz-pt-5">
                                     <SubscriptionCard TierName=@($"{sub.Title}") Price=@($"{sub.Price}$")
@@ -78,23 +78,23 @@
                                 <RadzenRow class="rz-justify-content-center">
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Subscription tier" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown  Data="@tiers" Placeholder="Select a tier" Multiple="true" @bind-Value="selectedTiers" Change="@(args => ApplyFilter(args))" />
+                                        <RadzenDropDown  Data="@tiers" Placeholder="Select a tier" Multiple="true" @bind-Value="selectedTiers" Change="@(args => ApplyFilter())" />
                                     </RadzenStack>
 
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Date" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown  Data="@years" Placeholder="Select publication date" Multiple="true" @bind-Value="selectedYears" Change="@(args => ApplyFilter(args))" />
+                                        <RadzenDropDown  Data="@years" Placeholder="Select publication date" Multiple="true" @bind-Value="selectedYears" Change="@(args => ApplyFilter())" />
                                     </RadzenStack>
 
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Sort by" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown   Data="@sortBy" Placeholder="Sort by" Multiple="true" @bind-Value="selectedSortBy" Change="@(args => ApplyFilter(args))" />
+                                        <RadzenDropDown   Data="@sortBy" Placeholder="Sort by" Multiple="true" @bind-Value="selectedSortBy" Change="@(args => ApplyFilter())" />
                                     </RadzenStack>
                                 </RadzenRow>
 
                                 <RadzenRow>
                                     <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center">
-                                        <RadzenTextBox class="w-100" Placeholder="Search for posts" @bind-Value="@searchText" Change="@(args => ApplyFilter(args))" aria-label="TextBox with placeholder" Style="max-width: 300px; margin-right: 10px;" />
+                                        <RadzenTextBox class="w-100" Placeholder="Search for posts" @bind-Value="@searchText" Change="@(args => ApplyFilter())" aria-label="TextBox with placeholder" Style="max-width: 300px; margin-right: 10px;" />
                                     </RadzenStack>
 
                                 </RadzenRow>
@@ -111,16 +111,16 @@
 
                             <RadzenColumn Size="12">
 
-                                <RadzenDataList @ref="datalist" Data="@posts" TItem="ManekiApp.Server.Models.ManekiAppDB.Post" class="w-100"
-                                                AllowVirtualization="false" AllowPaging="true" IsLoading="@isLoading" LoadData="@LoadData" Count="@postsAmount" PageSize="@pageSize"
-                                                ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat">
+                                <RadzenDataList @ref="Datalist" Data="@Posts" TItem="ManekiApp.Server.Models.ManekiAppDB.Post" class="w-100"
+                                                AllowVirtualization="false" AllowPaging="true" IsLoading="@IsLoading" LoadData="@LoadData" Count="@PostsAmount" PageSize="@PageSize"
+                                                ShowPagingSummary="true" PagingSummaryFormat="@PagingSummaryFormat">
                                     <Template Context="post">
                                         <PostAuthorPage Post="@(post)"
-                                                        AuthorPage="@(author)" />
+                                                        AuthorPage="@(Author)" />
                                     </Template>
                                 </RadzenDataList>
                                 
-                                <RadzenText Text="No posts available." TextStyle="TextStyle.H4" TagName="TagName.H1" Visible="@(!posts.Any())"/>
+                                <RadzenText Text="No posts available." TextStyle="TextStyle.H4" TagName="TagName.H1" Visible="@(!Posts.Any())"/>
 
                             </RadzenColumn>
                         </RadzenRow>
@@ -130,13 +130,13 @@
 
                 <RadzenTabsItem Text="About the author">
 
-                    <RadzenCard class="w-100" Style="margin-bottom: 20px" Visible="@(socLinks.Any())">
+                    <RadzenCard class="w-100" Style="margin-bottom: 20px" Visible="@(SocLinks.Any())">
 
                         <RadzenStack Orientation="Orientation.Horizontal">
 
                             <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
                                 <RadzenRow>
-                                    @foreach (var link in socLinks)
+                                    @foreach (var link in SocLinks)
                                     {
                                         <RadzenColumn class="text-center">
                                             <RadzenImage Path="@link.Key" @onclick="() => OpenLinkInNewTab(link.Value)" Style="width: 50px"></RadzenImage>
@@ -147,7 +147,7 @@
                         </RadzenStack>
                     </RadzenCard>
 
-                    <RadzenCard class="w-100" Style="margin-bottom: 20px" Visible="@(!string.IsNullOrEmpty(author.Description))">
+                    <RadzenCard class="w-100" Style="margin-bottom: 20px" Visible="@(!string.IsNullOrEmpty(Author.Description))">
 
                         <RadzenStack Orientation="Orientation.Horizontal">
 
@@ -155,7 +155,7 @@
 
                                 <RadzenRow Orientation="Orientation.Vertical">
                                     <RadzenStack Gap=5>
-                                        <RadzenText Text="@author.Description" Style="font-size: 14px"/>
+                                        <RadzenText Text="@Author.Description" Style="font-size: 14px"/>
                                     </RadzenStack>
                                 </RadzenRow>
 
@@ -171,17 +171,17 @@
                                 <RadzenRow>
                                     <RadzenColumn class="text-center">
                                         <RadzenText TextStyle="TextStyle.Overline" Text="Total posts" Style="font-size: 12px"/>
-                                        <RadzenText Style="font-weight: 500">@postsAmount</RadzenText>
+                                        <RadzenText Style="font-weight: 500">@PostsAmount</RadzenText>
                                     </RadzenColumn>
 
                                     <RadzenColumn class="text-center">
                                         <RadzenText TextStyle="TextStyle.Overline" Text="Total Subscribers" Style="font-size: 12px"/>
-                                        <RadzenText Style="font-weight: 500">@subscribersAmount</RadzenText>
+                                        <RadzenText Style="font-weight: 500">@SubscribersAmount</RadzenText>
                                     </RadzenColumn>
 
                                     <RadzenColumn class="text-center">
                                         <RadzenText TextStyle="TextStyle.Overline" Text="Paid subscribers" Style="font-size: 12px"/>
-                                        <RadzenText Style="font-weight: 500">@paidSubscribersAmount</RadzenText>
+                                        <RadzenText Style="font-weight: 500">@PaidSubscribersAmount</RadzenText>
                                     </RadzenColumn>
                                 </RadzenRow>
 
@@ -195,7 +195,7 @@
 </RadzenRow>
                                     
 <RadzenRow>
-    @if(!isFound)
+    @if(!IsFound)
     {
         <RadzenColumn>
             <NotFound></NotFound>

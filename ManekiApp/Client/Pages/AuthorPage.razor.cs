@@ -11,7 +11,7 @@ namespace ManekiApp.Client.Pages
     public partial class AuthorPage
     {
         [Inject]
-        protected IJSRuntime JSRuntime { get; set; }
+        protected IJSRuntime JsRuntime { get; set; }
 
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
@@ -31,34 +31,31 @@ namespace ManekiApp.Client.Pages
         [Inject]
         protected SecurityService Security { get; set; }
 
-        [Inject] protected ManekiAppDBService ManekiAppDB { get; set; }
+        [Inject] protected ManekiAppDBService ManekiAppDb { get; set; }
 
         [Parameter] public Guid AuthorPageId { get; set; }
 
-        protected Server.Models.ManekiAppDB.AuthorPage author = new Server.Models.ManekiAppDB.AuthorPage();
-        protected List<Subscription> authorSubscriptions = new List<Subscription>();
-        protected Dictionary<string, string> socLinks = new Dictionary<string, string>();
+        protected Server.Models.ManekiAppDB.AuthorPage Author = new();
+        protected List<Subscription> AuthorSubscriptions = [];
+        protected Dictionary<string, string> SocLinks = new();
 
-        protected bool isFound = true;
-        protected bool isUserAuthor = false;
+        protected bool IsFound = true;
+        protected bool IsUserAuthor;
 
-        protected int postsAmount;
-        protected int subscribersAmount;
-        protected int paidSubscribersAmount;
+        protected int PostsAmount;
+        protected int SubscribersAmount;
+        protected int PaidSubscribersAmount;
 
         //PAGINATION ATTRIBUTES
-        protected IEnumerable<Server.Models.ManekiAppDB.Post> posts =
-            new List<Server.Models.ManekiAppDB.Post>();
+        protected IEnumerable<Post> Posts =
+            new List<Post>();
 
-        protected IEnumerable<Server.Models.ManekiAppDB.Post> filteredPosts =
-            new List<Server.Models.ManekiAppDB.Post>();
+        protected int PaginationPostsAmount;
 
-        protected int paginationPostsAmount;
-
-        protected int pageSize = 3;
-        protected bool isLoading;
-        protected string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
-        protected RadzenDataList<ManekiApp.Server.Models.ManekiAppDB.Post> datalist;
+        protected int PageSize = 3;
+        protected bool IsLoading;
+        protected string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
+        protected RadzenDataList<Post> Datalist;
 
         private IEnumerable<int> selectedTiers = new List<int>();
         private IEnumerable<int> selectedYears = new List<int>();
@@ -81,64 +78,58 @@ namespace ManekiApp.Client.Pages
 
         private async Task LoadAuthorData()
         {
-            author = await ManekiAppDB.GetAuthorPageById(id: AuthorPageId, expand: "Subscriptions");
-            if (author != null)
+            Author = await ManekiAppDb.GetAuthorPageById(id: AuthorPageId, expand: "Subscriptions");
+            if (Author != null)
             {
-                Console.WriteLine($"Loaded Author: {author.Title}");
-                isUserAuthor = CheckUserAuthor(author);
+                Console.WriteLine($"Loaded Author: {Author.Title}");
+                IsUserAuthor = CheckUserAuthor(Author);
 
-                authorSubscriptions = author.Subscriptions.Where(sub => sub.PermissionLevel > 0).ToList();
-                postsAmount = await GetPostsAmount(author);
-                subscribersAmount = await GetSubscribersAmount(author);
-                paidSubscribersAmount = await GetPaidSubscribersAmount(author);
-                socLinks = GetSocialLinks();
+                AuthorSubscriptions = Author.Subscriptions.Where(sub => sub.PermissionLevel > 0).ToList();
+                PostsAmount = await GetPostsAmount(Author);
+                SubscribersAmount = await GetSubscribersAmount(Author);
+                PaidSubscribersAmount = await GetPaidSubscribersAmount(Author);
+                SocLinks = GetSocialLinks();
 
-                if (!string.IsNullOrEmpty(author.SocialLinks))
-                {
-                    Console.WriteLine($"Social Links: {author.SocialLinks}");
-                }
-                else
-                {
-                    Console.WriteLine("No social links provided");
-                }
+                Console.WriteLine(!string.IsNullOrEmpty(Author.SocialLinks)
+                    ? $"Social Links: {Author.SocialLinks}"
+                    : "No social links provided");
             }
             else
             {
-                isFound = false;
+                IsFound = false;
                 Console.WriteLine("Author is null");
             }
         }
 
-        private async Task ApplyFilter(object args)
+        private async Task ApplyFilter()
         {
-
             await UpdateDataList();
         }
 
         private async Task UpdateDataList()
         {
-            await datalist.FirstPage();
-            await datalist.Reload();
+            await Datalist.FirstPage();
+            await Datalist.Reload();
         }
 
         async Task LoadData(LoadDataArgs args)
         {
-            isLoading = true;
+            IsLoading = true;
 
             string filter = BuildFilter();
-            string orderby = BuildOrderBy();
+            string orderBy = BuildOrderBy();
 
-            var result = await ManekiAppDB.GetPosts(filter: filter, orderby: orderby);
+            var result = await ManekiAppDb.GetPosts(filter: filter, orderby: orderBy);
 
-            paginationPostsAmount = result.Count;
-            posts = result.Value.AsODataEnumerable();
+            PaginationPostsAmount = result.Count;
+            Posts = result.Value.AsODataEnumerable();
 
-            isLoading = false;
+            IsLoading = false;
         }
 
         private string BuildFilter()
         {
-            var filterBuilder = new StringBuilder($"(AuthorPageId eq {author.Id})");
+            var filterBuilder = new StringBuilder($"(AuthorPageId eq {Author.Id})");
 
             if (selectedTiers.Any())
             {
@@ -199,20 +190,20 @@ namespace ManekiApp.Client.Pages
 
         private bool CheckUserAuthor(Server.Models.ManekiAppDB.AuthorPage authorPage)
         {
-            return Security.User.Id.Equals(author.UserId);
+            return Security.User.Id.Equals(Author.UserId);
         }
 
         private void NavigateToEditPage()
         {
-            NavigationManager.NavigateTo($"/edit-author-page");
+            NavigationManager.NavigateTo("/edit-author-page");
         }
 
         private Dictionary<string, string> GetSocialLinks()
         {
             var toReturn = new Dictionary<string, string>();
-            if (!string.IsNullOrEmpty(author.SocialLinks))
+            if (!string.IsNullOrEmpty(Author.SocialLinks))
             {
-                var socialLinks = JsonSerializer.Deserialize<SocialLinks>(author.SocialLinks);
+                var socialLinks = JsonSerializer.Deserialize<SocialLinks>(Author.SocialLinks);
                 var icons = new Dictionary<string, string>
                 {
                     { "/images/youtube.png", socialLinks.Youtube },
@@ -234,7 +225,7 @@ namespace ManekiApp.Client.Pages
         private async Task OpenLinkInNewTab(string url)
         {
             var fullUrl = NavigationManager.ToAbsoluteUri(url).ToString();
-            await JSRuntime.InvokeVoidAsync("open", fullUrl, "_blank");
+            await JsRuntime.InvokeVoidAsync("open", fullUrl, "_blank");
         }
 
         private async Task<int> GetPostsAmount(Server.Models.ManekiAppDB.AuthorPage author)
@@ -255,7 +246,7 @@ namespace ManekiApp.Client.Pages
         private async Task<ODataServiceResult<Post>> GetPostsAmountOData(Server.Models.ManekiAppDB.AuthorPage author)
         {
             var filter = $"AuthorPageId eq {author.Id}";
-            var result = await ManekiAppDB.GetPosts(filter: filter, count: true, top: 0);
+            var result = await ManekiAppDb.GetPosts(filter: filter, count: true, top: 0);
             return result;
         }
 
@@ -263,7 +254,7 @@ namespace ManekiApp.Client.Pages
         {
             var subscriptionIds = string.Join(",", author.Subscriptions.Select(s => s.Id));
             var filter = $"SubscriptionId in ({subscriptionIds})";
-            var result = await ManekiAppDB.GetUserSubscriptions(filter: filter, count: true, top: 0);
+            var result = await ManekiAppDb.GetUserSubscriptions(filter: filter, count: true, top: 0);
             return result;
         }
 
@@ -272,7 +263,7 @@ namespace ManekiApp.Client.Pages
             var subscriptionIds = string.Join(",", author.Subscriptions.Select(s => s.Id));
             var now = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");
             var filter = $"SubscriptionId in ({subscriptionIds}) and Subscription/PermissionLevel gt 0 and EndsAt gt {now}";
-            var result = await ManekiAppDB.GetUserSubscriptions(filter: filter, count: true, top: 0);
+            var result = await ManekiAppDb.GetUserSubscriptions(filter: filter, count: true, top: 0);
             return result;
         }
 
@@ -280,14 +271,14 @@ namespace ManekiApp.Client.Pages
 
         public class SocialLinks
         {
-            public string Youtube { get; set; } = null;
-            public string Instagram { get; set; } = null;
-            public string Telegram { get; set; } = null;
-            public string TikTok { get; set; } = null;
-            public string Facebook { get; set; } = null;
-            public string Twitter { get; set; } = null;
-            public string Twitch { get; set; } = null;
-            public string Pinterest { get; set; } = null;
+            public string Youtube { get; set; } = string.Empty;
+            public string Instagram { get; set; } = string.Empty;
+            public string Telegram { get; set; } = string.Empty;
+            public string TikTok { get; set; } = string.Empty;
+            public string Facebook { get; set; } = string.Empty;
+            public string Twitter { get; set; } = string.Empty;
+            public string Twitch { get; set; } = string.Empty;
+            public string Pinterest { get; set; } = string.Empty;
         }
 
 
