@@ -40,20 +40,44 @@
             return;
         }
 
-        var currentUser = GetCurrentUserId();
+        var currentUserId = GetCurrentUserId();
+        if(await IsTelegramConfirmed(currentUserId) == false)return;
         var currentPlan = await GetCurrentPlan();
         var currentSubscription = await ManekiAppDb.GetSubscriptionById(id:currentPlan.SubscriptionId);
         CurrentPlanName = currentSubscription.Title;
         if (IsFreePlan())
         {
-            await HandleFreePlanSubscription(currentUser, currentPlan);
+            await HandleFreePlanSubscription(currentUserId, currentPlan);
         }
         else
         {
             await HandlePaidPlanSubscription(currentPlan);
         }
     }
+    private async Task<bool> IsTelegramConfirmed(string currentUserId)
+    {
+        var user = await SecurityService.GetUserById(currentUserId);
+        if (!user.TelegramConfirmed)
+        {
+            await DialogService.OpenAsync("Telegram Confirmation Required",
+                ds =>
+                    @<div>
+                        <p Style="margin-bottom: 1rem">You need to confirm your Telegram account to subscribe to a plan.</p>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <RadzenButton Text="OK" Click="() => ds.Close()" Style="margin-bottom: 10px; width: 150px"/>
+                </div>
+                </div>
+                </div>);
+            //when user close dialog navigate to settings page
+            NavigationManager.NavigateTo("settings");
+            return false;
+        }
+        //add return bool to avoid further execution
+        return true;
 
+
+    }
     private bool IsUserAuthenticated()
     {
         return SecurityService.IsAuthenticated();
