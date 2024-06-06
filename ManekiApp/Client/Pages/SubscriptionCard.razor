@@ -1,8 +1,11 @@
-﻿@using System.Runtime.InteropServices
+﻿@page "/subscription"
+@using System.Runtime.InteropServices
 @using ManekiApp.Server.Models.ManekiAppDB
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
 @inject DialogService DialogService
+@inject NavigationManager NavigationManager
 
 <RadzenCard>
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px">
@@ -17,7 +20,6 @@
         @Description
     </RadzenText>
     <RadzenButton Text="Subscribe" Click="@(() => SubscribeClicked())" Style="border-radius: 10px; border: 1px solid #3e633f;"/>
-
 </RadzenCard>
 
 @code {
@@ -29,45 +31,97 @@
     [Parameter] public string Description { get; set; }
     [Inject] protected ManekiAppDBService ManekiAppDB { get; set; }
     [Inject] public SecurityService SecurityService { get; set; }
-
+    public string currentPlanName { get; set; }
     private async Task SubscribeClicked()
     {
-        var currentUser = SecurityService.User.Id;
-        var currentPlan = await GetCurrentPlan();
-
-        if (Price <= 0)
+        if (!IsUserAuthenticated())
         {
-            if (currentPlan != null && currentPlan.SubscriptionId != SubscriptionId)
-            {
-                var result = await ShowConfirmFreePlanDialog();
-                if (result)
-                {
-                    await ProcessFreeUser(currentUser);
-                }
-            }
-            else
+            RedirectToLogin();
+            return;
+        }
+
+        var currentUser = GetCurrentUserId();
+        var currentPlan = await GetCurrentPlan();
+        var currentSubscription = await ManekiAppDB.GetSubscriptionById(id:currentPlan.SubscriptionId);
+        currentPlanName = currentSubscription.Title;
+        if (IsFreePlan())
+        {
+            await HandleFreePlanSubscription(currentUser, currentPlan);
+        }
+        else
+        {
+            await HandlePaidPlanSubscription(currentPlan);
+        }
+    }
+
+    private bool IsUserAuthenticated()
+    {
+        return SecurityService.IsAuthenticated();
+    }
+
+    private void RedirectToLogin()
+    {
+        NavigationManager.NavigateTo("login");
+    }
+
+    private string GetCurrentUserId()
+    {
+        return SecurityService.User.Id;
+    }
+
+    private bool IsFreePlan()
+    {
+        return Price <= 0;
+    }
+
+    private async Task HandleFreePlanSubscription(string currentUser, UserSubscription currentPlan)
+    {
+        if (ShouldConfirmFreePlanChange(currentPlan))
+        {
+            var result = await ShowConfirmFreePlanDialog();
+            if (result)
             {
                 await ProcessFreeUser(currentUser);
             }
         }
         else
         {
-            if (currentPlan == null || currentPlan.SubscriptionId != SubscriptionId)
-            {
-                var result = await ShowConfirmPlanChangeDialog();
-                if (result)
-                {
-                    var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
-                    await JSRuntime.InvokeVoidAsync("open", url, "_blank");
-                }
-            }
-            else
-            {
-                var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
-                await JSRuntime.InvokeVoidAsync("open", url, "_blank");
-            }
+            await ProcessFreeUser(currentUser);
         }
     }
+
+    private bool ShouldConfirmFreePlanChange(UserSubscription currentPlan)
+    {
+        return currentPlan != null && currentPlan.SubscriptionId != SubscriptionId;
+    }
+
+    private async Task HandlePaidPlanSubscription(UserSubscription currentPlan)
+    {
+        if (ShouldConfirmPlanChange(currentPlan))
+        {
+            var result = await ShowConfirmPlanChangeDialog();
+            if (result)
+            {
+                OpenSubscriptionUrl();
+            }
+        }
+        else
+        {
+            OpenSubscriptionUrl();
+        }
+    }
+
+    private bool ShouldConfirmPlanChange(UserSubscription currentPlan)
+    {
+        return currentPlan == null || currentPlan.SubscriptionId != SubscriptionId;
+    }
+
+    private void OpenSubscriptionUrl()
+    {
+        var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
+        _ = JSRuntime.InvokeVoidAsync("open", url, "_blank");
+    }
+
 
     private async Task<bool> ShowConfirmFreePlanDialog()
     {
@@ -89,7 +143,7 @@
         return await DialogService.OpenAsync("Confirm Plan Change",
             ds =>
                 @<div>
-                    <p Style="margin-bottom: 1rem">Are you sure you want to change your subscription plan?</p>
+                    <p Style="margin-bottom: 1rem">Are you sure you want to change your subscription plan? (@currentPlanName to @TierName)</p>
                     <div class="row">
                         <div class="col-md-12">
                             <RadzenButton Text="Yes" Click="() => { ds.Close(true); }" Style="margin-bottom: 10px; width: 150px"/>
