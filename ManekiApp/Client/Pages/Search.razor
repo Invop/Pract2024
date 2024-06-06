@@ -3,49 +3,29 @@
 
 <PageTitle>Search</PageTitle>
 <RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenAlert Title="Cannot load search results" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
+    </RadzenColumn>
+
     <RadzenCard class="w-100">
         <RadzenStack Orientation="Orientation.Horizontal">
-                <RadzenTextBox Placeholder="Search..." class="w-100" aria-label="TextBox with placeholder" />
+                <RadzenTextBox Placeholder="Search..." class="w-100" aria-label="TextBox with placeholder" @bind-Value="@searchFieldValue" />
                 <RadzenColumn>
-                    <RadzenButton class="h-100">Search</RadzenButton>
+                    <RadzenButton class="h-100" Click="ApplySearch">Search</RadzenButton>
                 </RadzenColumn>
         </RadzenStack>
     </RadzenCard>
 
-    <RadzenCard class="w-100">
-        <RadzenCard>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
-                <RadzenImage Path="" Style="width: 80px; height: 80px; border-radius: 50%" AlternateText="" />
-                <RadzenRow class="w-100">
-                    <RadzenColumn class="align-self-center">
-                        <RadzenStack Gap="0">
-                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Author Name</RadzenText>
-                            <RadzenText><b>Arthur</b></RadzenText>
-                        </RadzenStack>
-                    </RadzenColumn>
-                    <RadzenColumn>
-                        <RadzenStack Gap="0">
-                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Posts</RadzenText>
-                            <RadzenText>39</RadzenText>
-                        </RadzenStack>
-                        <RadzenStack Gap="0">
-                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Subscribers</RadzenText>
-                            <RadzenText>1298</RadzenText>
-                        </RadzenStack>
-                    </RadzenColumn>
-                </RadzenRow>
-            </RadzenStack>
-            <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-            <RadzenRow>
-                <RadzenColumn Size="4" Class="rz-text-truncate">
-                    <b>Subscriptions</b>
-                </RadzenColumn>
-                <RadzenColumn Size="8" Class="rz-text-align-end">
-                    <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="2$" />
-                    <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="5$" />
-                    <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text="25$" />
-                </RadzenColumn>
-            </RadzenRow>
-        </RadzenCard>
-    </RadzenCard>
+    <RadzenDataList @ref="datalist" Data="@authors" TItem="ManekiApp.Server.Models.ManekiAppDB.AuthorPage" class="w-100"
+                    AllowVirtualization="false" AllowPaging="true" IsLoading="@isLoading" LoadData="@LoadData" Count="@authorsAmount" PageSize="@pageSize"
+                    ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" >
+        <Template Context="author">
+            <AuthorSearchCard
+                Author="@(author)"/>
+        </Template>
+    </RadzenDataList>
+    
+    <RadzenColumn Size="12" Visible="@(!authors.Any())">
+        <RadzenText Text="No results found :(" TextStyle="TextStyle.H4" ></RadzenText>
+    </RadzenColumn>
 </RadzenRow>
