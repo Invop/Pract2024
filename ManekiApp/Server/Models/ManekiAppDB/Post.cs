@@ -14,10 +14,10 @@ public partial class Post
     public string Content { get; set; }
 
     [Required]
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
     [Required]
-    public DateTime EditedAt { get; set; }
+    public DateTimeOffset EditedAt { get; set; }
 
     [Required]
     public Guid AuthorPageId { get; set; }
@@ -28,8 +28,11 @@ public partial class Post
 
     public ICollection<Image> Images { get; set; }
 
+    public int MinLevel { get; set; }
+
     public Post()
     {
         Id = Guid.NewGuid();
+        MinLevel = 0;
     }
 }

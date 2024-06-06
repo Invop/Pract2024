@@ -1,17 +1,16 @@
-@page "/create-post"
-@using ManekiApp.Server.Models.ManekiAppDB
+@page "/edit-post/{Id}"
 @attribute [Authorize]
 
-<PageTitle>CreatePost</PageTitle>
+<PageTitle>EditPost</PageTitle>
 <RadzenRow>
-    <RadzenColumn Size="12">
-        <RadzenText Text="Create Post" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+    <RadzenColumn Size="12" Visible="@(isAuthor && PostExists)">
+        <RadzenText Text="Edit Post" TextStyle="TextStyle.H3" TagName="TagName.H1" />
     </RadzenColumn>
     
-    <RadzenAlert Title="Cannot create a post" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
+    <RadzenAlert Title="Cannot edit a post" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
 </RadzenRow>
 
-<RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.Post" Data="@Post" Submit="@FormSubmit" OnInvalidSubmit="() => {}">
+<RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.Post" Data="@Post" Submit="@FormSubmit" OnInvalidSubmit="() => {}" Visible="@(isAuthor && PostExists)">
     <ChildContent>
         <RadzenRow>
             <RadzenColumn Size="12" Visible="@(!isPreview)">
@@ -44,7 +43,7 @@
                                     
                         <RadzenImage class="profile-image" 
                                      Path="@( 
-                                               currentAuthor.ProfileImage != null ?
+                                           currentAuthor.ProfileImage != null ?
                                                $"data:image/jpeg;base64,{currentAuthor.ProfileImage}" :
                                                $"https://ui-avatars.com/api/?name={currentAuthor.Title}"
                                            )" 
@@ -76,8 +75,33 @@
             </RadzenColumn>
 
             <RadzenColumn Size="12" Visible="@(!isPreview)">
-                <RadzenButton class="w-100" ButtonType="ButtonType.Submit" ButtonStyle="Radzen.ButtonStyle.Success" Style="background-color: #58a45b">Publish</RadzenButton>
+                <RadzenRow RowGap="8">
+                    <RadzenColumn Size="12" SizeMD="6">
+                        <RadzenButton class="w-100" ButtonStyle="Radzen.ButtonStyle.Light" Click="@CancelEdit">Cancel</RadzenButton>
+                    </RadzenColumn> 
+            
+                    <RadzenColumn Size="12" SizeMD="6">
+                        <RadzenButton class="w-100" ButtonType="ButtonType.Submit" ButtonStyle="Radzen.ButtonStyle.Success" Style="background-color: #58a45b">Publish</RadzenButton>
+                    </RadzenColumn> 
+                </RadzenRow>
+            </RadzenColumn>         
+            
+            <RadzenColumn Size="12" Visible="@(!isPreview)">
+                <RadzenButton class="w-100" ButtonStyle="Radzen.ButtonStyle.Danger" Click="@DeletePost">Delete</RadzenButton>
             </RadzenColumn>
+            
         </RadzenRow>
     </ChildContent>
 </RadzenTemplateForm>
+
+<RadzenRow Visible="@(!isAuthor)">
+    <RadzenColumn>
+        <Unauthorized></Unauthorized>
+    </RadzenColumn>
+</RadzenRow>
+
+<RadzenRow Visible="@(!PostExists)">
+    <RadzenColumn>
+        <NotFound></NotFound>
+    </RadzenColumn>
+</RadzenRow>

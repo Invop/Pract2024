@@ -49,5 +49,10 @@ namespace ManekiApp.Client.Layout
                 Security.Logout();
             }
         }
+
+        private void RedirectToCreatePost()
+        {
+            NavigationManager.NavigateTo("/create-post");
+        }
     }
 }
