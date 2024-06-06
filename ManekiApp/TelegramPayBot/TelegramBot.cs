@@ -130,6 +130,11 @@ namespace ManekiApp.TelegramPayBot
                         .Include(us => us.Subscription)
                         .FirstOrDefaultAsync(us => us.UserId == currentUser.Id 
                                                    && us.Subscription.AuthorPageId == subscription.AuthorPageId);
+                    
+                    var level0Subscription = await context.Subscriptions
+                        .FirstOrDefaultAsync(s =>
+                            s.AuthorPageId == subscription.AuthorPageId
+                            && s.PermissionLevel == 0);
 
                     if (existingUserSubscription != null)
                     {
@@ -151,8 +156,8 @@ namespace ManekiApp.TelegramPayBot
                             existingUserSubscription.SubscribedAt = DateTime.UtcNow;
                             Console.WriteLine("Updated");
                         }
-                        
-                        _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(existingUserSubscription);
+                            _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(existingUserSubscription,
+                                level0Subscription.Id);
                     }
                     else
                     {
@@ -168,7 +173,9 @@ namespace ManekiApp.TelegramPayBot
                             IsCanceled = false,
                             JobId = String.Empty
                         };
-                        _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(newUserSubscription);
+                        if (level0Subscription != null)
+                            _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(newUserSubscription,
+                                level0Subscription.Id);
                         context.UserSubscriptions.Add(newUserSubscription);
                         Console.WriteLine("Created");
                     }

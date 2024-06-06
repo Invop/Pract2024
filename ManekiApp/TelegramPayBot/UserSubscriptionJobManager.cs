@@ -15,7 +15,7 @@ public class UserSubscriptionJobManager
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public void ScheduleUserSubscriptionDeletionJob(UserSubscription userSubscription)
+    public void ScheduleUserSubscriptionDeletionJob(UserSubscription userSubscription, Guid level0SubscriptionId)
     {
         // Remove the existing job if any
         if (!string.IsNullOrEmpty(userSubscription.JobId))
@@ -26,18 +26,18 @@ public class UserSubscriptionJobManager
         // Schedule a new job for the subscription's EndsAt date
         var delay = userSubscription.EndsAt - DateTime.UtcNow;
         userSubscription.JobId = _backgroundJobClient.Schedule<UserSubscriptionJobManager>(
-            x => x.DeleteUserSubscription(userSubscription.Id, null),
+            x => x.UpdateUserSubscription(userSubscription.Id,level0SubscriptionId, null),
             delay);
     }
 
-    public async Task DeleteUserSubscription(Guid id, IJobCancellationToken token)
+    public async Task UpdateUserSubscription(Guid id, Guid level0SubscriptionId, IJobCancellationToken token)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
         var userSubscription = await context.UserSubscriptions.FirstOrDefaultAsync(x=>x.Id==id);
         if (userSubscription != null)
         {
-            userSubscription.IsCanceled = true;
+            userSubscription.SubscriptionId = level0SubscriptionId;
             await context.SaveChangesAsync();
         }
     }
