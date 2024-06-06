@@ -78,33 +78,31 @@
                                 <RadzenRow class="rz-justify-content-center">
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Subscription tier" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown TValue="string" Data="@tiers" Placeholder="Select a tier" Multiple="true"/>
+                                        <RadzenDropDown  Data="@tiers" Placeholder="Select a tier" Multiple="true" @bind-Value="selectedTiers" Change="@(args => ApplyFilter(args))" />
                                     </RadzenStack>
 
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Date" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown TValue="int" Data="@years" Placeholder="Select publication date" Multiple="true"/>
+                                        <RadzenDropDown  Data="@years" Placeholder="Select publication date" Multiple="true" @bind-Value="selectedYears" Change="@(args => ApplyFilter(args))" />
                                     </RadzenStack>
 
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Sort by" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown TValue="string" Data="@sortBy" Placeholder="Sort by" Multiple="true"/>
-                                    </RadzenStack>
-
-
-                                </RadzenRow>
-
-                                <RadzenRow>
-                                    <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center">
-                                        <RadzenTextBox class="w-75" Placeholder="Search for posts" aria-label="TextBox with placeholder" Style="max-width: 300px; margin-right: 10px;"/>
-                                        <RadzenButton class="w-25" Style="border-radius: 10px">Search</RadzenButton>
-
+                                        <RadzenDropDown   Data="@sortBy" Placeholder="Sort by" Multiple="true" @bind-Value="selectedSortBy" Change="@(args => ApplyFilter(args))" />
                                     </RadzenStack>
                                 </RadzenRow>
 
                                 <RadzenRow>
                                     <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center">
-                                        <RadzenButton class="w-50" Text="Сlean the filters" Icon="clear" Style="background-color: #d1d8e1; border: 1px solid #949aa4; border-radius: 10px; color: #000000; font-weight: 600"></RadzenButton>
+                                        <RadzenTextBox class="w-100" Placeholder="Search for posts" @bind-Value="@searchText" Change="@(args => ApplyFilter(args))" aria-label="TextBox with placeholder" Style="max-width: 300px; margin-right: 10px;" />
+                                    </RadzenStack>
+
+                                </RadzenRow>
+
+
+                                <RadzenRow>
+                                    <RadzenStack class="w-100" Orientation="Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center">
+                                        <RadzenButton class="w-50" Text="Сlean the filters" Click="@ClearFilters" Icon="clear" Style="background-color: #d1d8e1; border: 1px solid #949aa4; border-radius: 10px; color: #000000; font-weight: 600"></RadzenButton>
 
                                     </RadzenStack>
                                 </RadzenRow>
@@ -112,14 +110,13 @@
                             </RadzenStack>
 
                             <RadzenColumn Size="12">
-                                
+
                                 <RadzenDataList @ref="datalist" Data="@posts" TItem="ManekiApp.Server.Models.ManekiAppDB.Post" class="w-100"
-                                                AllowVirtualization="false" AllowPaging="true" IsLoading="@isLoading" LoadData="@LoadData" Count="@paginationPostsAmount" PageSize="@pageSize"
+                                                AllowVirtualization="false" AllowPaging="true" IsLoading="@isLoading" LoadData="@LoadData" Count="@postsAmount" PageSize="@pageSize"
                                                 ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat">
                                     <Template Context="post">
-                                        <PostAuthorPage
-                                            Post="@(post)"
-                                            AuthorPage="@(author)"/>
+                                        <PostAuthorPage Post="@(post)"
+                                                        AuthorPage="@(author)" />
                                     </Template>
                                 </RadzenDataList>
                                 
@@ -210,9 +207,11 @@
 {
     int selectedIndex = 0;
 
-    private List<string> tiers = new List<string> { "Bronze Tier", "Silver Tier", "Gold Tier" };
+    private List<int> tiers = new List<int> { 0, 1, 2, 3 };
 
     private List<int> years = new List<int> { 2022, 2023, 2024 };
 
     private List<string> sortBy = new List<string> { "From the newest", "From the oldest" };
+
+
 }
