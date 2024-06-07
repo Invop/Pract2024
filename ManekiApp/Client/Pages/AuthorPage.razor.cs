@@ -59,7 +59,7 @@ namespace ManekiApp.Client.Pages
 
         private IEnumerable<int> selectedTiers = new List<int>();
         private IEnumerable<int> selectedYears = new List<int>();
-        private IEnumerable<string> selectedSortBy = new List<string>();
+        private string selectedSortBy = "From the newest";
         private string searchText = string.Empty;
 
         protected override async Task OnInitializedAsync()
@@ -90,6 +90,9 @@ namespace ManekiApp.Client.Pages
                 PaidSubscribersAmount = await GetPaidSubscribersAmount(Author);
                 SocLinks = GetSocialLinks();
 
+                //Variable from AuthorPage.razor
+                tiers = Author.Subscriptions.ToList();
+
                 Console.WriteLine(!string.IsNullOrEmpty(Author.SocialLinks)
                     ? $"Social Links: {Author.SocialLinks}"
                     : "No social links provided");
@@ -119,9 +122,10 @@ namespace ManekiApp.Client.Pages
             string filter = BuildFilter();
             string orderBy = BuildOrderBy();
 
-            var result = await ManekiAppDb.GetPosts(filter: filter, orderby: orderBy);
-
-            PaginationPostsAmount = result.Count;
+            var result = await ManekiAppDb.GetPosts(filter: filter, orderby: orderBy, skip: args.Skip, top: args.Top);
+            var countFilterResult = await ManekiAppDb.GetPosts(filter: filter, orderby: orderBy, top: 0, count: true);
+            
+            PaginationPostsAmount = countFilterResult.Count;
             Posts = result.Value.AsODataEnumerable();
 
             IsLoading = false;
@@ -155,7 +159,7 @@ namespace ManekiApp.Client.Pages
 
         private string BuildTiersFilter()
         {
-            return string.Join(" and ", selectedTiers.Select(tier => $"MinLevel ge {tier}"));
+            return string.Join(" or ", selectedTiers.Select(tier => $"MinLevel eq {tier}"));
         }
 
         private string BuildYearsFilter()
@@ -171,7 +175,7 @@ namespace ManekiApp.Client.Pages
 
         private string BuildOrderBy()
         {
-            return selectedSortBy != null && selectedSortBy.Contains("From the oldest") ? "CreatedAt" : "CreatedAt desc";
+            return selectedSortBy is "From the oldest" ? "CreatedAt" : "CreatedAt desc";
         }
 
 
@@ -181,7 +185,7 @@ namespace ManekiApp.Client.Pages
 
             selectedTiers = new List<int>();
             selectedYears = new List<int>();
-            selectedSortBy = new List<string>();
+            selectedSortBy = "From the newest";
             searchText = string.Empty;
 
             await UpdateDataList();

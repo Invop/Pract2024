@@ -1,4 +1,5 @@
 @page "/author-page/{AuthorPageId:guid}"
+@using ManekiApp.Server.Models.ManekiAppDB
 
 
 @attribute [Authorize]
@@ -78,7 +79,7 @@
                                 <RadzenRow class="rz-justify-content-center">
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Subscription tier" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown  Data="@tiers" Placeholder="Select a tier" Multiple="true" @bind-Value="selectedTiers" Change="@(args => ApplyFilter())" />
+                                        <RadzenDropDown  Data="@tiers" TextProperty="Title" ValueProperty="PermissionLevel" Placeholder="Select a tier" Multiple="true" @bind-Value="selectedTiers" Change="@(args => ApplyFilter())" />
                                     </RadzenStack>
 
                                     <RadzenStack Gap=5>
@@ -88,7 +89,7 @@
 
                                     <RadzenStack Gap=5>
                                         <RadzenLabel Text="Sort by" Component="DropDownMultipleChips" Style="margin-right: 8px; vertical-align: middle; font-weight: bold"/>
-                                        <RadzenDropDown   Data="@sortBy" Placeholder="Sort by" Multiple="true" @bind-Value="selectedSortBy" Change="@(args => ApplyFilter())" />
+                                        <RadzenDropDown   Data="@sortBy" Placeholder="Sort by" @bind-Value="selectedSortBy" Change="@(args => ApplyFilter())" />
                                     </RadzenStack>
                                 </RadzenRow>
 
@@ -111,8 +112,10 @@
 
                             <RadzenColumn Size="12">
 
+                                <RadzenText Text="No posts available." TextStyle="TextStyle.H4" TagName="TagName.H1" TextAlign="TextAlign.Center" Visible="@(!Posts.Any())"/>
+
                                 <RadzenDataList @ref="Datalist" Data="@Posts" TItem="ManekiApp.Server.Models.ManekiAppDB.Post" class="w-100"
-                                                AllowVirtualization="false" AllowPaging="true" IsLoading="@IsLoading" LoadData="@LoadData" Count="@PostsAmount" PageSize="@PageSize"
+                                                AllowVirtualization="false" AllowPaging="true" IsLoading="@IsLoading" LoadData="@LoadData" Count="@PaginationPostsAmount" PageSize="@PageSize"
                                                 ShowPagingSummary="true" PagingSummaryFormat="@PagingSummaryFormat">
                                     <Template Context="post">
                                         <PostAuthorPage Post="@(post)"
@@ -120,8 +123,6 @@
                                     </Template>
                                 </RadzenDataList>
                                 
-                                <RadzenText Text="No posts available." TextStyle="TextStyle.H4" TagName="TagName.H1" Visible="@(!Posts.Any())"/>
-
                             </RadzenColumn>
                         </RadzenRow>
                     </RadzenStack>
@@ -207,7 +208,7 @@
 {
     int selectedIndex = 0;
 
-    private List<int> tiers = new List<int> { 0, 1, 2, 3 };
+    private List<Subscription> tiers = new List<Subscription>();
 
     private List<int> years = new List<int> { 2022, 2023, 2024 };
 
