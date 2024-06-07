@@ -2,7 +2,6 @@ using ManekiApp.Client;
 using ManekiApp.Server.Components;
 using ManekiApp.Server.Data;
 using ManekiApp.Server.Models;
-using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
@@ -98,6 +97,8 @@ app.MapRazorComponents<App>().AddInteractiveWebAssemblyRenderMode().AddAdditiona
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>().Database.Migrate();
 using var scope = app.Services.CreateScope();
 SeedData(scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>());
+
+app.UseStatusCodePagesWithRedirects("/not-found");
 app.Run();
 void SeedData(RoleManager<ApplicationRole> roleManager)
 {
