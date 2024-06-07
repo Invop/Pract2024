@@ -88,7 +88,7 @@ namespace ManekiApp.Client.Pages
                 PostsAmount = await GetPostsAmount(Author);
                 SubscribersAmount = await GetSubscribersAmount(Author);
                 PaidSubscribersAmount = await GetPaidSubscribersAmount(Author);
-                SocLinks = GetSocialLinks();
+                SocLinks = await GetSocialLinks();
 
                 //Variable from AuthorPage.razor
                 tiers = Author.Subscriptions.ToList();
@@ -202,12 +202,17 @@ namespace ManekiApp.Client.Pages
             NavigationManager.NavigateTo("/edit-author-page");
         }
 
-        private Dictionary<string, string> GetSocialLinks()
+        private async Task<Dictionary<string, string>> GetSocialLinks()
         {
             var toReturn = new Dictionary<string, string>();
             if (!string.IsNullOrEmpty(Author.SocialLinks))
             {
                 var socialLinks = JsonSerializer.Deserialize<SocialLinks>(Author.SocialLinks);
+
+                //Probably for protecting a telegram chat link from free subscribers
+                bool isPaidSubscriber = (await CheckUserSubscriptions(1, Author)) || IsUserAuthor;
+                socialLinks.Telegram = isPaidSubscriber ? socialLinks.Telegram : null;  
+                
                 var icons = new Dictionary<string, string>
                 {
                     { "/images/youtube.png", socialLinks.Youtube },
@@ -271,7 +276,26 @@ namespace ManekiApp.Client.Pages
             return result;
         }
 
+        private async Task<bool> CheckUserSubscriptions(int minLevel, ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage)
+        {
+            var userSubscriptionsOData = await GetUserSubscriptionsByUserAndAuthor(Security.User.Id, authorPage.Id);
+            var userSubscriptions = userSubscriptionsOData.Value.ToList();
 
+            foreach (var subscription in userSubscriptions)
+            {
+                if (subscription.Subscription.PermissionLevel >= minLevel &&
+                    subscription.EndsAt >= DateTimeOffset.UtcNow) return true;
+            }
+
+            return false;
+        }
+        
+        private async Task<ODataServiceResult<UserSubscription>> GetUserSubscriptionsByUserAndAuthor(string userId, Guid authorPageId)
+        {
+            var filter = $"UserId eq '{userId}' and Subscription/AuthorPageId eq {authorPageId}";
+            var userSubscriptionsOData = await ManekiAppDb.GetUserSubscriptions(filter: filter, expand: "Subscription");
+            return userSubscriptionsOData;
+        }
 
         public class SocialLinks
         {
