@@ -27,6 +27,7 @@ public partial class Analytics
     private IEnumerable<Subscription> subscriptions = new List<Subscription>();
     private DataItem[] chartItems;
     private IQueryable<SubscriberDetails> subscribersData;
+    private decimal? lifetimeProfit { get; set; } = 0;
     private bool showDataLabels = false;
     private bool isLoading;
 
@@ -93,7 +94,7 @@ public partial class Analytics
             });
 
         subscribersData = subscriberDetails.AsQueryable();
-
+        lifetimeProfit = subscribersData.Sum(x => x.Amount);
         isLoading = false;
     }
 
