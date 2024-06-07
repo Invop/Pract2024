@@ -60,7 +60,7 @@
                             @foreach (var sub in AuthorSubscriptions)
                             {
                                 <RadzenColumn class="rz-pt-5">
-                                    <SubscriptionCard TierName=@($"{sub.Title}") Price=@($"{sub.Price}$")
+                                    <SubscriptionCard TierName=@($"{sub.Title}") Price=@(sub.Price)
                                                       SubscriptionId="sub.Id" UserId="@Security.User.Id"
                                                       Description="@sub.Description">
                                     </SubscriptionCard>
