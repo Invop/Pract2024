@@ -39,16 +39,37 @@ namespace ManekiApp.Client.Pages
         [Inject]
         protected ManekiAppDBService ManekiService { get; set; }
 
-        protected ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage;
+        protected ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage = new Server.Models.ManekiAppDB.AuthorPage();
         protected bool errorVisible;
         protected string error;
         
         protected override async Task OnInitializedAsync()
         {
-            authorPage = new Server.Models.ManekiAppDB.AuthorPage();
+            try
+            {
+                await RedirectIfAuthor();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error occured: {e.Message}");
+            }
+            
             authorPage.UserId = Security.User.Id;
         }
-        
+
+        private async Task RedirectIfAuthor()
+        {
+            string filter = $"UserId eq '{Security.User.Id}'";
+            var result = await ManekiService.GetAuthorPages(filter: filter);
+
+            if (result.Value.Any())
+            {
+                string pageId = result.Value.First().Id.ToString();
+                NavigationManager.NavigateTo($"/author-page/{pageId}");
+                return;
+            }
+        }
+
         protected async Task FormSubmit(ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage)
         {
             try
