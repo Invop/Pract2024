@@ -78,9 +78,10 @@ namespace ManekiApp.Client.Pages
 
         private async Task LoadAuthorData()
         {
-            Author = await ManekiAppDb.GetAuthorPageById(id: AuthorPageId, expand: "Subscriptions");
-            if (Author != null)
+            var authorsResult = await ManekiAppDb.GetAuthorPages(filter: $"Id eq {AuthorPageId}", expand: "Subscriptions");
+            if (authorsResult.Value.Any())
             {
+                Author = authorsResult.Value.First();
                 Console.WriteLine($"Loaded Author: {Author.Title}");
                 IsUserAuthor = CheckUserAuthor(Author);
 
@@ -100,7 +101,7 @@ namespace ManekiApp.Client.Pages
             else
             {
                 IsFound = false;
-                Console.WriteLine("Author is null");
+                Console.WriteLine("Author is not found");
             }
         }
 
