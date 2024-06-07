@@ -38,14 +38,16 @@ public partial class Analytics
         var filter = $"UserId eq '{userId}'";
         var authorPageOdata = await manekiAppDbService.GetAuthorPages(filter, top: 1);
         var authorPage = authorPageOdata.Value.FirstOrDefault();
-
-        //get all author subscriptions
-        if (authorPage != null)
+        if (authorPage == null)
         {
-            filter = $"AuthorPageId eq {authorPage.Id}";
-            var subscriptionsOData = await manekiAppDbService.GetSubscriptions(filter);
-            subscriptions = subscriptionsOData.Value;
+            NavigationManager.NavigateTo("/feed");
+            return;
         }
+        //get all author subscriptions
+        filter = $"AuthorPageId eq {authorPage.Id}";
+        var subscriptionsOData = await manekiAppDbService.GetSubscriptions(filter);
+        subscriptions = subscriptionsOData.Value.ToList();
+
 
         //get all author patrons
         if (subscriptions != null && subscriptions.Any())
