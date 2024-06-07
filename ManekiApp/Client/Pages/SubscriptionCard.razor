@@ -125,12 +125,12 @@
             var result = await ShowConfirmPlanChangeDialog();
             if (result)
             {
-                OpenSubscriptionUrl();
+                await OpenSubscriptionUrl();
             }
         }
         else
         {
-            OpenSubscriptionUrl();
+            await OpenSubscriptionUrl();
         }
     }
 
@@ -139,10 +139,10 @@
         return currentPlan == null || currentPlan.SubscriptionId != SubscriptionId;
     }
 
-    private void OpenSubscriptionUrl()
+    private async Task OpenSubscriptionUrl()
     {
         var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
-        _ = JSRuntime.InvokeVoidAsync("open", url, "_blank");
+        await JSRuntime.InvokeVoidAsync("open", url, "_blank");
     }
 
 

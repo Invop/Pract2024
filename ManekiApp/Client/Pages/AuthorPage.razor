@@ -2,8 +2,6 @@
 @using ManekiApp.Server.Models.ManekiAppDB
 
 
-@attribute [Authorize]
-
 <PageTitle>AuthorPage</PageTitle>
 <RadzenRow>
     @if (IsFound)
@@ -63,6 +61,7 @@
                                 <RadzenColumn class="rz-pt-5">
                                     <SubscriptionCard TierName=@($"{sub.Title}") Price=@(sub.Price)
                                                       SubscriptionId="sub.Id" UserId="@Security.User.Id"
+                                                      Subscriptions="@AuthorSubscriptions"
                                                       Description="@sub.Description">
                                     </SubscriptionCard>
                                 </RadzenColumn>
