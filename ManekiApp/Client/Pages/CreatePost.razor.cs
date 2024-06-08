@@ -84,7 +84,14 @@ namespace ManekiApp.Client.Pages
 
                 await ManekiAppDBService.CreatePost(post);
 
-                await SendNotificationRequest(currentAuthor.Id);
+                try
+                {
+                    await SendNotificationRequest(currentAuthor.Id);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error while sending notification request: {e.Message}");
+                }
 
                 NavigationManager.NavigateTo($"/post/{Post.Id}");
             }
