@@ -42,10 +42,21 @@
         }
 
         var currentUserId = GetCurrentUserId();
-        if(await IsTelegramConfirmed(currentUserId) == false)return;
+        if (!await IsTelegramConfirmed(currentUserId))
+        {
+            return;
+        }
+
         var currentPlan = await GetCurrentPlan();
-        var currentSubscription = await ManekiAppDb.GetSubscriptionById(id:currentPlan.SubscriptionId);
+        if (currentPlan == null)
+        {
+            await HandleNoCurrentPlan(currentUserId);
+            return;
+        }
+
+        var currentSubscription = await ManekiAppDb.GetSubscriptionById(id: currentPlan.SubscriptionId);
         CurrentPlanName = currentSubscription.Title;
+
         if (IsFreePlan())
         {
             await HandleFreePlanSubscription(currentUserId, currentPlan);
@@ -55,6 +66,19 @@
             await HandlePaidPlanSubscription(currentPlan);
         }
     }
+
+    private async Task HandleNoCurrentPlan(string currentUserId)
+    {
+        if (IsFreePlan())
+        {
+            await ProcessFreeUser(currentUserId);
+        }
+        else
+        {
+            await OpenSubscriptionUrl();
+        }
+    }
+
     private async Task<bool> IsTelegramConfirmed(string currentUserId)
     {
         var user = await SecurityService.GetUserById(currentUserId);
