@@ -12,6 +12,9 @@ using _Imports = ManekiApp.Client._Imports;
 using ManekiAppDBService = ManekiApp.Server.ManekiAppDBService;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseUrls("http://localhost:5000", "https://localhost:5001");
+
 builder.Services.AddLogging();
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveWebAssemblyComponents();
