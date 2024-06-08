@@ -98,7 +98,7 @@ namespace ManekiApp.Client.Pages
         private async Task SendNotificationRequest(Guid authorId)
         {
             var client = new HttpClient();
-            var response = await client.PostAsync($"https://localhost:7030/notify?authorId={authorId}", null);
+            var response = await client.PostAsync($"https://localhost:5006/notify?authorId={authorId}", null);
 
             if (response.IsSuccessStatusCode)
             {

@@ -3,6 +3,8 @@ using ManekiApp.TelegramBot;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5005", "https://localhost:5006");
+
 
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"))
@@ -16,7 +18,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("https://localhost:5001", "https://localhost:7030")
+            policy.WithOrigins("https://localhost:5001", "https://localhost:5006")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
