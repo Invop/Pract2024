@@ -40,8 +40,8 @@
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="@CancelSubscription" @onclick:stopPropagation="true">Cancel Subscription</RadzenButton>
             }
             <RadzenRow>
-                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_active" ImageAlternateText="Notifications enabled" @onclick:stopPropagation="true"></RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="notifications_off" ImageAlternateText="Notifications disabled" @onclick:stopPropagation="true"></RadzenButton>
+                <RadzenButton Visible="@(RecieveNotifications)" ButtonStyle="ButtonStyle.Light" Click="@DisableNotifications" Icon="notifications_active" ImageAlternateText="Notifications enabled" @onclick:stopPropagation="true"></RadzenButton>
+                <RadzenButton Visible="@(!RecieveNotifications)" ButtonStyle="ButtonStyle.Light" Click="@EnableNotifications" Icon="notifications_off" ImageAlternateText="Notifications disabled" @onclick:stopPropagation="true"></RadzenButton>
             </RadzenRow>
         </RadzenColumn>
     </RadzenRow>
@@ -60,4 +60,7 @@
     [Parameter] public string SubscriptionPrice { get; set; }
     [Parameter] public string RadzenBadgeStyle { get; set; }
     [Parameter] public EventCallback CancelSubscription { get; set; }
+    [Parameter] public EventCallback EnableNotifications { get; set; }
+    [Parameter] public EventCallback DisableNotifications { get; set; }
+    [Parameter] public bool RecieveNotifications { get; set; }
 }

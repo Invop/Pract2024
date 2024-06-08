@@ -104,6 +104,18 @@ namespace ManekiApp.Client.Pages
             await ManekiAppDB.UpdateUserSubscription(userSubscription.Id, userSubscription);
         }
         
+        private async Task EnableNotifications(UserSubscription userSubscription)
+        {
+            userSubscription.ReceiveNotifications = true;
+            await ManekiAppDB.UpdateUserSubscription(userSubscription.Id, userSubscription);
+        }
+        
+        private async Task DisableNotifications(UserSubscription userSubscription)
+        {
+            userSubscription.ReceiveNotifications = false;
+            await ManekiAppDB.UpdateUserSubscription(userSubscription.Id, userSubscription);
+        }
+        
         void NavigateToAuthorPage(string url)
         {
             NavigationManager.NavigateTo(url);

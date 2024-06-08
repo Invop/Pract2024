@@ -27,7 +27,10 @@
                     SubscriptionType=@(subscriptionType)
                     SubscriptionPrice=@(subscriptionPrice)
                     RadzenBadgeStyle="background: linear-gradient(90deg, rgba(58,172,180,1) 0%, rgba(29,137,253,1) 50%, rgba(119,69,252,1) 100%); height: 40px; display: flex; font-size: 25px; font-weight: 400"
-                    CancelSubscription="@(() => CancelSubscription(subscription))"/>
+                    RecieveNotifications="@(subscription.ReceiveNotifications)"
+                    CancelSubscription="@(() => CancelSubscription(subscription))"
+                    EnableNotifications="@(() => EnableNotifications(subscription))"
+                    DisableNotifications="@(() => DisableNotifications(subscription))"/>
             </div>
         }
     </RadzenRow>
