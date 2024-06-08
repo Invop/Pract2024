@@ -298,6 +298,11 @@ namespace ManekiApp.Client.Pages
             return userSubscriptionsOData;
         }
 
+        protected void NavigateToCreatePost()
+        {
+            NavigationManager.NavigateTo("/create-post");
+        }
+
         public class SocialLinks
         {
             public string Youtube { get; set; } = string.Empty;

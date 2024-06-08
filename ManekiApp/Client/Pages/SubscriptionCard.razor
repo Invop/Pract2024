@@ -19,10 +19,11 @@
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 17px">
         @Description
     </RadzenText>
-    <RadzenButton Text="Subscribe" Click="@(() => SubscribeClicked())" Style="border-radius: 10px; border: 1px solid #3e633f;"/>
+    <RadzenButton Text="Subscribe" Click="@(() => SubscribeClicked())" Visible="@ShowButtons" Style="border-radius: 10px; border: 1px solid #3e633f;"/>
 </RadzenCard>
 
 @code {
+    [Parameter] public bool ShowButtons { get; set; }
     [Parameter] public string TierName { get; set; }
     [Parameter] public decimal Price { get; set; }
     [Parameter] public Guid SubscriptionId { get; set; }

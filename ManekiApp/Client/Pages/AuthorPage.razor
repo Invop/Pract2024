@@ -30,7 +30,8 @@
                     </RadzenRow>
 
                     <RadzenRow>
-                         <RadzenButton Text="Edit page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" Visible="@IsUserAuthor"/>
+                         <RadzenButton Text="Edit Page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" Visible="@IsUserAuthor"/>
+                         <RadzenButton Text="Create Post" Variant="Variant.Flat" Click="NavigateToCreatePost" Shade="Shade.Light" Style="background-color: #bdaba6; width: 144px; border-radius: 10px; border: 1px solid #988784; color: #ffffff" Visible="@IsUserAuthor"/>
                     </RadzenRow>
 
                 </RadzenStack>
@@ -60,7 +61,8 @@
                                     <SubscriptionCard TierName=@($"{sub.Title}") Price=@(sub.Price)
                                                       SubscriptionId="sub.Id" UserId="@Security.User.Id"
                                                       Subscriptions="@AuthorSubscriptions"
-                                                      Description="@sub.Description">
+                                                      Description="@sub.Description"
+                                                      ShowButtons="@(!IsUserAuthor)">
                                     </SubscriptionCard>
                                 </RadzenColumn>
                             }
