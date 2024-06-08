@@ -50,7 +50,7 @@ public class TelegramBot
         cts.Cancel();
     }
 
-    public async Task NotifyUsersAsync(IServiceProvider services, Guid authorPageId)
+    public async Task NotifyUsersAsync(IServiceProvider services, Guid authorPageId, string postTitle)
     {
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
@@ -87,7 +87,7 @@ public class TelegramBot
 
         await Task.WhenAll(chatIds.Select(async chatId =>
         {
-            await _client.SendTextMessageAsync(new ChatId(chatId), $"{authorName} Create new post");
+            await _client.SendTextMessageAsync(chatId:new ChatId(chatId), text:$"{authorName}, whom you subscribed to, published a new post:\n{postTitle}");
         }));
 
 
