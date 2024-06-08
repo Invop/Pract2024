@@ -9,7 +9,7 @@
 
     <RadzenColumn Size="12" Visible="@(PostExists)">
         <RadzenStack Style="background-color: #eee6e6; padding: 20px; border-radius: 10px">
-            <RadzenCard Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="padding: 6px;">
+            <RadzenCard Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="padding: 6px; cursor: pointer;" @onclick="redirectToAuthorPage">
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Style="background-color: rgba(225, 225, 225, 0)">
                     
                     <RadzenImage class="profile-image" Path="@( 
