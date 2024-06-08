@@ -18,7 +18,7 @@ public class TelegramBot
     {
         _serviceScopeFactory = serviceScopeFactory;
         _client = new TelegramBotClient(botToken);
-        
+
     }
 
     public async Task Start()
@@ -50,11 +50,18 @@ public class TelegramBot
         cts.Cancel();
     }
 
-    public async Task NotifyUsersAsync(IServiceProvider services,Guid authorPageId)
-    {   
+    public async Task NotifyUsersAsync(IServiceProvider services, Guid authorPageId)
+    {
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
-        var author = await dbContext.AuthorPages.FirstOrDefaultAsync(u => u.Id == authorPageId);
+        var author = await dbContext.AuthorPages
+            .Select(u => new
+            {
+                u.Id,
+                u.Title,
+                ProfileImage = u.ProfileImage ?? ""
+            })
+            .FirstOrDefaultAsync(u => u.Id == authorPageId);
         if (author == null)
         {
             return;
@@ -64,12 +71,12 @@ public class TelegramBot
 
         var subscriptionsIds = dbContext.Subscriptions
             .Where(x => x.AuthorPageId == authorPageId)
-            .Select(x=>x.Id)
+            .Select(x => x.Id)
             .ToList();
         var subscribersIds = dbContext.UserSubscriptions
             .Where(x => subscriptionsIds.Contains(x.SubscriptionId))
-            .Where(x=>x.EndsAt >= DateTimeOffset.Now)
-            .Where(x=>x.ReceiveNotifications)
+            .Where(x => x.EndsAt >= DateTimeOffset.UtcNow)
+            .Where(x => x.ReceiveNotifications)
             .Select(x => x.UserId)
             .Distinct()
             .ToList();
@@ -85,7 +92,7 @@ public class TelegramBot
 
 
     }
-    
+
     private async Task HandleUpdateAsync(IServiceProvider services, ITelegramBotClient botClient,
         Update update, CancellationToken cancellationToken)
     {

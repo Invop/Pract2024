@@ -73,7 +73,10 @@ builder.Services.AddDbContext<ManekiApp.Server.Data.ManekiAppDBContext>(options 
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"));
 });
+
+
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -87,19 +90,33 @@ else
 }
 
 app.UseHttpsRedirection();
-app.MapControllers();
-app.UseHeaderPropagation();
 app.UseStaticFiles();
+
+app.UseRouting();
+
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
+app.UseHeaderPropagation();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveWebAssemblyRenderMode().AddAdditionalAssemblies(typeof(_Imports).Assembly);
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>().Database.Migrate();
 using var scope = app.Services.CreateScope();
 SeedData(scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>());
 
+
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder
+    .WithOrigins("https://localhost:5001")
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
+
+
 app.UseStatusCodePagesWithRedirects("/not-found");
 app.Run();
+
 void SeedData(RoleManager<ApplicationRole> roleManager)
 {
     var roles = new List<string>
