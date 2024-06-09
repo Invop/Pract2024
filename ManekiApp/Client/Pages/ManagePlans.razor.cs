@@ -40,7 +40,7 @@ namespace ManekiApp.Client.Pages
         protected bool errorVisible;
         protected string error;
 
-        protected List<PlanViewModel> subscriptionsList = new List<PlanViewModel>();
+        protected List<Subscription> subscriptionsList = new List<Subscription>();
         
         protected override async Task OnInitializedAsync()
         {
@@ -55,10 +55,8 @@ namespace ManekiApp.Client.Pages
 
             var subscriptionsResult = await GetSubscriptionsForAuthor(currentAuthor.Id);
             var subscriptions = subscriptionsResult?.Value?.ToList();
-            
-            subscriptionsList = subscriptions
-                .Select(subscription => new PlanViewModel { Subscription = subscription })
-                .ToList();
+
+            subscriptionsList = subscriptions;
         }
 
         private async Task<ODataServiceResult<Server.Models.ManekiAppDB.AuthorPage>> GetAuthorPagesOData(string userId)
@@ -74,53 +72,16 @@ namespace ManekiApp.Client.Pages
             var subscriptions = await ManekiService.GetSubscriptions(filter: filter);
             return subscriptions;
         }
-
-        private async Task<ODataServiceResult<Subscription>> GetSubscriptionsById(Guid id)
-        {
-            var filter = $"Id eq {id}";
-            var subscriptions = await ManekiService.GetSubscriptions(filter: filter);
-            return subscriptions;
-        }
         
         protected async Task CancelClick()
         {
             DialogService.Close(null);
         }
-        
-        protected class PlanViewModel
+
+        protected void ShowError(string message)
         {
-            public Server.Models.ManekiAppDB.Subscription Subscription;
-            public bool IsEditing = false;
-        }
-
-        private void EditSubscription(PlanViewModel subscriptionView)
-        {
-            subscriptionView.IsEditing = true;
-        }
-
-        private async Task DiscardChanges(PlanViewModel subscriptionView)
-        {
-            var serverSubscriptionResult = await GetSubscriptionsById(subscriptionView.Subscription.Id); 
-            var serverSubscription = serverSubscriptionResult?.Value?.FirstOrDefault();
-
-            subscriptionView.Subscription = serverSubscription;
-            subscriptionView.IsEditing = false;
-        }
-
-        private async Task UpdateSubscription(PlanViewModel subscriptionView)
-        {
-            var updatedSubscription = subscriptionView.Subscription;
-            try 
-            { 
-                await ManekiService.UpdateSubscription(updatedSubscription.Id, updatedSubscription); 
-            }
-            catch (Exception ex)
-            {
-                errorVisible = true;
-                error = ex.Message;
-            }
-
-            subscriptionView.IsEditing = false;
+            error = message;
+            errorVisible = true;
         }
     }
 }
