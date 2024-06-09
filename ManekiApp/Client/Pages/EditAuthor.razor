@@ -28,7 +28,7 @@
                     <RadzenColumn class="w-100" Size="12" SizeMD="9">
                         <RadzenTextArea Name="Title" Placeholder="Your page title" Rows="3" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Title" ></RadzenTextArea>   
                         <br/>
-                        <RadzenRequiredValidator Component="Title" Text="Page title is required" Style="position: relative" />
+                        <RadzenCustomValidator Validator="@(() => ValidateString(authorPage.Title))" Component="Title" Text="Page title is required or not valid" Style="position: relative" />
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -40,7 +40,7 @@
                     <RadzenColumn class="w-100" Size="12" SizeMD="9">
                         <RadzenTextArea Name="Description" Placeholder="Your page description" Rows="6" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Description" ></RadzenTextArea>
                         <br/>
-                        <RadzenRequiredValidator Component="Description" Text="Page description is required" Style="position: relative" />
+                        <RadzenCustomValidator Validator="@(() => ValidateString(authorPage.Description))" Component="Description" Text="Page description is required or not valid" Style="position: relative" />
                     </RadzenColumn>   
                 </RadzenRow>
 
@@ -134,7 +134,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.twitch.tv/yourapge" Trim="false" @bind-Value="socialLinks.Twitch"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.twitch.tv/yourpage" Trim="false" @bind-Value="socialLinks.Twitch"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
