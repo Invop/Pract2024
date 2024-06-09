@@ -1,4 +1,5 @@
 @using ManekiApp.Server.Models.ManekiAppDB
+@using System.Text.RegularExpressions
 <RadzenColumn Size="12">
     <RadzenCard class="w-100">
         <RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.Subscription"  Data="@Subscription" 
@@ -28,14 +29,14 @@
                                 <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
                                 <RadzenText Style="font-weight: 400" Visible="@(!IsEditing)"><b>@Subscription.Title</b></RadzenText>
                                 <RadzenTextBox Name="Title" Placeholder="Subscription Title" @bind-Value="@Subscription.Title" Visible="@(IsEditing)"></RadzenTextBox>
-                                <RadzenRequiredValidator Component="Title" Text="Title is required" Style="position: relative" Visible="@(IsEditing)"/>
+                                <RadzenCustomValidator Validator="@(() => ValidateString(Subscription.Title))" Component="Title" Text="Title is required or not valid" Style="position: relative" Visible="@(IsEditing)"/>
                             </RadzenStack>
                             <RadzenStack Gap="0">
                                 <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Price</RadzenText>
                                 <RadzenText Style="font-weight: 400" Visible="@(!IsEditing)">@Subscription.Price $</RadzenText>
                                 
                                 <RadzenStack Orientation="Orientation.Horizontal" Visible="@(IsEditing)">
-                                    <RadzenNumeric Name="Price" TValue="decimal" Step="0.1" Placeholder="Subscription Price" class="w-100" @bind-Value="@Subscription.Price"></RadzenNumeric>
+                                    <RadzenNumeric Min="1" Name="Price" TValue="decimal" Step="0.1" Placeholder="Subscription Price" class="w-100" @bind-Value="@Subscription.Price"></RadzenNumeric>
                                     <RadzenColumn>
                                         <RadzenText class="align-items-center h-100 rz-px-3" Style="display: flex; font-size: 20px; font-weight: 500">$</RadzenText>
                                     </RadzenColumn>
@@ -49,7 +50,7 @@
                                 <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Description</RadzenText>
                                 <RadzenText Style="font-weight: 400; word-break:break-all;" class="h-100" Visible="@(!IsEditing)">@Subscription.Description</RadzenText>
                                 <RadzenTextArea Name="Description" Placeholder="Subscription Description" @bind-Value="@Subscription.Description" Style="height: 100%" Visible="@(IsEditing)"></RadzenTextArea>
-                                <RadzenRequiredValidator Component="Description" Text="Description is required" Style="position: relative" Visible="@(IsEditing)"/>
+                                <RadzenCustomValidator Validator="@(() => ValidateString(Subscription.Description))" Component="Description" Text="Description is required or not valid" Style="position: relative" Visible="@(IsEditing)"/>
                             </RadzenStack>
                         </RadzenColumn>
                     </RadzenRow>
@@ -70,6 +71,7 @@
 
     private async Task FormSubmit()
     {
+        NormalizeAllTextFields();
         var updatedSubscription = Subscription;
         try 
         { 
@@ -103,5 +105,23 @@
         var filter = $"Id eq {id}";
         var subscriptions = await ManekiService.GetSubscriptions(filter: filter);
         return subscriptions;
+    }
+    
+    private void NormalizeAllTextFields()
+    {
+        Subscription.Title = GetNormalizedString(Subscription.Title);
+        Subscription.Description = GetNormalizedString(Subscription.Description);
+    }
+        
+    public static string GetNormalizedString(string input)
+    {
+        string pattern = @"\s+";
+        string normalizedString = Regex.Replace(input, pattern, " ").Trim();
+        return normalizedString;
+    }
+
+    private bool ValidateString(string text)
+    {
+        return !(string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text));
     }
 }
