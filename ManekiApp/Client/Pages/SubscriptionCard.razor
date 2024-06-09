@@ -1,8 +1,9 @@
 ﻿@page "/subscription"
-@using System.Runtime.InteropServices
+@using System.Text
 @using ManekiApp.Server.Models.ManekiAppDB
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.JSInterop
+@using Newtonsoft.Json
 @inject IJSRuntime JSRuntime
 @inject DialogService DialogService
 @inject NavigationManager NavigationManager
@@ -223,6 +224,12 @@
                 IsCanceled = false
             };
             await ManekiAppDb.CreateUserSubscription(newUserSubscription);
+            HttpClient client = new HttpClient();
+            var json = JsonConvert.SerializeObject(newUserSubscription);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("https://localhost:5004/setJobIdForFreeSub", content);
+
+
         }
     }
 
