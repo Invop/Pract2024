@@ -1,46 +1,96 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ManekiApp.Server.Models.ManekiAppDB;
-using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using Radzen;
-using Radzen.Blazor;
 
 namespace ManekiApp.Client.Pages
 {
+    /// <summary>
+    /// Class Feed.
+    /// Implements the <see cref="ComponentBase" />
+    /// </summary>
+    /// <seealso cref="ComponentBase" />
     public partial class Feed
     {
+        /// <summary>
+        /// Gets or sets the js runtime.
+        /// </summary>
+        /// <value>The js runtime.</value>
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the navigation manager.
+        /// </summary>
+        /// <value>The navigation manager.</value>
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
 
+        /// <summary>
+        /// Gets or sets the dialog service.
+        /// </summary>
+        /// <value>The dialog service.</value>
         [Inject]
         protected DialogService DialogService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the tooltip service.
+        /// </summary>
+        /// <value>The tooltip service.</value>
         [Inject]
         protected TooltipService TooltipService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the context menu service.
+        /// </summary>
+        /// <value>The context menu service.</value>
         [Inject]
         protected ContextMenuService ContextMenuService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the notification service.
+        /// </summary>
+        /// <value>The notification service.</value>
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the security.
+        /// </summary>
+        /// <value>The security.</value>
         [Inject]
         protected SecurityService Security { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the maneki application database service.
+        /// </summary>
+        /// <value>The maneki application database service.</value>
         [Inject]
         protected ManekiAppDBService ManekiAppDBService { get; set; }
 
+        /// <summary>
+        /// The user feed posts
+        /// </summary>
         protected List<Post> userFeedPosts = new List<Post>();
+        /// <summary>
+        /// The user subscriptions
+        /// </summary>
         protected IEnumerable<UserSubscription> userSubscriptions = new List<UserSubscription>();
+        /// <summary>
+        /// The subscriptions
+        /// </summary>
         protected IEnumerable<Subscription> subscriptions = new List<Subscription>();
-        protected IEnumerable<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> authorsUserFollows = new List<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>();        
+        /// <summary>
+        /// The authors user follows
+        /// </summary>
+        protected IEnumerable<ManekiApp.Server.Models.ManekiAppDB.AuthorPage> authorsUserFollows = new List<ManekiApp.Server.Models.ManekiAppDB.AuthorPage>();
+        /// <summary>
+        /// Method invoked when the component is ready to start, having received its
+        /// initial parameters from its parent in the render tree.
+        /// Override this method if you will perform an asynchronous operation and
+        /// want the component to refresh when that operation is completed.
+        /// </summary>
+        /// <returns>A Task representing the asynchronous operation.</returns>
         protected override async Task OnInitializedAsync()
         {
             if (Security.User != null && !string.IsNullOrEmpty(Security.User.Id))
@@ -50,6 +100,10 @@ namespace ManekiApp.Client.Pages
             }
         }
 
+        /// <summary>
+        /// Loads the feed data.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
         private async Task LoadFeedData(string userId)
         {
             await LoadUserSubscriptions(userId);
@@ -57,14 +111,21 @@ namespace ManekiApp.Client.Pages
             await LoadPostsFromFollowedAuthors();
         }
 
+        /// <summary>
+        /// Loads the user subscriptions.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
         private async Task LoadUserSubscriptions(string userId)
-            // loads user subscriptions from the database
+        // loads user subscriptions from the database
         {
             var filter = $"UserId eq '{userId}'";
             var userSubscriptionsOData = await ManekiAppDBService.GetUserSubscriptions(filter: filter, expand: "Subscription");
             userSubscriptions = userSubscriptionsOData.Value;
         }
 
+        /// <summary>
+        /// Loads the authors and subscriptions.
+        /// </summary>
         private async Task LoadAuthorsAndSubscriptions()
         // loads authors and their subscriptions from the database
         {
@@ -85,8 +146,11 @@ namespace ManekiApp.Client.Pages
             }
         }
 
+        /// <summary>
+        /// Loads the posts from followed authors.
+        /// </summary>
         private async Task LoadPostsFromFollowedAuthors()
-            // loads posts from authors on which the user is subscribed
+        // loads posts from authors on which the user is subscribed
         {
             var authorIds = authorsUserFollows.Select(author => author.Id).ToList();
             if (authorIds.Any())
@@ -100,8 +164,8 @@ namespace ManekiApp.Client.Pages
                     {
                         var userSubscriptionsToCurrentAuthor = userSubscriptions
                             .Where(sub => sub.Subscription.AuthorPageId == post.AuthorPageId);
-                        
-                        foreach(var subscription in userSubscriptionsToCurrentAuthor)
+
+                        foreach (var subscription in userSubscriptionsToCurrentAuthor)
                         {
                             if (subscription.Subscription.PermissionLevel >= post.MinLevel &&
                                 subscription.EndsAt >= DateTimeOffset.UtcNow)
