@@ -10,6 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseUrls("http://localhost:5003", "https://localhost:5004");
 
+var optionsBuilder = new DbContextOptionsBuilder<HangfireDbContext>();
+optionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("HangfireDBConnection"));
+
+using (var context = new HangfireDbContext(optionsBuilder.Options))
+{
+    context.Database.EnsureCreated();
+}
+
 
 builder.Services.AddSingleton<UserSubscriptionJobManager>();
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
