@@ -7,7 +7,7 @@
     @if (IsFound)
     {
         <RadzenCard class="w-100">
-            <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenStack Orientation="Orientation.Horizontal" style="overflow-x: scroll;">
 
                 <RadzenImage class="profile-image" Path="@(Author.ProfileImage != null ? $"data:image/jpeg;base64,{Author.ProfileImage}" : $"https://ui-avatars.com/api/?name={Author.Title}")" Style="width: 250px; border-radius: 50%; height: 250px; margin-left: 30px; margin-right: 30px"></RadzenImage>
                 <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">

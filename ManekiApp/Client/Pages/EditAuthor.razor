@@ -7,28 +7,30 @@
     <RadzenAlert Title="Cannot update author page" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small"
                  AlertStyle="AlertStyle.Danger" Visible="@errorVisible" Style="border-radius: 10px; border: 1px solid #f44336">@error</RadzenAlert>
     <RadzenAlert Title="Success!" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small"
-                     AlertStyle="AlertStyle.Success" Visible="@isSuccess" Style="border-radius: 10px; border: 1px solid #4caf50">@success</RadzenAlert>
+                 AlertStyle="AlertStyle.Success" Visible="@isSuccess" Style="border-radius: 10px; border: 1px solid #4caf50">@success</RadzenAlert>
     
     <RadzenStack class="w-100" Style="background-color: #eee6e6; padding: 20px; border-radius: 10px">
         <RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.AuthorPage"  Data="@authorPage" 
-                            Visible="@(authorPage != null)" Submit="@FormSubmit">
+                            Visible="@(authorPage != null)" Submit="@FormSubmit" InvalidSubmit="() => { }">
             <ChildContent>
 
                 <RadzenRow Style="margin-bottom: 1rem">
-                        <RadzenColumn Size="12" SizeMD="12">
-                            <RadzenText Text="You can edit your author page" Style="font-weight: bold; font-size: 25px" />
-                        </RadzenColumn>
-                    </RadzenRow>
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenText Text="You can edit your author page" Style="font-weight: bold; font-size: 25px" />
+                    </RadzenColumn>
+                </RadzenRow>
 
-                    <RadzenRow Style="margin-bottom: 1rem">
-                        <RadzenColumn Size="12" SizeMD="3">
-                            <RadzenLabel Component="Title" Text="Title" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
-                        </RadzenColumn>
+                <RadzenRow Style="margin-bottom: 1rem">
+                    <RadzenColumn Size="12" SizeMD="3">
+                        <RadzenLabel Component="Title" Text="Title" TextStyle="TextStyle.Subtitle2"></RadzenLabel>
+                    </RadzenColumn>
 
-                        <RadzenColumn class="w-100" Size="12" SizeMD="9">
-                            <RadzenTextArea Placeholder="Your page title" Rows="3" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Title" Name="Title"></RadzenTextArea>                    
-                        </RadzenColumn>
-                    </RadzenRow>
+                    <RadzenColumn class="w-100" Size="12" SizeMD="9">
+                        <RadzenTextArea Name="Title" Placeholder="Your page title" Rows="3" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Title" ></RadzenTextArea>   
+                        <br/>
+                        <RadzenRequiredValidator Component="Title" Text="Page title is required" Style="position: relative" />
+                    </RadzenColumn>
+                </RadzenRow>
 
                 <RadzenRow Style="margin-bottom: 1rem">
                     <RadzenColumn Size="12" SizeMD="3">
@@ -36,7 +38,9 @@
                     </RadzenColumn>
 
                     <RadzenColumn class="w-100" Size="12" SizeMD="9">
-                        <RadzenTextArea Placeholder="Your page description" Rows="6" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Description" Name="Description" ></RadzenTextArea>
+                        <RadzenTextArea Name="Description" Placeholder="Your page description" Rows="6" Cols="50" Style="border-radius: 10px" @bind-Value="@authorPage.Description" ></RadzenTextArea>
+                        <br/>
+                        <RadzenRequiredValidator Component="Description" Text="Page description is required" Style="position: relative" />
                     </RadzenColumn>   
                 </RadzenRow>
 
@@ -70,7 +74,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.youtube.com/channel/" Trim="false" @bind-Value="socialLinks.Youtube"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.youtube.com/channel/yourpage" Trim="false" @bind-Value="socialLinks.Youtube"></RadzenTextBox>
                     </RadzenColumn> 
                 </RadzenRow>
 
@@ -80,7 +84,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Instagram"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.instagram.com/yourpage" Trim="false" @bind-Value="socialLinks.Instagram"></RadzenTextBox>
                     </RadzenColumn> 
                 </RadzenRow>
 
@@ -90,7 +94,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Telegram"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="Chat invitation link" Trim="false" @bind-Value="socialLinks.Telegram"></RadzenTextBox>
                     </RadzenColumn> 
                 </RadzenRow>
 
@@ -100,7 +104,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.TikTok"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.tiktok.com/yourpage" Trim="false" @bind-Value="socialLinks.TikTok"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -110,7 +114,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Facebook"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.facebook.com/yourpage/" Trim="false" @bind-Value="socialLinks.Facebook"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -120,7 +124,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Twitter"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://x.com/yourpage" Trim="false" @bind-Value="socialLinks.Twitter"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -130,7 +134,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Twitch"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.twitch.tv/yourapge" Trim="false" @bind-Value="socialLinks.Twitch"></RadzenTextBox>
                     </RadzenColumn>
                 </RadzenRow>
 
@@ -140,7 +144,7 @@
                     </RadzenColumn>
 
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="" Trim="false" @bind-Value="socialLinks.Pinterest"></RadzenTextBox>
+                        <RadzenTextBox style="display: block; width: 100%; border-radius: 10px" Placeholder="https://www.pinterest.com/yourpage/" Trim="false" @bind-Value="socialLinks.Pinterest"></RadzenTextBox>
                     </RadzenColumn>  
                 </RadzenRow>
 
