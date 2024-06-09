@@ -40,7 +40,7 @@ namespace ManekiApp.Client.Pages
         protected IEnumerable<Server.Models.ManekiAppDB.AuthorPage> authors =
             new List<Server.Models.ManekiAppDB.AuthorPage>();
 
-        protected int pageSize = 1;
+        protected int pageSize = 3;
         protected int authorsAmount;
         protected bool isLoading;
         protected string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
