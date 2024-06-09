@@ -1,31 +1,26 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Linq.Expressions;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.OData.Extensions;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.OData;
-using Microsoft.OData.Edm;
-using Microsoft.OData.UriParser;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Concurrent;
-
-using Microsoft.AspNetCore.OData.Abstracts;
-using Microsoft.Net.Http.Headers;
-using Microsoft.AspNetCore.OData.Extensions;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ManekiApp.Server.Data
 {
+    /// <summary>
+    /// Class EntityPatch.
+    /// </summary>
     public static class EntityPatch
     {
+        /// <summary>
+        /// Applies the specified object.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <param name="source">The source.</param>
         public static void Apply(object obj, object source)
         {
-            foreach (PropertyInfo property in obj.GetType().GetProperties().Where(p => p.CanWrite && 
+            foreach (PropertyInfo property in obj.GetType().GetProperties().Where(p => p.CanWrite &&
                 !p.GetCustomAttributes(typeof(DatabaseGeneratedAttribute), false).Cast<DatabaseGeneratedAttribute>().Any()))
             {
                 var value = property.GetValue(source, null);
@@ -37,6 +32,12 @@ namespace ManekiApp.Server.Data
         }
 
 
+        /// <summary>
+        /// Ifs the match.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="elementType">Type of the element.</param>
+        /// <returns>IDictionary&lt;System.String, System.Object&gt;.</returns>
         public static IDictionary<string, object> IfMatch(HttpRequest request, Type elementType)
         {
             StringValues ifMatchValues;
@@ -61,6 +62,13 @@ namespace ManekiApp.Server.Data
             return null;
         }
 
+        /// <summary>
+        /// Applies to.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="request">The request.</param>
+        /// <param name="query">The query.</param>
+        /// <returns>IQueryable&lt;T&gt;.</returns>
         public static IQueryable<T> ApplyTo<T>(HttpRequest request, IQueryable<T> query)
         {
             var ifMatch = EntityPatch.IfMatch(request, query.ElementType);
@@ -75,7 +83,7 @@ namespace ManekiApp.Server.Data
                     var property = query.ElementType.GetProperty(item.Key);
                     var conversionType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                     var itemValue = (item.Value == null) ? null :
-                        Convert.ChangeType(item.Value is DateTimeOffset ? 
+                        Convert.ChangeType(item.Value is DateTimeOffset ?
                             ((DateTimeOffset)item.Value).UtcDateTime : item.Value, conversionType);
 
                     var name = Expression.Property(param, item.Key);
@@ -100,6 +108,11 @@ namespace ManekiApp.Server.Data
             return query;
         }
 
+        /// <summary>
+        /// Converts to nullable.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>Expression.</returns>
         public static Expression ToNullable(Expression expression)
         {
             if (!IsNullable(expression.Type))
@@ -110,6 +123,11 @@ namespace ManekiApp.Server.Data
             return expression;
         }
 
+        /// <summary>
+        /// Determines whether the specified color type is nullable.
+        /// </summary>
+        /// <param name="clrType">Type of the color.</param>
+        /// <returns><c>true</c> if the specified color type is nullable; otherwise, <c>false</c>.</returns>
         public static bool IsNullable(Type clrType)
         {
             if (clrType.IsValueType)
@@ -122,6 +140,11 @@ namespace ManekiApp.Server.Data
             }
         }
 
+        /// <summary>
+        /// Converts to nullable.
+        /// </summary>
+        /// <param name="clrType">Type of the color.</param>
+        /// <returns>Type.</returns>
         public static Type ToNullable(Type clrType)
         {
             if (IsNullable(clrType))

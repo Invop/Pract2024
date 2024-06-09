@@ -1,23 +1,21 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Net.Http.Headers;
-using Microsoft.AspNetCore.Http;
-
 using Microsoft.AspNetCore.OData.Query.Wrapper;
+using System.Reflection;
+using System.Web;
 
 
 namespace ManekiApp.Server.Data
 {
+    /// <summary>
+    /// Class OutputFormatter.
+    /// </summary>
     public static class OutputFormatter
     {
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="name">The name.</param>
+        /// <returns>System.Object.</returns>
         public static object GetValue(object target, string name)
         {
             var selectExpandWrapper = target as ISelectExpandWrapper;
@@ -27,6 +25,12 @@ namespace ManekiApp.Server.Data
                     target.GetType().GetProperty(name).GetValue(target);
         }
 
+        /// <summary>
+        /// Gets the properties from select.
+        /// </summary>
+        /// <param name="queryString">The query string.</param>
+        /// <param name="type">The type.</param>
+        /// <returns>IEnumerable&lt;KeyValuePair&lt;System.String, Type&gt;&gt;.</returns>
         public static IEnumerable<KeyValuePair<string, Type>> GetPropertiesFromSelect(string queryString, Type type)
         {
             var select = HttpUtility.ParseQueryString(queryString)["$select"];
@@ -37,19 +41,29 @@ namespace ManekiApp.Server.Data
             return GetProperties(elementType).Where(p => selectedPropertyNames.Contains(p.Key));
         }
 
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>IEnumerable&lt;KeyValuePair&lt;System.String, Type&gt;&gt;.</returns>
         public static IEnumerable<KeyValuePair<string, Type>> GetProperties(Type type)
         {
             return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(p => p.CanRead && OutputFormatter.IsSimpleType(p.PropertyType)).Select(p => new KeyValuePair<string, Type>(p.Name, p.PropertyType));
         }
 
+        /// <summary>
+        /// Determines whether [is simple type] [the specified type].
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns><c>true</c> if [is simple type] [the specified type]; otherwise, <c>false</c>.</returns>
         public static bool IsSimpleType(Type type)
         {
             var underlyingType = type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(Nullable<>) ?
                 Nullable.GetUnderlyingType(type) : type;
 
-            if(underlyingType == typeof(System.Guid) || underlyingType == typeof(System.DateTimeOffset))
+            if (underlyingType == typeof(System.Guid) || underlyingType == typeof(System.DateTimeOffset))
                 return true;
 
             var typeCode = Type.GetTypeCode(underlyingType);

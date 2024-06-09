@@ -1,12 +1,19 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManekiApp.Server.Data
 {
+    /// <summary>
+    /// Class BlankTriggerAddingConvention.
+    /// Implements the <see cref="Microsoft.EntityFrameworkCore.Metadata.Conventions.IModelFinalizingConvention" />
+    /// </summary>
+    /// <seealso cref="Microsoft.EntityFrameworkCore.Metadata.Conventions.IModelFinalizingConvention" />
     public class BlankTriggerAddingConvention : Microsoft.EntityFrameworkCore.Metadata.Conventions.IModelFinalizingConvention
     {
+        /// <summary>
+        /// Called when a model is being finalized.
+        /// </summary>
+        /// <param name="modelBuilder">The builder for the model.</param>
+        /// <param name="context">Additional information associated with convention execution.</param>
         public virtual void ProcessModelFinalizing(
             Microsoft.EntityFrameworkCore.Metadata.Builders.IConventionModelBuilder modelBuilder,
             Microsoft.EntityFrameworkCore.Metadata.Conventions.IConventionContext<Microsoft.EntityFrameworkCore.Metadata.Builders.IConventionModelBuilder> context)

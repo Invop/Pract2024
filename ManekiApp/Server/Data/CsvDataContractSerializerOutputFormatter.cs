@@ -1,27 +1,30 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Net.Http.Headers;
-using Microsoft.AspNetCore.Http;
+using System.Text;
 
 namespace ManekiApp.Server.Data
 {
+    /// <summary>
+    /// Class CsvDataContractSerializerOutputFormatter.
+    /// Implements the <see cref="TextOutputFormatter" />
+    /// </summary>
+    /// <seealso cref="TextOutputFormatter" />
     public class CsvDataContractSerializerOutputFormatter : TextOutputFormatter
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CsvDataContractSerializerOutputFormatter"/> class.
+        /// </summary>
         public CsvDataContractSerializerOutputFormatter()
         {
             SupportedMediaTypes.Add("text/csv");
             SupportedEncodings.Add(Encoding.Unicode);
         }
 
+        /// <summary>
+        /// Writes the response body.
+        /// </summary>
+        /// <param name="context">The formatter context associated with the call.</param>
+        /// <param name="selectedEncoding">The <see cref="T:System.Text.Encoding" /> that should be used to write the response.</param>
+        /// <returns>A task which can write the response body.</returns>
         public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
             var query = (IQueryable)context.Object;
