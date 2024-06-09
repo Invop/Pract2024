@@ -10,14 +10,38 @@ using Telegram.Bot.Types.Payments;
 
 namespace ManekiApp.TelegramPayBot
 {
+    /// <summary>
+    /// Class TelegramBot.
+    /// </summary>
     public class TelegramBot
     {
+        /// <summary>
+        /// The service scope factory
+        /// </summary>
         private readonly IServiceScopeFactory _serviceScopeFactory;
+        /// <summary>
+        /// The client
+        /// </summary>
         private readonly TelegramBotClient _client;
+        /// <summary>
+        /// The current user
+        /// </summary>
         private ApplicationUser? currentUser;
+        /// <summary>
+        /// The payment provider token
+        /// </summary>
         private const string PaymentProviderToken = "284685063:TEST:NGJhYzcwNzZmODA3";
+        /// <summary>
+        /// The user subscription job manager
+        /// </summary>
         private readonly UserSubscriptionJobManager _userSubscriptionJobManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TelegramBot"/> class.
+        /// </summary>
+        /// <param name="serviceScopeFactory">The service scope factory.</param>
+        /// <param name="botToken">The bot token.</param>
+        /// <param name="userSubscriptionJobManager">The user subscription job manager.</param>
         public TelegramBot(IServiceScopeFactory serviceScopeFactory, string botToken, UserSubscriptionJobManager userSubscriptionJobManager)
         {
             _serviceScopeFactory = serviceScopeFactory;
@@ -26,6 +50,9 @@ namespace ManekiApp.TelegramPayBot
         }
 
 
+        /// <summary>
+        /// Starts this instance.
+        /// </summary>
         public async Task Start()
         {
             using CancellationTokenSource cts = new();
@@ -50,6 +77,11 @@ namespace ManekiApp.TelegramPayBot
             cts.Cancel();
         }
 
+        /// <summary>
+        /// User exists as an asynchronous operation.
+        /// </summary>
+        /// <param name="telegramId">The telegram identifier.</param>
+        /// <returns>A Task&lt;System.Boolean&gt; representing the asynchronous operation.</returns>
         private async Task<bool> UserExistsAsync(string telegramId)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
@@ -60,6 +92,13 @@ namespace ManekiApp.TelegramPayBot
             }
         }
 
+        /// <summary>
+        /// Handle update as an asynchronous operation.
+        /// </summary>
+        /// <param name="botClient">The bot client.</param>
+        /// <param name="update">The update.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             switch (update.Type)
@@ -79,11 +118,25 @@ namespace ManekiApp.TelegramPayBot
         }
 
 
+        /// <summary>
+        /// Handle pre checkout query as an asynchronous operation.
+        /// </summary>
+        /// <param name="botClient">The bot client.</param>
+        /// <param name="update">The update.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
         private async Task HandlePreCheckoutQueryAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             await botClient.AnswerPreCheckoutQueryAsync(update.PreCheckoutQuery.Id, cancellationToken: cancellationToken);
         }
 
+        /// <summary>
+        /// Handle message as an asynchronous operation.
+        /// </summary>
+        /// <param name="botClient">The bot client.</param>
+        /// <param name="update">The update.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
         private async Task HandleMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message.SuccessfulPayment != null)
@@ -183,6 +236,13 @@ namespace ManekiApp.TelegramPayBot
             }
         }
 
+        /// <summary>
+        /// Handle text message as an asynchronous operation.
+        /// </summary>
+        /// <param name="botClient">The bot client.</param>
+        /// <param name="update">The update.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
         private async Task HandleTextMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message.Text.StartsWith("/start subscription"))
@@ -191,6 +251,13 @@ namespace ManekiApp.TelegramPayBot
             }
         }
 
+        /// <summary>
+        /// Handle start subscription command as an asynchronous operation.
+        /// </summary>
+        /// <param name="botClient">The bot client.</param>
+        /// <param name="update">The update.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
         private async Task HandleStartSubscriptionCommandAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             var message = update.Message;
@@ -213,6 +280,13 @@ namespace ManekiApp.TelegramPayBot
 
         }
 
+        /// <summary>
+        /// Handles the polling error asynchronous.
+        /// </summary>
+        /// <param name="botClient">The bot client.</param>
+        /// <param name="exception">The exception.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Task.</returns>
         private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch
@@ -226,6 +300,11 @@ namespace ManekiApp.TelegramPayBot
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Handles the non existing user.
+        /// </summary>
+        /// <param name="chatId">The chat identifier.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         private async Task HandleNonExistingUser(long? chatId, CancellationToken cancellationToken)
         {
             // Send an error message if the user does not exist
@@ -235,6 +314,14 @@ namespace ManekiApp.TelegramPayBot
                 cancellationToken: cancellationToken);
         }
 
+        /// <summary>
+        /// Send invoice as an asynchronous operation.
+        /// </summary>
+        /// <param name="botClient">The bot client.</param>
+        /// <param name="chatId">The chat identifier.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="cancellationToken">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
         private async Task SendInvoiceAsync(ITelegramBotClient botClient, long chatId, Guid subscriptionId, CancellationToken cancellationToken)
         {
 
@@ -269,6 +356,10 @@ namespace ManekiApp.TelegramPayBot
             }
         }
 
+        /// <summary>
+        /// Deletes the user subscription.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
         public async Task DeleteUserSubscription(Guid id)
         {
             using var scope = _serviceScopeFactory.CreateScope();
