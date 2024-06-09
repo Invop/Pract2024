@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -82,6 +83,8 @@ namespace ManekiApp.Client.Pages
                 Post.AuthorPageId = currentAuthor.Id;
                 Post.MinLevel = minLevelValue;
 
+                NormalizeAllTextFields();
+                
                 await ManekiAppDBService.CreatePost(post);
 
                 try
@@ -126,6 +129,23 @@ namespace ManekiApp.Client.Pages
         private void DisablePreview()
         {
             isPreview = false;
+        }
+        
+        private void NormalizeAllTextFields()
+        {
+            Post.Title = GetNormalizedString(Post.Title);
+        }
+        
+        public static string GetNormalizedString(string input)
+        {
+            string pattern = @"\s+";
+            string normalizedString = Regex.Replace(input, pattern, " ").Trim();
+            return normalizedString;
+        }
+
+        private bool ValidateString(string text)
+        {
+            return !(string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text));
         }
     }
 }
