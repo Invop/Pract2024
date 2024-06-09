@@ -24,8 +24,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-
-
 var app = builder.Build();
 
 app.UseCors(MyAllowSpecificOrigins);
@@ -35,10 +33,10 @@ var botRunner = app.Services.GetRequiredService<TelegramBotRunner>();
 Task.Run(async () => await botRunner.StartBotAsync());
 
 // Map the /notify endpoint
-app.MapPost("/notify", async (Guid authorId) =>
+app.MapPost("/notify", async (Guid authorId, string title) =>
 {
     var notificationService = app.Services.GetRequiredService<TelegramBotRunner>();
-    await notificationService.NotifyUsersAsync(authorId);
+    await notificationService.NotifyUsersAsync(authorId, title);
     return Results.Accepted();
 });
 
