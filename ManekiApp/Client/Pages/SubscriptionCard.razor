@@ -7,6 +7,7 @@
 @inject IJSRuntime JSRuntime
 @inject DialogService DialogService
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
 <RadzenCard>
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px">
@@ -210,6 +211,7 @@
             currentPlan.SubscriptionId = SubscriptionId;
             currentPlan.EndsAt = DateTime.UtcNow.AddMonths(1);
             await ManekiAppDb.UpdateUserSubscription(currentPlan.Id, currentPlan);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "You have successfully subscribed to the free plan.");
         }
         else
         {
@@ -228,7 +230,7 @@
             var json = JsonConvert.SerializeObject(newUserSubscription);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PostAsync("https://localhost:5004/setJobIdForFreeSub", content);
-
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "You have successfully subscribed to the free plan.");
 
         }
     }
