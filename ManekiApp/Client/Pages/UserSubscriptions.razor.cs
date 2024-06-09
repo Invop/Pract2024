@@ -143,5 +143,33 @@ namespace ManekiApp.Client.Pages
 
             return pathString;
         }
+
+        private string GetGradientColor(UserSubscription subscription)
+        {
+            Subscription userSubscription = subscriptions.FirstOrDefault(sub => sub.Id == subscription.SubscriptionId);
+            int subscriptionPermissionLevel = userSubscription?.PermissionLevel ?? 0;
+            
+            string style =
+                "background: linear-gradient(90deg, rgba(139,152,161,1) 0%, rgba(235,235,235,1) 50%, rgba(194,210,221,1) 100%);";
+
+            if (subscriptionPermissionLevel == 1)
+            {
+                style = "background: linear-gradient(90deg, rgba(58,172,180,1) 0%, rgba(29,137,253,1) 50%, rgba(119,69,252,1) 100%);";
+            }
+
+            if (subscriptionPermissionLevel == 2)
+            {
+                style = "background: linear-gradient(90deg, rgba(244,179,92,1) 0%, rgba(253,200,29,1) 50%, rgba(252,168,69,1) 100%);";
+            }
+
+            if (subscriptionPermissionLevel == 3)
+            {
+                style = "background: linear-gradient(90deg, rgba(180,58,113,1) 0%, rgba(253,29,29,1) 50%, rgba(252,122,69,1) 100%);";
+            }
+
+            style += " height: 40px; display: flex; font-size: 25px; font-weight: 400;";
+
+            return style;
+        }
     }
 }
