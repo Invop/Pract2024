@@ -1,19 +1,21 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Text;
 
 namespace ManekiApp.Server.Controllers
 {
+    /// <summary>
+    /// Class ReportController.
+    /// Implements the <see cref="Controller" />
+    /// </summary>
+    /// <seealso cref="Controller" />
     public partial class ReportController : Controller
     {
+        /// <summary>
+        /// Gets the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
         [HttpGet("/__ssrsreport")]
         public async Task Get(string url)
         {
@@ -30,6 +32,9 @@ namespace ManekiApp.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Proxies this instance.
+        /// </summary>
         [Route("/ssrsproxy/{*url}")]
         public async Task Proxy()
         {
@@ -72,8 +77,16 @@ namespace ManekiApp.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Called when [HTTP client handler create].
+        /// </summary>
+        /// <param name="handler">The handler.</param>
         partial void OnHttpClientHandlerCreate(ref HttpClientHandler handler);
 
+        /// <summary>
+        /// Creates the HTTP client.
+        /// </summary>
+        /// <returns>HttpClient.</returns>
         private HttpClient CreateHttpClient()
         {
             var httpClientHandler = new HttpClientHandler();
@@ -91,8 +104,19 @@ namespace ManekiApp.Server.Controllers
             return new HttpClient(httpClientHandler);
         }
 
+        /// <summary>
+        /// Called when [report request].
+        /// </summary>
+        /// <param name="requestMessage">The request message.</param>
         partial void OnReportRequest(ref HttpRequestMessage requestMessage);
 
+        /// <summary>
+        /// Forwards the request.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="currentReqest">The current reqest.</param>
+        /// <param name="url">The URL.</param>
+        /// <returns>HttpResponseMessage.</returns>
         async Task<HttpResponseMessage> ForwardRequest(HttpClient httpClient, HttpRequest currentReqest, string url)
         {
             var proxyRequestMessage = new HttpRequestMessage(new HttpMethod(currentReqest.Method), url);
@@ -128,6 +152,11 @@ namespace ManekiApp.Server.Controllers
             return await httpClient.SendAsync(proxyRequestMessage);
         }
 
+        /// <summary>
+        /// Copies the response headers.
+        /// </summary>
+        /// <param name="responseMessage">The response message.</param>
+        /// <param name="response">The response.</param>
         static void CopyResponseHeaders(HttpResponseMessage responseMessage, HttpResponse response)
         {
             response.StatusCode = (int)responseMessage.StatusCode;
@@ -144,6 +173,14 @@ namespace ManekiApp.Server.Controllers
             response.Headers.Remove("transfer-encoding");
         }
 
+        /// <summary>
+        /// Writes the response.
+        /// </summary>
+        /// <param name="currentReqest">The current reqest.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="responseMessage">The response message.</param>
+        /// <param name="response">The response.</param>
+        /// <param name="isAjax">if set to <c>true</c> [is ajax].</param>
         static async Task WriteResponse(HttpRequest currentReqest, string url, HttpResponseMessage responseMessage, HttpResponse response, bool isAjax)
         {
             var result = await responseMessage.Content.ReadAsStringAsync();

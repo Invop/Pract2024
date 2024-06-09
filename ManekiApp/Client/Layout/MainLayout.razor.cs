@@ -1,47 +1,83 @@
-using System.Net.Http;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
 
 namespace ManekiApp.Client.Layout
 {
+    /// <summary>
+    /// Class MainLayout.
+    /// Implements the <see cref="LayoutComponentBase" />
+    /// </summary>
+    /// <seealso cref="LayoutComponentBase" />
     public partial class MainLayout
     {
+        /// <summary>
+        /// Gets or sets the js runtime.
+        /// </summary>
+        /// <value>The js runtime.</value>
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the navigation manager.
+        /// </summary>
+        /// <value>The navigation manager.</value>
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
 
+        /// <summary>
+        /// Gets or sets the dialog service.
+        /// </summary>
+        /// <value>The dialog service.</value>
         [Inject]
         protected DialogService DialogService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the tooltip service.
+        /// </summary>
+        /// <value>The tooltip service.</value>
         [Inject]
         protected TooltipService TooltipService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the context menu service.
+        /// </summary>
+        /// <value>The context menu service.</value>
         [Inject]
         protected ContextMenuService ContextMenuService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the notification service.
+        /// </summary>
+        /// <value>The notification service.</value>
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
+        /// <summary>
+        /// The sidebar expanded
+        /// </summary>
         private bool sidebarExpanded = true;
 
+        /// <summary>
+        /// Gets or sets the security.
+        /// </summary>
+        /// <value>The security.</value>
         [Inject]
         protected SecurityService Security { get; set; }
 
+        /// <summary>
+        /// Sidebars the toggle click.
+        /// </summary>
         void SidebarToggleClick()
         {
             sidebarExpanded = !sidebarExpanded;
         }
 
+        /// <summary>
+        /// Profiles the menu click.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         protected void ProfileMenuClick(RadzenProfileMenuItem args)
         {
             if (args.Value == "Logout")
@@ -50,6 +86,9 @@ namespace ManekiApp.Client.Layout
             }
         }
 
+        /// <summary>
+        /// Redirects to create post.
+        /// </summary>
         private void RedirectToCreatePost()
         {
             NavigationManager.NavigateTo("/create-post");

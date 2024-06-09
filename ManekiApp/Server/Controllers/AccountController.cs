@@ -1,28 +1,48 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+using ManekiApp.Server.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using ManekiApp.Server.Models;
+using System.Security.Claims;
 
 namespace ManekiApp.Server.Controllers
 {
+    /// <summary>
+    /// Class AccountController.
+    /// Implements the <see cref="Controller" />
+    /// </summary>
+    /// <seealso cref="Controller" />
     [Route("Account/[action]")]
     public partial class AccountController : Controller
     {
+        /// <summary>
+        /// The sign in manager
+        /// </summary>
         private readonly SignInManager<ApplicationUser> signInManager;
+        /// <summary>
+        /// The user manager
+        /// </summary>
         private readonly UserManager<ApplicationUser> userManager;
+        /// <summary>
+        /// The role manager
+        /// </summary>
         private readonly RoleManager<ApplicationRole> roleManager;
+        /// <summary>
+        /// The env
+        /// </summary>
         private readonly IWebHostEnvironment env;
+        /// <summary>
+        /// The configuration
+        /// </summary>
         private readonly IConfiguration configuration;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountController"/> class.
+        /// </summary>
+        /// <param name="env">The env.</param>
+        /// <param name="signInManager">The sign in manager.</param>
+        /// <param name="userManager">The user manager.</param>
+        /// <param name="roleManager">The role manager.</param>
+        /// <param name="configuration">The configuration.</param>
         public AccountController(IWebHostEnvironment env, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager, IConfiguration configuration)
         {
@@ -33,18 +53,29 @@ namespace ManekiApp.Server.Controllers
             this.configuration = configuration;
         }
 
+        /// <summary>
+        /// Redirects the with error.
+        /// </summary>
+        /// <param name="error">The error.</param>
+        /// <param name="redirectUrl">The redirect URL.</param>
+        /// <returns>IActionResult.</returns>
         private IActionResult RedirectWithError(string error, string redirectUrl = null)
         {
-             if (!string.IsNullOrEmpty(redirectUrl))
-             {
-                 return Redirect($"~/Login?error={error}&redirectUrl={Uri.EscapeDataString(redirectUrl.Replace("~", ""))}");
-             }
-             else
-             {
-                 return Redirect($"~/Login?error={error}");
-             }
+            if (!string.IsNullOrEmpty(redirectUrl))
+            {
+                return Redirect($"~/Login?error={error}&redirectUrl={Uri.EscapeDataString(redirectUrl.Replace("~", ""))}");
+            }
+            else
+            {
+                return Redirect($"~/Login?error={error}");
+            }
         }
 
+        /// <summary>
+        /// Logins the specified return URL.
+        /// </summary>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>IActionResult.</returns>
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
@@ -56,6 +87,13 @@ namespace ManekiApp.Server.Controllers
             return Redirect("~/Login");
         }
 
+        /// <summary>
+        /// Logins the specified user name.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="redirectUrl">The redirect URL.</param>
+        /// <returns>IActionResult.</returns>
         [HttpPost]
         public async Task<IActionResult> Login(string userName, string password, string redirectUrl)
         {
@@ -87,6 +125,12 @@ namespace ManekiApp.Server.Controllers
 
             return RedirectWithError("Invalid user or password", redirectUrl);
         }
+        /// <summary>
+        /// Changes the password.
+        /// </summary>
+        /// <param name="oldPassword">The old password.</param>
+        /// <param name="newPassword">The new password.</param>
+        /// <returns>IActionResult.</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)
@@ -112,6 +156,10 @@ namespace ManekiApp.Server.Controllers
             return BadRequest(message);
         }
 
+        /// <summary>
+        /// Currents the user.
+        /// </summary>
+        /// <returns>ApplicationAuthenticationState.</returns>
         [HttpPost]
         public ApplicationAuthenticationState CurrentUser()
         {
@@ -123,6 +171,10 @@ namespace ManekiApp.Server.Controllers
             };
         }
 
+        /// <summary>
+        /// Logouts this instance.
+        /// </summary>
+        /// <returns>IActionResult.</returns>
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
