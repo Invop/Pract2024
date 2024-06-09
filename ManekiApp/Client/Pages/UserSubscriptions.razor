@@ -34,4 +34,8 @@
             </div>
         }
     </RadzenRow>
+    
+     <RadzenColumn Size="12" Visible="@(!userSubscriptions.Any())">
+        <RadzenText Text="You have no active subscriptions at the moment." TextStyle="TextStyle.H4" ></RadzenText>
+     </RadzenColumn>
 </RadzenRow>
