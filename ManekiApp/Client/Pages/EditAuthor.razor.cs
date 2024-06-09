@@ -99,7 +99,7 @@ namespace ManekiApp.Client.Pages
 
         protected async Task CancelClick()
         {
-            DialogService.Close(null);
+            NavigationManager.NavigateTo($"/author-page/{authorPage.Id}");
         }
 
         protected async Task UploadProfileImage(InputFileChangeEventArgs e)
