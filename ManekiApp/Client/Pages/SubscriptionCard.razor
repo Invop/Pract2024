@@ -237,11 +237,12 @@
 
     private async Task<UserSubscription> GetCurrentPlan(string userId)
     {   
-        var userSubsFilter = string.Join(" or ", Subscriptions.Select(s => $"SubscriptionId eq {s.Id} and UserId eq '{userId}'"));
+        var userSubsFilter = string.Join(" or ", Subscriptions.Select(s => $"(SubscriptionId eq {s.Id} and UserId eq '{userId}')"));
         var userPlanOData = await ManekiAppDb.GetUserSubscriptions(userSubsFilter);
         var userPlan = userPlanOData.Value.FirstOrDefault();
         return userPlan;
     }
+
 
 
 }
