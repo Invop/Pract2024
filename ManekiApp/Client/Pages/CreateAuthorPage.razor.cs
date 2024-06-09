@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
@@ -74,6 +75,7 @@ namespace ManekiApp.Client.Pages
         {
             try
             {
+                NormalizeAllTextFields();
                 authorPage.SocialLinks = JsonSerializer.Serialize(new SocialLinks());
                 await ManekiService.CreateAuthorPage(authorPage);
                 
@@ -141,6 +143,24 @@ namespace ManekiApp.Client.Pages
             public string Twitter { get; set; } = null;
             public string Twitch { get; set; } = null;
             public string Pinterest { get; set; } = null;
+        }
+        
+        private void NormalizeAllTextFields()
+        {
+            authorPage.Title = GetNormalizedString(authorPage.Title);
+            authorPage.Description = GetNormalizedString(authorPage.Description);
+        }
+        
+        public static string GetNormalizedString(string input)
+        {
+            string pattern = @"\s+";
+            string normalizedString = Regex.Replace(input, pattern, " ").Trim();
+            return normalizedString;
+        }
+
+        private bool ValidateString(string text)
+        {
+            return !(string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text));
         }
     }
 }
