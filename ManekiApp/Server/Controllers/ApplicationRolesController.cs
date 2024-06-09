@@ -1,87 +1,122 @@
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using ManekiApp.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using ManekiApp.Server.Models;
 
 namespace ManekiApp.Server.Controllers
 {
+    /// <summary>
+    /// Class ApplicationRolesController.
+    /// Implements the <see cref="ODataController" />
+    /// </summary>
+    /// <seealso cref="ODataController" />
     [Authorize]
     [Route("odata/Identity/ApplicationRoles")]
     public partial class ApplicationRolesController : ODataController
     {
-       private readonly RoleManager<ApplicationRole> roleManager;
+        /// <summary>
+        /// The role manager
+        /// </summary>
+        private readonly RoleManager<ApplicationRole> roleManager;
 
-       public ApplicationRolesController(RoleManager<ApplicationRole> roleManager)
-       {
-           this.roleManager = roleManager;
-       }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationRolesController"/> class.
+        /// </summary>
+        /// <param name="roleManager">The role manager.</param>
+        public ApplicationRolesController(RoleManager<ApplicationRole> roleManager)
+        {
+            this.roleManager = roleManager;
+        }
 
-       partial void OnRolesRead(ref IQueryable<ApplicationRole> roles);
+        /// <summary>
+        /// Called when [roles read].
+        /// </summary>
+        /// <param name="roles">The roles.</param>
+        partial void OnRolesRead(ref IQueryable<ApplicationRole> roles);
 
-       [AllowAnonymous]
-       [EnableQuery]
-       [HttpGet]
-       public IEnumerable<ApplicationRole> Get()
-       {
-           var roles = roleManager.Roles;
-           OnRolesRead(ref roles);
+        /// <summary>
+        /// Gets this instance.
+        /// </summary>
+        /// <returns>IEnumerable&lt;ApplicationRole&gt;.</returns>
+        [AllowAnonymous]
+        [EnableQuery]
+        [HttpGet]
+        public IEnumerable<ApplicationRole> Get()
+        {
+            var roles = roleManager.Roles;
+            OnRolesRead(ref roles);
 
-           return roles;
-       }
+            return roles;
+        }
 
-       partial void OnRoleCreated(ApplicationRole role);
+        /// <summary>
+        /// Called when [role created].
+        /// </summary>
+        /// <param name="role">The role.</param>
+        partial void OnRoleCreated(ApplicationRole role);
 
-       [HttpPost]
-       public async Task<IActionResult> Post([FromBody] ApplicationRole role)
-       {
-           if (role == null)
-           {
-               return BadRequest();
-           }
+        /// <summary>
+        /// Posts the specified role.
+        /// </summary>
+        /// <param name="role">The role.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] ApplicationRole role)
+        {
+            if (role == null)
+            {
+                return BadRequest();
+            }
 
-           OnRoleCreated(role);
+            OnRoleCreated(role);
 
-           var result = await roleManager.CreateAsync(role);
+            var result = await roleManager.CreateAsync(role);
 
-           if (!result.Succeeded)
-           {
-               var message = string.Join(", ", result.Errors.Select(error => error.Description));
+            if (!result.Succeeded)
+            {
+                var message = string.Join(", ", result.Errors.Select(error => error.Description));
 
-               return BadRequest(new { error = new { message }});
-           }
+                return BadRequest(new { error = new { message } });
+            }
 
-           return Created($"odata/Identity/Roles('{role.Id}')", role);
-       }
+            return Created($"odata/Identity/Roles('{role.Id}')", role);
+        }
 
-       partial void OnRoleDeleted(ApplicationRole role);
+        /// <summary>
+        /// Called when [role deleted].
+        /// </summary>
+        /// <param name="role">The role.</param>
+        partial void OnRoleDeleted(ApplicationRole role);
 
-       [HttpDelete("{Id}")]
-       public async Task<IActionResult> Delete(string key)
-       {
-           var role = await roleManager.FindByIdAsync(key);
+        /// <summary>
+        /// Deletes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> Delete(string key)
+        {
+            var role = await roleManager.FindByIdAsync(key);
 
-           if (role == null)
-           {
-               return NotFound();
-           }
+            if (role == null)
+            {
+                return NotFound();
+            }
 
-           OnRoleDeleted(role);
+            OnRoleDeleted(role);
 
-           var result = await roleManager.DeleteAsync(role);
+            var result = await roleManager.DeleteAsync(role);
 
-           if (!result.Succeeded)
-           {
-               var message = string.Join(", ", result.Errors.Select(error => error.Description));
+            if (!result.Succeeded)
+            {
+                var message = string.Join(", ", result.Errors.Select(error => error.Description));
 
-               return BadRequest(new { error = new { message }});
-           }
+                return BadRequest(new { error = new { message } });
+            }
 
-           return new NoContentResult();
-       }
+            return new NoContentResult();
+        }
     }
 }

@@ -1,23 +1,31 @@
-using System;
-using System.Linq;
-using System.Linq.Dynamic.Core;
-using System.Data;
-using System.Globalization;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System.Globalization;
+using System.Linq.Dynamic.Core;
 using System.Reflection;
-using Microsoft.AspNetCore.Http;
+using System.Text;
 
 namespace ManekiApp.Server.Controllers
 {
+    /// <summary>
+    /// Class ExportController.
+    /// Implements the <see cref="Controller" />
+    /// </summary>
+    /// <seealso cref="Controller" />
     public partial class ExportController : Controller
     {
+        /// <summary>
+        /// Applies the query.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="keyless">if set to <c>true</c> [keyless].</param>
+        /// <returns>IQueryable.</returns>
         public IQueryable ApplyQuery<T>(IQueryable<T> items, IQueryCollection query = null, bool keyless = false) where T : class
         {
             if (query != null)
@@ -34,7 +42,7 @@ namespace ManekiApp.Server.Controllers
                 var filter = query.ContainsKey("$filter") ? query["$filter"].ToString() : null;
                 if (!string.IsNullOrEmpty(filter))
                 {
-                    if(keyless)
+                    if (keyless)
                     {
                         items = items.ToList().AsQueryable();
                     }
@@ -65,6 +73,12 @@ namespace ManekiApp.Server.Controllers
             return items;
         }
 
+        /// <summary>
+        /// Converts to csv.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>FileStreamResult.</returns>
         public FileStreamResult ToCSV(IQueryable query, string fileName = null)
         {
             var columns = GetProperties(query.ElementType);
@@ -90,6 +104,12 @@ namespace ManekiApp.Server.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Converts to excel.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>FileStreamResult.</returns>
         public FileStreamResult ToExcel(IQueryable query, string fileName = null)
         {
             var columns = GetProperties(query.ElementType);
@@ -195,28 +215,44 @@ namespace ManekiApp.Server.Controllers
         }
 
 
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="name">The name.</param>
+        /// <returns>System.Object.</returns>
         public static object GetValue(object target, string name)
         {
             return target.GetType().GetProperty(name).GetValue(target);
         }
 
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>IEnumerable&lt;KeyValuePair&lt;System.String, Type&gt;&gt;.</returns>
         public static IEnumerable<KeyValuePair<string, Type>> GetProperties(Type type)
         {
             return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(p => p.CanRead && IsSimpleType(p.PropertyType)).Select(p => new KeyValuePair<string, Type>(p.Name, p.PropertyType));
         }
 
+        /// <summary>
+        /// Determines whether [is simple type] [the specified type].
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns><c>true</c> if [is simple type] [the specified type]; otherwise, <c>false</c>.</returns>
         public static bool IsSimpleType(Type type)
         {
             var underlyingType = type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(Nullable<>) ?
                 Nullable.GetUnderlyingType(type) : type;
 
-            if(underlyingType == typeof(System.Guid) || underlyingType == typeof(System.DateTimeOffset))
+            if (underlyingType == typeof(System.Guid) || underlyingType == typeof(System.DateTimeOffset))
                 return true;
 
 #if NET6_0_OR_GREATER
-            if(underlyingType == typeof(System.DateOnly) || underlyingType == typeof(System.TimeOnly))
+            if (underlyingType == typeof(System.DateOnly) || underlyingType == typeof(System.TimeOnly))
                 return true;
 #endif
             var typeCode = Type.GetTypeCode(underlyingType);
@@ -244,6 +280,11 @@ namespace ManekiApp.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Determines whether the specified type code is numeric.
+        /// </summary>
+        /// <param name="typeCode">The type code.</param>
+        /// <returns><c>true</c> if the specified type code is numeric; otherwise, <c>false</c>.</returns>
         private static bool IsNumeric(TypeCode typeCode)
         {
             switch (typeCode)
@@ -262,6 +303,10 @@ namespace ManekiApp.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Generates the content of the workbook styles part.
+        /// </summary>
+        /// <param name="workbookStylesPart1">The workbook styles part1.</param>
         private static void GenerateWorkbookStylesPartContent(WorkbookStylesPart workbookStylesPart1)
         {
             Stylesheet stylesheet1 = new Stylesheet() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "x14ac x16r2 xr" } };

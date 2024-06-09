@@ -1,34 +1,41 @@
-using System;
-using System.Net;
-using System.Data;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-
-using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Deltas;
-using Microsoft.AspNetCore.OData.Formatter;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using System.Data;
 
 namespace ManekiApp.Server.Controllers.ManekiAppDB
 {
+    /// <summary>
+    /// Class SubscriptionsController.
+    /// Implements the <see cref="ODataController" />
+    /// </summary>
+    /// <seealso cref="ODataController" />
     [Route("odata/ManekiAppDB/Subscriptions")]
     public partial class SubscriptionsController : ODataController
     {
+        /// <summary>
+        /// The context
+        /// </summary>
         private ManekiApp.Server.Data.ManekiAppDBContext context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubscriptionsController"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
         public SubscriptionsController(ManekiApp.Server.Data.ManekiAppDBContext context)
         {
             this.context = context;
         }
 
-    
+
+        /// <summary>
+        /// Gets the subscriptions.
+        /// </summary>
+        /// <returns>IEnumerable&lt;ManekiApp.Server.Models.ManekiAppDB.Subscription&gt;.</returns>
         [HttpGet]
-        [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
+        [EnableQuery(MaxExpansionDepth = 10, MaxAnyAllExpressionDepth = 10, MaxNodeCount = 1000)]
         public IEnumerable<ManekiApp.Server.Models.ManekiAppDB.Subscription> GetSubscriptions()
         {
             var items = this.context.Subscriptions.AsQueryable<ManekiApp.Server.Models.ManekiAppDB.Subscription>();
@@ -37,11 +44,24 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
             return items;
         }
 
+        /// <summary>
+        /// Called when [subscriptions read].
+        /// </summary>
+        /// <param name="items">The items.</param>
         partial void OnSubscriptionsRead(ref IQueryable<ManekiApp.Server.Models.ManekiAppDB.Subscription> items);
 
+        /// <summary>
+        /// Called when [subscription get].
+        /// </summary>
+        /// <param name="item">The item.</param>
         partial void OnSubscriptionGet(ref SingleResult<ManekiApp.Server.Models.ManekiAppDB.Subscription> item);
 
-        [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
+        /// <summary>
+        /// Gets the subscription.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>SingleResult&lt;ManekiApp.Server.Models.ManekiAppDB.Subscription&gt;.</returns>
+        [EnableQuery(MaxExpansionDepth = 10, MaxAnyAllExpressionDepth = 10, MaxNodeCount = 1000)]
         [HttpGet("/odata/ManekiAppDB/Subscriptions(Id={Id})")]
         public SingleResult<ManekiApp.Server.Models.ManekiAppDB.Subscription> GetSubscription(Guid key)
         {
@@ -52,9 +72,22 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
 
             return result;
         }
+        /// <summary>
+        /// Called when [subscription deleted].
+        /// </summary>
+        /// <param name="item">The item.</param>
         partial void OnSubscriptionDeleted(ManekiApp.Server.Models.ManekiAppDB.Subscription item);
+        /// <summary>
+        /// Called when [after subscription deleted].
+        /// </summary>
+        /// <param name="item">The item.</param>
         partial void OnAfterSubscriptionDeleted(ManekiApp.Server.Models.ManekiAppDB.Subscription item);
 
+        /// <summary>
+        /// Deletes the subscription.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>IActionResult.</returns>
         [HttpDelete("/odata/ManekiAppDB/Subscriptions(Id={Id})")]
         public IActionResult DeleteSubscription(Guid key)
         {
@@ -81,23 +114,37 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 return new NoContentResult();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return BadRequest(ModelState);
             }
         }
 
+        /// <summary>
+        /// Called when [subscription updated].
+        /// </summary>
+        /// <param name="item">The item.</param>
         partial void OnSubscriptionUpdated(ManekiApp.Server.Models.ManekiAppDB.Subscription item);
+        /// <summary>
+        /// Called when [after subscription updated].
+        /// </summary>
+        /// <param name="item">The item.</param>
         partial void OnAfterSubscriptionUpdated(ManekiApp.Server.Models.ManekiAppDB.Subscription item);
 
+        /// <summary>
+        /// Puts the subscription.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="item">The item.</param>
+        /// <returns>IActionResult.</returns>
         [HttpPut("/odata/ManekiAppDB/Subscriptions(Id={Id})")]
-        [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PutSubscription(Guid key, [FromBody]ManekiApp.Server.Models.ManekiAppDB.Subscription item)
+        [EnableQuery(MaxExpansionDepth = 10, MaxAnyAllExpressionDepth = 10, MaxNodeCount = 1000)]
+        public IActionResult PutSubscription(Guid key, [FromBody] ManekiApp.Server.Models.ManekiAppDB.Subscription item)
         {
             try
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
@@ -115,20 +162,26 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 this.OnAfterSubscriptionUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return BadRequest(ModelState);
             }
         }
 
+        /// <summary>
+        /// Patches the subscription.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="patch">The patch.</param>
+        /// <returns>IActionResult.</returns>
         [HttpPatch("/odata/ManekiAppDB/Subscriptions(Id={Id})")]
-        [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
-        public IActionResult PatchSubscription(Guid key, [FromBody]Delta<ManekiApp.Server.Models.ManekiAppDB.Subscription> patch)
+        [EnableQuery(MaxExpansionDepth = 10, MaxAnyAllExpressionDepth = 10, MaxNodeCount = 1000)]
+        public IActionResult PatchSubscription(Guid key, [FromBody] Delta<ManekiApp.Server.Models.ManekiAppDB.Subscription> patch)
         {
             try
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
@@ -150,23 +203,36 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                 this.OnAfterSubscriptionUpdated(item);
                 return new ObjectResult(SingleResult.Create(itemToReturn));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return BadRequest(ModelState);
             }
         }
 
+        /// <summary>
+        /// Called when [subscription created].
+        /// </summary>
+        /// <param name="item">The item.</param>
         partial void OnSubscriptionCreated(ManekiApp.Server.Models.ManekiAppDB.Subscription item);
+        /// <summary>
+        /// Called when [after subscription created].
+        /// </summary>
+        /// <param name="item">The item.</param>
         partial void OnAfterSubscriptionCreated(ManekiApp.Server.Models.ManekiAppDB.Subscription item);
 
+        /// <summary>
+        /// Posts the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>IActionResult.</returns>
         [HttpPost]
-        [EnableQuery(MaxExpansionDepth=10,MaxAnyAllExpressionDepth=10,MaxNodeCount=1000)]
+        [EnableQuery(MaxExpansionDepth = 10, MaxAnyAllExpressionDepth = 10, MaxNodeCount = 1000)]
         public IActionResult Post([FromBody] ManekiApp.Server.Models.ManekiAppDB.Subscription item)
         {
             try
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
@@ -191,7 +257,7 @@ namespace ManekiApp.Server.Controllers.ManekiAppDB
                     StatusCode = 201
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return BadRequest(ModelState);
