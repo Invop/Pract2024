@@ -17,10 +17,10 @@
             <RadzenColumn Size="12" Visible="@(!isPreview)">
                 <RadzenCard>
                     <RadzenTextBox Name="PostTitle" class="w-100" Placeholder="Post Title" @bind-Value="@Post.Title"></RadzenTextBox>
-                    <RadzenRequiredValidator Component="PostTitle" Text="Post must have a title" Style="position: relative"/>
+                    <RadzenCustomValidator Validator="@(() => ValidateString(Post.Title))" Component="PostTitle" Text="Post title is required or not valid" Style="position: relative" />
                     <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
                     <RadzenHtmlEditor Name="PostContent" @bind-Value="@Post.Content" Style="height: 900px"></RadzenHtmlEditor>
-                    <RadzenRequiredValidator Component="PostContent" Text="Post must have a content" Style="position: relative"/>
+                    <RadzenCustomValidator Validator="@(() => ValidateString(Post.Content))" Component="PostContent" Text="Post content is required or not valid" Style="position: relative" />
                 </RadzenCard>
             </RadzenColumn>
 

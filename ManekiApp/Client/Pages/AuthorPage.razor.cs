@@ -78,13 +78,14 @@ namespace ManekiApp.Client.Pages
 
         private async Task LoadAuthorData()
         {
-            Author = await ManekiAppDb.GetAuthorPageById(id: AuthorPageId, expand: "Subscriptions");
-            if (Author != null)
+            var authorsResult = await ManekiAppDb.GetAuthorPages(filter: $"Id eq {AuthorPageId}", expand: "Subscriptions");
+            if (authorsResult.Value.Any())
             {
+                Author = authorsResult.Value.First();
                 Console.WriteLine($"Loaded Author: {Author.Title}");
                 IsUserAuthor = CheckUserAuthor(Author);
 
-                AuthorSubscriptions = Author.Subscriptions.Where(sub => sub.PermissionLevel > 0).ToList();
+                AuthorSubscriptions = Author.Subscriptions.ToList();
                 PostsAmount = await GetPostsAmount(Author);
                 SubscribersAmount = await GetSubscribersAmount(Author);
                 PaidSubscribersAmount = await GetPaidSubscribersAmount(Author);
@@ -100,7 +101,7 @@ namespace ManekiApp.Client.Pages
             else
             {
                 IsFound = false;
-                Console.WriteLine("Author is null");
+                Console.WriteLine("Author is not found");
             }
         }
 
@@ -124,7 +125,7 @@ namespace ManekiApp.Client.Pages
 
             var result = await ManekiAppDb.GetPosts(filter: filter, orderby: orderBy, skip: args.Skip, top: args.Top);
             var countFilterResult = await ManekiAppDb.GetPosts(filter: filter, orderby: orderBy, top: 0, count: true);
-            
+
             PaginationPostsAmount = countFilterResult.Count;
             Posts = result.Value.AsODataEnumerable();
 
@@ -211,8 +212,8 @@ namespace ManekiApp.Client.Pages
 
                 //Probably for protecting a telegram chat link from free subscribers
                 bool isPaidSubscriber = (await CheckUserSubscriptions(1, Author)) || IsUserAuthor;
-                socialLinks.Telegram = isPaidSubscriber ? socialLinks.Telegram : null;  
-                
+                socialLinks.Telegram = isPaidSubscriber ? socialLinks.Telegram : null;
+
                 var icons = new Dictionary<string, string>
                 {
                     { "/images/youtube.png", socialLinks.Youtube },
@@ -289,12 +290,17 @@ namespace ManekiApp.Client.Pages
 
             return false;
         }
-        
+
         private async Task<ODataServiceResult<UserSubscription>> GetUserSubscriptionsByUserAndAuthor(string userId, Guid authorPageId)
         {
             var filter = $"UserId eq '{userId}' and Subscription/AuthorPageId eq {authorPageId}";
             var userSubscriptionsOData = await ManekiAppDb.GetUserSubscriptions(filter: filter, expand: "Subscription");
             return userSubscriptionsOData;
+        }
+
+        protected void NavigateToCreatePost()
+        {
+            NavigationManager.NavigateTo("/create-post");
         }
 
         public class SocialLinks

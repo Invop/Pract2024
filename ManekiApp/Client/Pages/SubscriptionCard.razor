@@ -1,11 +1,13 @@
 ﻿@page "/subscription"
-@using System.Runtime.InteropServices
+@using System.Text
 @using ManekiApp.Server.Models.ManekiAppDB
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.JSInterop
+@using Newtonsoft.Json
 @inject IJSRuntime JSRuntime
 @inject DialogService DialogService
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
 <RadzenCard>
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 20px">
@@ -19,10 +21,11 @@
     <RadzenText TextStyle="TextStyle.Body1" Style="font-size: 17px">
         @Description
     </RadzenText>
-    <RadzenButton Text="Subscribe" Click="@(() => SubscribeClicked())" Style="border-radius: 10px; border: 1px solid #3e633f;"/>
+    <RadzenButton Text="Subscribe" Click="@(() => SubscribeClicked())" Visible="@ShowButtons" Style="border-radius: 10px; border: 1px solid #3e633f;"/>
 </RadzenCard>
 
 @code {
+    [Parameter] public bool ShowButtons { get; set; }
     [Parameter] public string TierName { get; set; }
     [Parameter] public decimal Price { get; set; }
     [Parameter] public Guid SubscriptionId { get; set; }
@@ -41,10 +44,21 @@
         }
 
         var currentUserId = GetCurrentUserId();
-        if(await IsTelegramConfirmed(currentUserId) == false)return;
-        var currentPlan = await GetCurrentPlan();
-        var currentSubscription = await ManekiAppDb.GetSubscriptionById(id:currentPlan.SubscriptionId);
+        if (!await IsTelegramConfirmed(currentUserId))
+        {
+            return;
+        }
+
+        var currentPlan = await GetCurrentPlan(currentUserId);
+        if (currentPlan == null)
+        {
+            await HandleNoCurrentPlan(currentUserId);
+            return;
+        }
+
+        var currentSubscription = await ManekiAppDb.GetSubscriptionById(id: currentPlan.SubscriptionId);
         CurrentPlanName = currentSubscription.Title;
+
         if (IsFreePlan())
         {
             await HandleFreePlanSubscription(currentUserId, currentPlan);
@@ -54,6 +68,19 @@
             await HandlePaidPlanSubscription(currentPlan);
         }
     }
+
+    private async Task HandleNoCurrentPlan(string currentUserId)
+    {
+        if (IsFreePlan())
+        {
+            await ProcessFreeUser(currentUserId);
+        }
+        else
+        {
+            await OpenSubscriptionUrl();
+        }
+    }
+
     private async Task<bool> IsTelegramConfirmed(string currentUserId)
     {
         var user = await SecurityService.GetUserById(currentUserId);
@@ -125,12 +152,12 @@
             var result = await ShowConfirmPlanChangeDialog();
             if (result)
             {
-                OpenSubscriptionUrl();
+                await OpenSubscriptionUrl();
             }
         }
         else
         {
-            OpenSubscriptionUrl();
+            await OpenSubscriptionUrl();
         }
     }
 
@@ -139,10 +166,10 @@
         return currentPlan == null || currentPlan.SubscriptionId != SubscriptionId;
     }
 
-    private void OpenSubscriptionUrl()
+    private async Task OpenSubscriptionUrl()
     {
         var url = $"https://t.me/maneki_pay_bot?start=subscription{SubscriptionId}";
-        _ = JSRuntime.InvokeVoidAsync("open", url, "_blank");
+        await JSRuntime.InvokeVoidAsync("open", url, "_blank");
     }
 
 
@@ -178,12 +205,13 @@
 
     private async Task ProcessFreeUser(string currentUser)
     {
-        var currentPlan = await GetCurrentPlan();
+        var currentPlan = await GetCurrentPlan(currentUser);
         if (currentPlan != null)
         {
             currentPlan.SubscriptionId = SubscriptionId;
             currentPlan.EndsAt = DateTime.UtcNow.AddMonths(1);
             await ManekiAppDb.UpdateUserSubscription(currentPlan.Id, currentPlan);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "You have successfully subscribed to the free plan.");
         }
         else
         {
@@ -198,15 +226,23 @@
                 IsCanceled = false
             };
             await ManekiAppDb.CreateUserSubscription(newUserSubscription);
+            HttpClient client = new HttpClient();
+            var json = JsonConvert.SerializeObject(newUserSubscription);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("https://localhost:5004/setJobIdForFreeSub", content);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "You have successfully subscribed to the free plan.");
+
         }
     }
 
-    private async Task<UserSubscription> GetCurrentPlan()
-    {
-        var userSubsFilter = string.Join(" or ", Subscriptions.Select(s => $"SubscriptionId eq {s.Id}"));
+    private async Task<UserSubscription> GetCurrentPlan(string userId)
+    {   
+        var userSubsFilter = string.Join(" or ", Subscriptions.Select(s => $"(SubscriptionId eq {s.Id} and UserId eq '{userId}')"));
         var userPlanOData = await ManekiAppDb.GetUserSubscriptions(userSubsFilter);
         var userPlan = userPlanOData.Value.FirstOrDefault();
         return userPlan;
     }
+
+
 
 }

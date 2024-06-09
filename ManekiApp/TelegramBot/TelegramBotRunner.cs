@@ -20,8 +20,8 @@ public class TelegramBotRunner
         await bot.Start();
     }
 
-    public async Task NotifyUsersAsync(Guid authorId)
+    public async Task NotifyUsersAsync(Guid authorId, string postTitle)
     {
-        await bot.NotifyUsersAsync(_serviceProvider,authorId);
+        await bot.NotifyUsersAsync(_serviceProvider,authorId, postTitle);
     }
 }

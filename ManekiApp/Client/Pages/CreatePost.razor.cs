@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using ManekiApp.Server.Models.ManekiAppDB;
-using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using Radzen;
-using Radzen.Blazor;
 
 namespace ManekiApp.Client.Pages
 {
@@ -35,7 +29,7 @@ namespace ManekiApp.Client.Pages
         [Inject]
         protected SecurityService Security { get; set; }
 
-        [Inject] 
+        [Inject]
         protected ManekiAppDBService ManekiAppDBService { get; set; }
 
         protected bool isPreview = false;
@@ -43,10 +37,10 @@ namespace ManekiApp.Client.Pages
 
         protected bool errorVisible;
         protected string error;
-        
+
         protected Server.Models.ManekiAppDB.AuthorPage currentAuthor;
         protected Server.Models.ManekiAppDB.Post Post = new Post();
-        
+
         protected int minLevelValue = 0;
         protected IEnumerable<Subscription> subscriptions;
 
@@ -77,9 +71,9 @@ namespace ManekiApp.Client.Pages
             {
                 NavigationManager.NavigateTo("/create-author-page");
             }
-            
+
         }
-        
+
         protected async Task FormSubmit(ManekiApp.Server.Models.ManekiAppDB.Post post)
         {
             try
@@ -89,10 +83,19 @@ namespace ManekiApp.Client.Pages
                 Post.AuthorPageId = currentAuthor.Id;
                 Post.MinLevel = minLevelValue;
 
+                NormalizeAllTextFields();
+                
                 await ManekiAppDBService.CreatePost(post);
 
-                await sendNotificationRequest(currentAuthor.Id);
-                
+                try
+                {
+                    await SendNotificationRequest(currentAuthor.Id);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error while sending notification request: {e.Message}");
+                }
+
                 NavigationManager.NavigateTo($"/post/{Post.Id}");
             }
             catch (Exception ex)
@@ -102,39 +105,19 @@ namespace ManekiApp.Client.Pages
             }
         }
 
-        private async Task sendNotificationRequest(Guid authorId)
+        private async Task SendNotificationRequest(Guid authorId)
         {
-            string baseAddress = "http://localhost:7033/notify/";
+            var client = new HttpClient();
+            var response = await client.PostAsync($"https://localhost:5006/notify?authorId={authorId}&title={Post.Title}", null);
 
-            // Combine the base address with the authorId
-            string requestUri = $"{baseAddress}{authorId}";
-
-            using (HttpClient client = new HttpClient())
+            if (response.IsSuccessStatusCode)
             {
-                try
-                {
-                    // Prepare the request content if necessary
-                    HttpContent content = new StringContent("");
-                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                    // Send the POST request
-                    HttpResponseMessage response = await client.PostAsync(requestUri, content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Console.WriteLine("Notification sent successfully.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Failed to send notification. Status code: {response.StatusCode}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                }
+                Console.WriteLine("Notification sent successfully.");
             }
-            
+            else
+            {
+                Console.WriteLine($"Failed to send notification. Status code: {response.StatusCode}");
+            }
         }
 
         private void EnablePreview()
@@ -146,6 +129,23 @@ namespace ManekiApp.Client.Pages
         private void DisablePreview()
         {
             isPreview = false;
+        }
+        
+        private void NormalizeAllTextFields()
+        {
+            Post.Title = GetNormalizedString(Post.Title);
+        }
+        
+        public static string GetNormalizedString(string input)
+        {
+            string pattern = @"\s+";
+            string normalizedString = Regex.Replace(input, pattern, " ").Trim();
+            return normalizedString;
+        }
+
+        private bool ValidateString(string text)
+        {
+            return !(string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text));
         }
     }
 }

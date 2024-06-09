@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
@@ -39,20 +40,42 @@ namespace ManekiApp.Client.Pages
         [Inject]
         protected ManekiAppDBService ManekiService { get; set; }
 
-        protected ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage;
+        protected ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage = new Server.Models.ManekiAppDB.AuthorPage();
         protected bool errorVisible;
         protected string error;
         
         protected override async Task OnInitializedAsync()
         {
-            authorPage = new Server.Models.ManekiAppDB.AuthorPage();
+            try
+            {
+                await RedirectIfAuthor();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error occured: {e.Message}");
+            }
+            
             authorPage.UserId = Security.User.Id;
         }
-        
+
+        private async Task RedirectIfAuthor()
+        {
+            string filter = $"UserId eq '{Security.User.Id}'";
+            var result = await ManekiService.GetAuthorPages(filter: filter);
+
+            if (result.Value.Any())
+            {
+                string pageId = result.Value.First().Id.ToString();
+                NavigationManager.NavigateTo($"/author-page/{pageId}");
+                return;
+            }
+        }
+
         protected async Task FormSubmit(ManekiApp.Server.Models.ManekiAppDB.AuthorPage authorPage)
         {
             try
             {
+                NormalizeAllTextFields();
                 authorPage.SocialLinks = JsonSerializer.Serialize(new SocialLinks());
                 await ManekiService.CreateAuthorPage(authorPage);
                 
@@ -120,6 +143,24 @@ namespace ManekiApp.Client.Pages
             public string Twitter { get; set; } = null;
             public string Twitch { get; set; } = null;
             public string Pinterest { get; set; } = null;
+        }
+        
+        private void NormalizeAllTextFields()
+        {
+            authorPage.Title = GetNormalizedString(authorPage.Title);
+            authorPage.Description = GetNormalizedString(authorPage.Description);
+        }
+        
+        public static string GetNormalizedString(string input)
+        {
+            string pattern = @"\s+";
+            string normalizedString = Regex.Replace(input, pattern, " ").Trim();
+            return normalizedString;
+        }
+
+        private bool ValidateString(string text)
+        {
+            return !(string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text));
         }
     }
 }

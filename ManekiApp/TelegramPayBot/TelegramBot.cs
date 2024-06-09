@@ -1,8 +1,5 @@
-
-using Hangfire;
 using ManekiApp.Server.Models;
 using ManekiApp.Server.Models.ManekiAppDB;
-using ManekiApp.TelegramPayBot.Keyboard;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -52,7 +49,7 @@ namespace ManekiApp.TelegramPayBot
             // Send cancellation request to stop bot
             cts.Cancel();
         }
-        
+
         private async Task<bool> UserExistsAsync(string telegramId)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
@@ -91,7 +88,7 @@ namespace ManekiApp.TelegramPayBot
         {
             if (update.Message.SuccessfulPayment != null)
             {
-                await HandleSuccessfulPaymentAsync(update,update.Message.From.Id.ToString(),update.Message.Chat.Id,cancellationToken);
+                await HandleSuccessfulPaymentAsync(update, update.Message.From.Id.ToString(), update.Message.Chat.Id, cancellationToken);
             }
             else if (update.Message?.Text != null)
             {
@@ -100,7 +97,7 @@ namespace ManekiApp.TelegramPayBot
 
         }
 
-        private async Task HandleSuccessfulPaymentAsync(Update update, string telegramId,long chatId, CancellationToken cancellationToken)
+        private async Task HandleSuccessfulPaymentAsync(Update update, string telegramId, long chatId, CancellationToken cancellationToken)
         {
 
             if (!await UserExistsAsync(telegramId))
@@ -128,9 +125,9 @@ namespace ManekiApp.TelegramPayBot
 
                     var existingUserSubscription = await context.UserSubscriptions
                         .Include(us => us.Subscription)
-                        .FirstOrDefaultAsync(us => us.UserId == currentUser.Id 
+                        .FirstOrDefaultAsync(us => us.UserId == currentUser.Id
                                                    && us.Subscription.AuthorPageId == subscription.AuthorPageId);
-                    
+
                     var level0Subscription = await context.Subscriptions
                         .FirstOrDefaultAsync(s =>
                             s.AuthorPageId == subscription.AuthorPageId
@@ -156,7 +153,7 @@ namespace ManekiApp.TelegramPayBot
                             existingUserSubscription.SubscribedAt = DateTime.UtcNow;
                             Console.WriteLine("Updated");
                         }
-                            _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(existingUserSubscription,
+                        existingUserSubscription.JobId = _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(existingUserSubscription,
                                 level0Subscription.Id);
                     }
                     else
@@ -174,7 +171,7 @@ namespace ManekiApp.TelegramPayBot
                             JobId = String.Empty
                         };
                         if (level0Subscription != null)
-                            _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(newUserSubscription,
+                            newUserSubscription.JobId = _userSubscriptionJobManager.ScheduleUserSubscriptionDeletionJob(newUserSubscription,
                                 level0Subscription.Id);
                         context.UserSubscriptions.Add(newUserSubscription);
                         Console.WriteLine("Created");
@@ -185,7 +182,7 @@ namespace ManekiApp.TelegramPayBot
                 }
             }
         }
-        
+
         private async Task HandleTextMessageAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message.Text.StartsWith("/start subscription"))
@@ -210,12 +207,12 @@ namespace ManekiApp.TelegramPayBot
                 message.Chat.Id,
                 "USE SAMPLE CARD ONLY 4242 4242 4242 4242",
                 cancellationToken: cancellationToken);
-            await SendInvoiceAsync(botClient ,message.Chat.Id, subscriptionId,
+            await SendInvoiceAsync(botClient, message.Chat.Id, subscriptionId,
                     cancellationToken);
-            
-            
+
+
         }
-        
+
         private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch
@@ -228,7 +225,7 @@ namespace ManekiApp.TelegramPayBot
             Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
         }
-        
+
         private async Task HandleNonExistingUser(long? chatId, CancellationToken cancellationToken)
         {
             // Send an error message if the user does not exist
@@ -238,21 +235,21 @@ namespace ManekiApp.TelegramPayBot
                 cancellationToken: cancellationToken);
         }
 
-        private async Task SendInvoiceAsync(ITelegramBotClient botClient, long chatId,Guid subscriptionId, CancellationToken cancellationToken)
+        private async Task SendInvoiceAsync(ITelegramBotClient botClient, long chatId, Guid subscriptionId, CancellationToken cancellationToken)
         {
 
             Subscription? subscription;
-            using(var scope = _serviceScopeFactory.CreateScope())
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
                 subscription = await context.Subscriptions.FindAsync(subscriptionId);
             }
 
-            if (subscription != null) 
+            if (subscription != null)
             {
                 decimal price = subscription.Price;
                 string title = subscription.Title;
-                if (price<=0)
+                if (price <= 0)
                 {
                     return;
                 }

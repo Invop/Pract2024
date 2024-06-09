@@ -2,7 +2,6 @@ using ManekiApp.Client;
 using ManekiApp.Server.Components;
 using ManekiApp.Server.Data;
 using ManekiApp.Server.Models;
-using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
@@ -13,6 +12,9 @@ using _Imports = ManekiApp.Client._Imports;
 using ManekiAppDBService = ManekiApp.Server.ManekiAppDBService;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseUrls("http://localhost:5000", "https://localhost:5001");
+
 builder.Services.AddLogging();
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveWebAssemblyComponents();
@@ -74,7 +76,10 @@ builder.Services.AddDbContext<ManekiApp.Server.Data.ManekiAppDBContext>(options 
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ManekiAppDBConnection"));
 });
+
+
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -88,17 +93,33 @@ else
 }
 
 app.UseHttpsRedirection();
-app.MapControllers();
-app.UseHeaderPropagation();
 app.UseStaticFiles();
+
+app.UseRouting();
+
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
+app.UseHeaderPropagation();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveWebAssemblyRenderMode().AddAdditionalAssemblies(typeof(_Imports).Assembly);
 app.Services.CreateScope().ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>().Database.Migrate();
 using var scope = app.Services.CreateScope();
 SeedData(scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>());
+
+
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder
+    .WithOrigins("https://localhost:5001")
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
+
+
+app.UseStatusCodePagesWithRedirects("/not-found");
 app.Run();
+
 void SeedData(RoleManager<ApplicationRole> roleManager)
 {
     var roles = new List<string>

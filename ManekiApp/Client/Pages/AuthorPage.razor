@@ -2,14 +2,12 @@
 @using ManekiApp.Server.Models.ManekiAppDB
 
 
-@attribute [Authorize]
-
 <PageTitle>AuthorPage</PageTitle>
 <RadzenRow>
     @if (IsFound)
     {
         <RadzenCard class="w-100">
-            <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenStack Orientation="Orientation.Horizontal" style="overflow-x: scroll;">
 
                 <RadzenImage class="profile-image" Path="@(Author.ProfileImage != null ? $"data:image/jpeg;base64,{Author.ProfileImage}" : $"https://ui-avatars.com/api/?name={Author.Title}")" Style="width: 250px; border-radius: 50%; height: 250px; margin-left: 30px; margin-right: 30px"></RadzenImage>
                 <RadzenStack class="w-100" JustifyContent="Radzen.JustifyContent.SpaceEvenly">
@@ -32,9 +30,8 @@
                     </RadzenRow>
 
                     <RadzenRow>
-                        <RadzenButton Text="Subscribe for free" Style="background-color: #58a45b; border-radius: 10px; border: 1px solid #3e633f" Visible="@(!IsUserAuthor)"></RadzenButton>
-                        <RadzenButton Text="Edit page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" Visible="@IsUserAuthor" />
-
+                         <RadzenButton Text="Edit Page" Variant="Variant.Flat" Click="NavigateToEditPage" Shade="Shade.Light" Style="background-color: #d1d8e1; width: 144px; border-radius: 10px; border: 1px solid #949aa4; color: #000000" Visible="@IsUserAuthor"/>
+                         <RadzenButton Text="Create Post" Variant="Variant.Flat" Click="NavigateToCreatePost" Shade="Shade.Light" Style="background-color: #bdaba6; width: 144px; border-radius: 10px; border: 1px solid #988784; color: #ffffff" Visible="@IsUserAuthor"/>
                     </RadzenRow>
 
                 </RadzenStack>
@@ -63,7 +60,9 @@
                                 <RadzenColumn class="rz-pt-5">
                                     <SubscriptionCard TierName=@($"{sub.Title}") Price=@(sub.Price)
                                                       SubscriptionId="sub.Id" UserId="@Security.User.Id"
-                                                      Description="@sub.Description">
+                                                      Subscriptions="@AuthorSubscriptions"
+                                                      Description="@sub.Description"
+                                                      ShowButtons="@(!IsUserAuthor)">
                                     </SubscriptionCard>
                                 </RadzenColumn>
                             }

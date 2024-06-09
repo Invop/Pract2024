@@ -1,0 +1,45 @@
+@page "/author-page"
+
+@code {
+    [Inject] protected NavigationManager NavigationManager { get; set; }
+    [Inject] protected ManekiAppDBService ManekiAppDb { get; set; }
+    [Inject] protected SecurityService Security { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (!isUserAuthenticated())
+            {
+                NavigationManager.NavigateTo("/not-found");
+                return;
+            }
+            await RedirectToPage();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading author data: {ex.Message}");
+        }
+
+    }
+    
+    private async Task RedirectToPage()
+    {
+        string filter = $"UserId eq '{Security.User.Id}'";
+        var result = await ManekiAppDb.GetAuthorPages(filter: filter);
+
+        if (!result.Value.Any())
+        {
+            NavigationManager.NavigateTo("/create-author-page");
+            return;
+        }
+
+        string pageId = result.Value.First().Id.ToString();
+        NavigationManager.NavigateTo($"/author-page/{pageId}");
+    }
+
+    private bool isUserAuthenticated()
+    {
+        return Security.IsAuthenticated();
+    }
+}

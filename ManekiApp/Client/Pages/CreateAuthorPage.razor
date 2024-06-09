@@ -28,6 +28,7 @@
 
                         <RadzenColumn class="w-100" Size="12" SizeMD="9">
                             <RadzenTextBox Name="Title" @bind-Value="@authorPage.Title" Placeholder="Your page title" class="w-100"></RadzenTextBox>
+                            <RadzenCustomValidator Validator="@(() => ValidateString(authorPage.Title))" Component="Title" Text="Page title is required or not valid" Style="position: relative" />
                         </RadzenColumn>
 
                         <RadzenColumn Size="12" SizeMD="3">
@@ -36,6 +37,7 @@
 
                         <RadzenColumn class="w-100" Size="12" SizeMD="9">
                             <RadzenTextArea Name="Description" @bind-Value="@authorPage.Description" Style="min-height: 300px" class="w-100"></RadzenTextArea>
+                            <RadzenCustomValidator Validator="@(() => ValidateString(authorPage.Description))" Component="Description" Text="Page description is required or not valid" Style="position: relative" />
                         </RadzenColumn>
                     </RadzenRow>
 

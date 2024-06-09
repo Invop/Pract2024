@@ -1,0 +1,127 @@
+@using ManekiApp.Server.Models.ManekiAppDB
+@using System.Text.RegularExpressions
+<RadzenColumn Size="12">
+    <RadzenCard class="w-100">
+        <RadzenTemplateForm TItem="ManekiApp.Server.Models.ManekiAppDB.Subscription"  Data="@Subscription" 
+                            Submit="@FormSubmit" InvalidSubmit="() => {}">
+            <ChildContent>
+                
+                <RadzenRow>
+                    <RadzenColumn Size="12" class="justify-content-between" Style="display: flex">
+                        <RadzenRow>
+                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Visible="@(!IsEditing)" Click="@(EditSubscription)"></RadzenButton>
+                            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Success" Icon="check" Visible="@(IsEditing)"></RadzenButton>
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="clear" Visible="@(IsEditing)" Click="@(DiscardChanges)"></RadzenButton>
+                        </RadzenRow>
+                        <RadzenRow>
+                            <RadzenText Style="text-align: center; display: flex; align-items:center;">Subscription Level</RadzenText>
+                            <RadzenBadge Style="text-align: center; display: flex; align-items: center; font-family: Verdana; font-weight: 500; font-size: 16px; background-color: #3994ff" class="rz-px-3">@Subscription.PermissionLevel</RadzenBadge>
+                        </RadzenRow>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
+
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenRow class="w-100">
+                        <RadzenColumn class="flex-column justify-content-center" Style="display: flex">
+                            <RadzenStack Gap="0">
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
+                                <RadzenText Style="font-weight: 400" Visible="@(!IsEditing)"><b>@Subscription.Title</b></RadzenText>
+                                <RadzenTextBox Name="Title" Placeholder="Subscription Title" @bind-Value="@Subscription.Title" Visible="@(IsEditing)"></RadzenTextBox>
+                                <RadzenCustomValidator Validator="@(() => ValidateString(Subscription.Title))" Component="Title" Text="Title is required or not valid" Style="position: relative" Visible="@(IsEditing)"/>
+                            </RadzenStack>
+                            <RadzenStack Gap="0">
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Price</RadzenText>
+                                <RadzenText Style="font-weight: 400" Visible="@(!IsEditing)">@Subscription.Price $</RadzenText>
+                                
+                                <RadzenStack Orientation="Orientation.Horizontal" Visible="@(IsEditing)">
+                                    <RadzenNumeric Min="1" Name="Price" TValue="decimal" Step="0.1" Placeholder="Subscription Price" class="w-100" @bind-Value="@Subscription.Price"></RadzenNumeric>
+                                    <RadzenColumn>
+                                        <RadzenText class="align-items-center h-100 rz-px-3" Style="display: flex; font-size: 20px; font-weight: 500">$</RadzenText>
+                                    </RadzenColumn>
+                                </RadzenStack>
+                                <RadzenRequiredValidator Component="Price" Text="Price is required" Style="position: relative" Visible="@(IsEditing)"/>
+                            </RadzenStack>
+                        </RadzenColumn>
+
+                        <RadzenColumn class="flex-column justify-content-center" Style="display: flex" SizeMD="6">
+                            <RadzenStack Gap="0" Style="height: 100%">
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Description</RadzenText>
+                                <RadzenText Style="font-weight: 400; word-break:break-all;" class="h-100" Visible="@(!IsEditing)">@Subscription.Description</RadzenText>
+                                <RadzenTextArea Name="Description" Placeholder="Subscription Description" @bind-Value="@Subscription.Description" Style="height: 100%" Visible="@(IsEditing)"></RadzenTextArea>
+                                <RadzenCustomValidator Validator="@(() => ValidateString(Subscription.Description))" Component="Description" Text="Description is required or not valid" Style="position: relative" Visible="@(IsEditing)"/>
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+                
+            </ChildContent>
+        </RadzenTemplateForm>
+    </RadzenCard>
+</RadzenColumn>    
+
+@code {
+    [Inject] protected ManekiAppDBService ManekiService { get; set; }
+    
+    [Parameter] public Subscription Subscription { get; set; }
+    [Parameter] public EventCallback<string> CallError { get; set; }
+
+    protected bool IsEditing = false;
+
+    private async Task FormSubmit()
+    {
+        NormalizeAllTextFields();
+        var updatedSubscription = Subscription;
+        try 
+        { 
+            await ManekiService.UpdateSubscription(updatedSubscription.Id, updatedSubscription); 
+        }
+        catch (Exception ex)
+        {
+            await CallError.InvokeAsync(ex.Message);
+            return;
+        }
+
+        IsEditing = false;
+    }
+
+    private void EditSubscription()
+    {
+        IsEditing = true;
+    }
+
+    private async Task DiscardChanges()
+    {
+        var serverSubscriptionResult = await GetSubscriptionsById(Subscription.Id); 
+        var serverSubscription = serverSubscriptionResult?.Value?.FirstOrDefault();
+
+        Subscription = serverSubscription;
+        IsEditing = false;
+    }
+    
+    private async Task<ODataServiceResult<Subscription>> GetSubscriptionsById(Guid id)
+    {
+        var filter = $"Id eq {id}";
+        var subscriptions = await ManekiService.GetSubscriptions(filter: filter);
+        return subscriptions;
+    }
+    
+    private void NormalizeAllTextFields()
+    {
+        Subscription.Title = GetNormalizedString(Subscription.Title);
+        Subscription.Description = GetNormalizedString(Subscription.Description);
+    }
+        
+    public static string GetNormalizedString(string input)
+    {
+        string pattern = @"\s+";
+        string normalizedString = Regex.Replace(input, pattern, " ").Trim();
+        return normalizedString;
+    }
+
+    private bool ValidateString(string text)
+    {
+        return !(string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text));
+    }
+}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ManekiApp.Server.Models.ManekiAppDB;
 using Microsoft.JSInterop;
@@ -127,6 +128,8 @@ namespace ManekiApp.Client.Pages
                 Post.EditedAt = DateTimeOffset.UtcNow;
                 Post.MinLevel = minLevelValue;
 
+                NormalizeAllTextFields();
+                
                 await ManekiAppDBService.UpdatePost(Post.Id, Post);
                 
                 NavigationManager.NavigateTo($"/post/{Post.Id}");
@@ -177,6 +180,23 @@ namespace ManekiApp.Client.Pages
                 errorVisible = true;
                 error = ex.Message;
             }
+        }
+        
+        private void NormalizeAllTextFields()
+        {
+            Post.Title = GetNormalizedString(Post.Title);
+        }
+        
+        public static string GetNormalizedString(string input)
+        {
+            string pattern = @"\s+";
+            string normalizedString = Regex.Replace(input, pattern, " ").Trim();
+            return normalizedString;
+        }
+
+        private bool ValidateString(string text)
+        {
+            return !(string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text));
         }
     }
 }
